@@ -5,7 +5,7 @@ cheatsheet do
   title 'py-Stellar-sdk'
   docset_file_name 'py-stellar-sdk==2.8.1'
   keyword 'stellar-sdk'
-  source_url 'https://stellar-sdk.readthedocs.io/en/latest/'
+  source_url 'https://stellar-sdk.readthedocs.io/en/latest/, https://kapeli.com/docsets#supportedentrytypes'
 
   style <<-EOS
     td.command {
@@ -55,14 +55,19 @@ cheatsheet do
   category do
     id 'Generate Keypair'
 
-    entry do
-      command ''
-      name 'Prove Twitter'
+    object do
+      command 'Keypair.random()'
+      name 'Keypair.random()'
       notes '
-      ```terminal
-      keybase prove twitter
+      ```python
+      from stellar_sdk import Keypair
+
+      keypair = Keypair.random()
+      print("Public Key: " + keypair.public_key)
+      print("Secret Seed: " + keypair.secret)
       ```
-      Prove you own a [Twitter](https://twitter.com) account.'
+      Generate random **Public Key** and **Private Key** object.
+      This `Keypair` object can sign transactions.'
     end
 
     entry do
