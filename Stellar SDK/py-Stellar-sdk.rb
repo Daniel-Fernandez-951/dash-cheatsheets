@@ -6,7 +6,7 @@ cheatsheet do
   docset_file_name 'py-stellar-sdk==2.8.1'
   keyword 'stellar-sdk'
   source_url 'https://stellar-sdk.readthedocs.io/en/latest/'
-  
+
   style <<-EOS
     td.command {
       text-align: right;
