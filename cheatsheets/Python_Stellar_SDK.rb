@@ -52,11 +52,17 @@ cheatsheet do
       end
   end
 
+  object_id do
+    id 'Test Method'
+  end
+
+
   category do
     id 'Generate Keypair'
 
-    object do
-      command 'Keypair.random()'
+    guide do
+      td_command 'Keypair.random()'
+      td_command 'Another test'
       name 'Keypair.random()'
       notes '
       ```python

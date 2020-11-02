@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<title>py-Stellar-sdk</title>
+<link href='style.css' rel='stylesheet'>
+<style type='text/css'>    td.command {
+      text-align: right;
+      vertical-align:middle;
+    }
+
+    td.description .name {
+      display: none;
+    }
+
+    .single-icon td.description {
+      width: 1%;
+      text-align: center;
+    }
+
+
+    .example-single-command.category-layouts td.command,
+    .example-single-command.category-layouts td.td_command:nth-child(1) {
+      width: 12em;
+    }
+
+    .example-single-command.category-layouts td.description {
+      /* override width for Layouts category */
+      width: 13em;
+    }
+
+    /* bootstrap color for stacking example */
+    .text-danger {
+      color: #a94442;
+    }
+</style>
+<link href='//dash_ref/Category/Install/1'>
+<link href='//dash_ref_Install/Entry/Pipenv/0'>
+<link href='//dash_ref/Category/Generate Keypair/1'>
+<link href='//dash_ref_Generate Keypair/Entry/Keypair.random()/0'>
+<link href='//dash_ref_Generate Keypair/Entry/Prove GitHub/0'>
+<link href='//dash_ref_Generate Keypair/Entry/Prove Reddit/0'>
+<link href='//dash_ref_Generate Keypair/Entry/Prove Coinbase/0'>
+<link href='//dash_ref_Generate Keypair/Entry/Prove Hacker News/0'>
+<link href='//dash_ref_Generate Keypair/Entry/Prove website via HTTP/0'>
+<link href='//dash_ref_Generate Keypair/Entry/Prove website via DNS/0'>
+</head>
+<body>
+<header>
+<h1>py-Stellar-sdk</h1>
+</header>
+<article>
+<p></p>
+<section class='category'>
+<h2 id='//dash_ref/Category/Install/1'>
+Install
+</h2>
+<div class='scrollable'>
+<table>
+<tr id='//dash_ref_Install/Entry/Pipenv/0'>
+<td class='command'>
+<p>
+<code>pipenv</code>
+</p>
+</td>
+<td class='description'>
+<div class='name'><p>Pipenv</p>
+</div>
+<div class='notes'><pre class="highlight console"><span class="go">pipenv install stellar-sdk==2.8.1&#x000A;</span></pre>
+<p>Install <code>py-stellar-sdk</code> using pipenv (recommended).</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</section>
+<section class='category'>
+<h2 id='//dash_ref/Category/Generate Keypair/1'>
+Generate Keypair
+</h2>
+<div class='scrollable'>
+<table>
+<tr id='//dash_ref_Generate Keypair/Entry/Keypair.random()/0'>
+<td class='td_command'>
+<code>Keypair.random()</code>
+</td>
+<td class='td_command'>
+<code>Another test</code>
+</td>
+<td class='description'>
+<div class='name'><p>Keypair.random()</p>
+</div>
+<div class='notes'></div>
+</td>
+<td class='td_notes'>
+<div class='td_notes'><pre class="highlight python"><span class="kn">from</span> <span class="nn">stellar_sdk</span> <span class="kn">import</span> <span class="n">Keypair</span>&#x000A;&#x000A;<span class="n">keypair</span> <span class="o">=</span> <span class="n">Keypair</span><span class="p">.</span><span class="n">random</span><span class="p">()</span>&#x000A;<span class="k">print</span><span class="p">(</span><span class="s">"Public Key: "</span> <span class="o">+</span> <span class="n">keypair</span><span class="p">.</span><span class="n">public_key</span><span class="p">)</span>&#x000A;<span class="k">print</span><span class="p">(</span><span class="s">"Secret Seed: "</span> <span class="o">+</span> <span class="n">keypair</span><span class="p">.</span><span class="n">secret</span><span class="p">)</span></pre>
+<p>Generate random <strong>Public Key</strong> and <strong>Private Key</strong> object.
+This <code>Keypair</code> object can sign transactions.</p>
+</div>
+</td>
+<td class='td_notes'>
+<div class='td_notes'><p>This is <code>td_notes</code></p>
+</div>
+</td>
+</tr>
+<tr id='//dash_ref_Generate Keypair/Entry/Prove GitHub/0'>
+<td class='command'>
+<p>
+<code>prove github</code>
+</p>
+</td>
+<td class='description'>
+<div class='name'><p>Prove GitHub</p>
+</div>
+<div class='notes'><pre class="highlight console"><span class="go">keybase prove github&#x000A;</span></pre>
+<p>Prove you own a <a href="https://github.com">GitHub</a> account.</p>
+</div>
+</td>
+</tr>
+<tr id='//dash_ref_Generate Keypair/Entry/Prove Reddit/0'>
+<td class='command'>
+<p>
+<code>prove reddit</code>
+</p>
+</td>
+<td class='description'>
+<div class='name'><p>Prove Reddit</p>
+</div>
+<div class='notes'><pre class="highlight console"><span class="go">keybase prove reddit&#x000A;</span></pre>
+<p>Prove you own a <a href="https://reddit.com">Reddit</a> account.</p>
+</div>
+</td>
+</tr>
+<tr id='//dash_ref_Generate Keypair/Entry/Prove Coinbase/0'>
+<td class='command'>
+<p>
+<code>prove coinbase</code>
+</p>
+</td>
+<td class='description'>
+<div class='name'><p>Prove Coinbase</p>
+</div>
+<div class='notes'><pre class="highlight console"><span class="go">keybase prove coinbase&#x000A;</span></pre>
+<p>Prove you own a <a href="https://coinbase.com">Coinbase</a> account.</p>
+</div>
+</td>
+</tr>
+<tr id='//dash_ref_Generate Keypair/Entry/Prove Hacker News/0'>
+<td class='command'>
+<p>
+<code>prove hackernews</code>
+</p>
+</td>
+<td class='description'>
+<div class='name'><p>Prove Hacker News</p>
+</div>
+<div class='notes'><pre class="highlight console"><span class="go">keybase prove hackernews&#x000A;</span></pre>
+<p>Prove you own a <a href="https://news.ycombinator.com/">YCombinator - Hacker News</a> account.</p>
+</div>
+</td>
+</tr>
+<tr id='//dash_ref_Generate Keypair/Entry/Prove website via HTTP/0'>
+<td class='command'>
+<p>
+<code>prove web you.com</code>
+</p>
+</td>
+<td class='description'>
+<div class='name'><p>Prove website via HTTP</p>
+</div>
+<div class='notes'><pre class="highlight console"><span class="go">keybase prove web you.com&#x000A;</span></pre>
+<p>Prove you own the domain/website you are claiming via HTTP.</p>
+</div>
+</td>
+</tr>
+<tr id='//dash_ref_Generate Keypair/Entry/Prove website via DNS/0'>
+<td class='command'>
+<p>
+<code>prove dns you.com</code>
+</p>
+</td>
+<td class='description'>
+<div class='name'><p>Prove website via DNS</p>
+</div>
+<div class='notes'><pre class="highlight console"><span class="go">keybase prove dns you.com&#x000A;</span></pre>
+<p>Prove you own the domain/website you are claiming via DNS.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</section>
+<section class='notes'>
+<h2>Notes</h2>
+<ul>
+<li>Alpha command list for <a href="https://keybase.io">Keybase</a>&#39;s command line tool, taken from Keybase&#39;s <a href="https://keybase.io/docs/command_line">documentation page</a></li>
+<li>Last updated: 12/04/14</li>
+</ul>
+
+</section>
+</article>
+<footer>
+You can modify and improve this cheat sheet <a onclick="window.dash.openExternal_(this.href); return false;" href="https://stellar-sdk.readthedocs.io/en/latest/, https://kapeli.com/docsets#supportedentrytypes">here</a>
+</footer>
+</body>
+</html>
