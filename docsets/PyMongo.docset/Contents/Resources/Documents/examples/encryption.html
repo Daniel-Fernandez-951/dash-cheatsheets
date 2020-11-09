@@ -1,0 +1,612 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Client-Side Field Level Encryption &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Handling UUID Data" href="uuid.html" />
+    <link rel="prev" title="TLS/SSL and PyMongo" href="tls.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="uuid.html" title="Handling UUID Data"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tls.html" title="TLS/SSL and PyMongo"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Client-Side Field Level Encryption</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="client-side-field-level-encryption">
+<span id="id1"></span><h1>Client-Side Field Level Encryption<a class="headerlink" href="#client-side-field-level-encryption" title="Permalink to this headline">¶</a></h1>
+<p>New in MongoDB 4.2, client-side field level encryption allows an application
+to encrypt specific data fields in addition to pre-existing MongoDB
+encryption features such as <a class="reference external" href="https://dochub.mongodb.org/core/security-encryption-at-rest">Encryption at Rest</a> and
+<a class="reference external" href="https://dochub.mongodb.org/core/security-tls-transport-encryption">TLS/SSL (Transport Encryption)</a>.</p>
+<p>With field level encryption, applications can encrypt fields in documents
+<em>prior</em> to transmitting data over the wire to the server. Client-side field
+level encryption supports workloads where applications must guarantee that
+unauthorized parties, including server administrators, cannot read the
+encrypted data.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/client-side-field-level-encryption" name="client-side-field-level-encryption"><em>client-side-field-level-encryption</em></a></p>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>To get started using client-side field level encryption in your project,
+you will need to install the
+<a class="reference external" href="https://pypi.org/project/pymongocrypt/">pymongocrypt</a> library
+as well as the driver itself. Install both the driver and a compatible
+version of pymongocrypt like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m pip install &#39;pymongo[encryption]&#39;
+</pre></div>
+</div>
+<p>Note that installing on Linux requires pip 19 or later for manylinux2010 wheel
+support. For more information about installing pymongocrypt see
+<a class="reference external" href="https://pypi.org/project/pymongocrypt/">the installation instructions on the project’s PyPI page</a>.</p>
+</div>
+<div class="section" id="mongocryptd">
+<h2>mongocryptd<a class="headerlink" href="#mongocryptd" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code> binary is required for automatic client-side encryption
+and is included as a component in the <a class="reference external" href="https://dochub.mongodb.org/core/install-mongodb-enterprise">MongoDB Enterprise Server package</a>.
+For detailed installation instructions see
+<a class="reference external" href="https://dochub.mongodb.org/core/client-side-field-level-encryption-mongocryptd">the MongoDB documentation on mongocryptd</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code> performs the following:</p>
+<ul class="simple">
+<li><p>Parses the automatic encryption rules specified to the database connection.
+If the JSON schema contains invalid automatic encryption syntax or any
+document validation syntax, <code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code> returns an error.</p></li>
+<li><p>Uses the specified automatic encryption rules to mark fields in read and
+write operations for encryption.</p></li>
+<li><p>Rejects read/write operations that may return unexpected or incorrect results
+when applied to an encrypted field. For supported and unsupported operations,
+see <a class="reference external" href="https://dochub.mongodb.org/core/client-side-field-level-encryption-read-write-support">Read/Write Support with Automatic Field Level Encryption</a>.</p></li>
+</ul>
+<p>A MongoClient configured with auto encryption will automatically spawn the
+<code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code> process from the application’s <code class="docutils literal notranslate"><span class="pre">PATH</span></code>. Applications can
+control the spawning behavior as part of the automatic encryption options.
+For example to set the path to the <code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code> process:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">auto_encryption_opts</span> <span class="o">=</span> <span class="n">AutoEncryptionOpts</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">mongocryptd_spawn_path</span><span class="o">=</span><span class="s1">&#39;/path/to/mongocryptd&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To control the logging output of <code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code> pass options using
+<code class="docutils literal notranslate"><span class="pre">mongocryptd_spawn_args</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">auto_encryption_opts</span> <span class="o">=</span> <span class="n">AutoEncryptionOpts</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">mongocryptd_spawn_args</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;--logpath=/path/to/mongocryptd.log&#39;</span><span class="p">,</span> <span class="s1">&#39;--logappend&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>If your application wishes to manage the <code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code> process manually,
+it is possible to disable spawning <code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">auto_encryption_opts</span> <span class="o">=</span> <span class="n">AutoEncryptionOpts</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">mongocryptd_bypass_spawn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="c1"># URI of the local ``mongocryptd`` process.</span>
+        <span class="n">mongocryptd_uri</span><span class="o">=</span><span class="s1">&#39;mongodb://localhost:27020&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code> is only responsible for supporting automatic client-side field
+level encryption and does not itself perform any encryption or decryption.</p>
+<div class="section" id="automatic-client-side-field-level-encryption">
+<span id="automatic-client-side-encryption"></span><h3>Automatic Client-Side Field Level Encryption<a class="headerlink" href="#automatic-client-side-field-level-encryption" title="Permalink to this headline">¶</a></h3>
+<p>Automatic client-side field level encryption is enabled by creating a
+<a class="reference internal" href="../api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient" title="pymongo.mongo_client.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a> with the <code class="docutils literal notranslate"><span class="pre">auto_encryption_opts</span></code>
+option set to an instance of
+<a class="reference internal" href="../api/pymongo/encryption_options.html#pymongo.encryption_options.AutoEncryptionOpts" title="pymongo.encryption_options.AutoEncryptionOpts"><code class="xref py py-class docutils literal notranslate"><span class="pre">AutoEncryptionOpts</span></code></a>. The following
+examples show how to setup automatic client-side field level encryption
+using <a class="reference internal" href="../api/pymongo/encryption.html#pymongo.encryption.ClientEncryption" title="pymongo.encryption.ClientEncryption"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientEncryption</span></code></a> to create a new
+encryption data key.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Automatic client-side field level encryption requires MongoDB 4.2
+enterprise or a MongoDB 4.2 Atlas cluster. The community version of the
+server supports automatic decryption as well as
+<a class="reference internal" href="#explicit-client-side-encryption"><span class="std std-ref">Explicit Encryption</span></a>.</p>
+</div>
+<div class="section" id="providing-local-automatic-encryption-rules">
+<h4>Providing Local Automatic Encryption Rules<a class="headerlink" href="#providing-local-automatic-encryption-rules" title="Permalink to this headline">¶</a></h4>
+<p>The following example shows how to specify automatic encryption rules via the
+<code class="docutils literal notranslate"><span class="pre">schema_map</span></code> option. The automatic encryption rules are expressed using a
+<a class="reference external" href="https://dochub.mongodb.org/core/client-side-field-level-encryption-automatic-encryption-rules">strict subset of the JSON Schema syntax</a>.</p>
+<p>Supplying a <code class="docutils literal notranslate"><span class="pre">schema_map</span></code> provides more security than relying on
+JSON Schemas obtained from the server. It protects against a
+malicious server advertising a false JSON Schema, which could trick
+the client into sending unencrypted data that should be encrypted.</p>
+<p>JSON Schemas supplied in the <code class="docutils literal notranslate"><span class="pre">schema_map</span></code> only apply to configuring
+automatic client-side field level encryption. Other validation
+rules in the JSON schema will not be enforced by the driver and
+will result in an error.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">CodecOptions</span>
+<span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">json_util</span>
+
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">pymongo.encryption</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Algorithm</span><span class="p">,</span>
+                                <span class="n">ClientEncryption</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pymongo.encryption_options</span> <span class="kn">import</span> <span class="n">AutoEncryptionOpts</span>
+
+
+<span class="k">def</span> <span class="nf">create_json_schema_file</span><span class="p">(</span><span class="n">kms_providers</span><span class="p">,</span> <span class="n">key_vault_namespace</span><span class="p">,</span>
+                            <span class="n">key_vault_client</span><span class="p">):</span>
+    <span class="n">client_encryption</span> <span class="o">=</span> <span class="n">ClientEncryption</span><span class="p">(</span>
+        <span class="n">kms_providers</span><span class="p">,</span>
+        <span class="n">key_vault_namespace</span><span class="p">,</span>
+        <span class="n">key_vault_client</span><span class="p">,</span>
+        <span class="c1"># The CodecOptions class used for encrypting and decrypting.</span>
+        <span class="c1"># This should be the same CodecOptions instance you have configured</span>
+        <span class="c1"># on MongoClient, Database, or Collection. We will not be calling</span>
+        <span class="c1"># encrypt() or decrypt() in this example so we can use any</span>
+        <span class="c1"># CodecOptions.</span>
+        <span class="n">CodecOptions</span><span class="p">())</span>
+
+    <span class="c1"># Create a new data key and json schema for the encryptedField.</span>
+    <span class="c1"># https://dochub.mongodb.org/core/client-side-field-level-encryption-automatic-encryption-rules</span>
+    <span class="n">data_key_id</span> <span class="o">=</span> <span class="n">client_encryption</span><span class="o">.</span><span class="n">create_data_key</span><span class="p">(</span>
+        <span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="n">key_alt_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pymongo_encryption_example_1&#39;</span><span class="p">])</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;encryptedField&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;encrypt&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;keyId&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">data_key_id</span><span class="p">],</span>
+                    <span class="s2">&quot;bsonType&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span>
+                        <span class="n">Algorithm</span><span class="o">.</span><span class="n">AEAD_AES_256_CBC_HMAC_SHA_512_Deterministic</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;bsonType&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
+    <span class="p">}</span>
+    <span class="c1"># Use CANONICAL_JSON_OPTIONS so that other drivers and tools will be</span>
+    <span class="c1"># able to parse the MongoDB extended JSON file.</span>
+    <span class="n">json_schema_string</span> <span class="o">=</span> <span class="n">json_util</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+        <span class="n">schema</span><span class="p">,</span> <span class="n">json_options</span><span class="o">=</span><span class="n">json_util</span><span class="o">.</span><span class="n">CANONICAL_JSON_OPTIONS</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;jsonSchema.json&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_schema_string</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># The MongoDB namespace (db.collection) used to store the</span>
+    <span class="c1"># encrypted documents in this example.</span>
+    <span class="n">encrypted_namespace</span> <span class="o">=</span> <span class="s2">&quot;test.coll&quot;</span>
+
+    <span class="c1"># This must be the same master key that was used to create</span>
+    <span class="c1"># the encryption key.</span>
+    <span class="n">local_master_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">96</span><span class="p">)</span>
+    <span class="n">kms_providers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;local&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">local_master_key</span><span class="p">}}</span>
+
+    <span class="c1"># The MongoDB namespace (db.collection) used to store</span>
+    <span class="c1"># the encryption data keys.</span>
+    <span class="n">key_vault_namespace</span> <span class="o">=</span> <span class="s2">&quot;encryption.__pymongoTestKeyVault&quot;</span>
+    <span class="n">key_vault_db_name</span><span class="p">,</span> <span class="n">key_vault_coll_name</span> <span class="o">=</span> <span class="n">key_vault_namespace</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># The MongoClient used to access the key vault (key_vault_namespace).</span>
+    <span class="n">key_vault_client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+    <span class="n">key_vault</span> <span class="o">=</span> <span class="n">key_vault_client</span><span class="p">[</span><span class="n">key_vault_db_name</span><span class="p">][</span><span class="n">key_vault_coll_name</span><span class="p">]</span>
+    <span class="c1"># Ensure that two data keys cannot share the same keyAltName.</span>
+    <span class="n">key_vault</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+    <span class="n">key_vault</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+        <span class="s2">&quot;keyAltNames&quot;</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">partialFilterExpression</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;keyAltNames&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}})</span>
+
+    <span class="n">create_json_schema_file</span><span class="p">(</span>
+        <span class="n">kms_providers</span><span class="p">,</span> <span class="n">key_vault_namespace</span><span class="p">,</span> <span class="n">key_vault_client</span><span class="p">)</span>
+
+    <span class="c1"># Load the JSON Schema and construct the local schema_map option.</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;jsonSchema.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">json_schema_string</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">json_schema</span> <span class="o">=</span> <span class="n">json_util</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_schema_string</span><span class="p">)</span>
+    <span class="n">schema_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">encrypted_namespace</span><span class="p">:</span> <span class="n">json_schema</span><span class="p">}</span>
+
+    <span class="n">auto_encryption_opts</span> <span class="o">=</span> <span class="n">AutoEncryptionOpts</span><span class="p">(</span>
+        <span class="n">kms_providers</span><span class="p">,</span> <span class="n">key_vault_namespace</span><span class="p">,</span> <span class="n">schema_map</span><span class="o">=</span><span class="n">schema_map</span><span class="p">)</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">auto_encryption_opts</span><span class="o">=</span><span class="n">auto_encryption_opts</span><span class="p">)</span>
+    <span class="n">db_name</span><span class="p">,</span> <span class="n">coll_name</span> <span class="o">=</span> <span class="n">encrypted_namespace</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">coll</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">db_name</span><span class="p">][</span><span class="n">coll_name</span><span class="p">]</span>
+    <span class="c1"># Clear old data</span>
+    <span class="n">coll</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+
+    <span class="n">coll</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s2">&quot;encryptedField&quot;</span><span class="p">:</span> <span class="s2">&quot;123456789&quot;</span><span class="p">})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Decrypted document: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">(),))</span>
+    <span class="n">unencrypted_coll</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()[</span><span class="n">db_name</span><span class="p">][</span><span class="n">coll_name</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Encrypted document: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">unencrypted_coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">(),))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="server-side-field-level-encryption-enforcement">
+<h4>Server-Side Field Level Encryption Enforcement<a class="headerlink" href="#server-side-field-level-encryption-enforcement" title="Permalink to this headline">¶</a></h4>
+<p>The MongoDB 4.2 server supports using schema validation to enforce encryption
+of specific fields in a collection. This schema validation will prevent an
+application from inserting unencrypted values for any fields marked with the
+<code class="docutils literal notranslate"><span class="pre">&quot;encrypt&quot;</span></code> JSON schema keyword.</p>
+<p>The following example shows how to setup automatic client-side field level
+encryption using
+<a class="reference internal" href="../api/pymongo/encryption.html#pymongo.encryption.ClientEncryption" title="pymongo.encryption.ClientEncryption"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientEncryption</span></code></a> to create a new encryption
+data key and create a collection with the
+<a class="reference external" href="https://dochub.mongodb.org/core/client-side-field-level-encryption-automatic-encryption-rules">Automatic Encryption JSON Schema Syntax</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">CodecOptions</span>
+<span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">STANDARD</span>
+
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">pymongo.encryption</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Algorithm</span><span class="p">,</span>
+                                <span class="n">ClientEncryption</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pymongo.encryption_options</span> <span class="kn">import</span> <span class="n">AutoEncryptionOpts</span>
+<span class="kn">from</span> <span class="nn">pymongo.errors</span> <span class="kn">import</span> <span class="n">OperationFailure</span>
+<span class="kn">from</span> <span class="nn">pymongo.write_concern</span> <span class="kn">import</span> <span class="n">WriteConcern</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># The MongoDB namespace (db.collection) used to store the</span>
+    <span class="c1"># encrypted documents in this example.</span>
+    <span class="n">encrypted_namespace</span> <span class="o">=</span> <span class="s2">&quot;test.coll&quot;</span>
+
+    <span class="c1"># This must be the same master key that was used to create</span>
+    <span class="c1"># the encryption key.</span>
+    <span class="n">local_master_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">96</span><span class="p">)</span>
+    <span class="n">kms_providers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;local&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">local_master_key</span><span class="p">}}</span>
+
+    <span class="c1"># The MongoDB namespace (db.collection) used to store</span>
+    <span class="c1"># the encryption data keys.</span>
+    <span class="n">key_vault_namespace</span> <span class="o">=</span> <span class="s2">&quot;encryption.__pymongoTestKeyVault&quot;</span>
+    <span class="n">key_vault_db_name</span><span class="p">,</span> <span class="n">key_vault_coll_name</span> <span class="o">=</span> <span class="n">key_vault_namespace</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># The MongoClient used to access the key vault (key_vault_namespace).</span>
+    <span class="n">key_vault_client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+    <span class="n">key_vault</span> <span class="o">=</span> <span class="n">key_vault_client</span><span class="p">[</span><span class="n">key_vault_db_name</span><span class="p">][</span><span class="n">key_vault_coll_name</span><span class="p">]</span>
+    <span class="c1"># Ensure that two data keys cannot share the same keyAltName.</span>
+    <span class="n">key_vault</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+    <span class="n">key_vault</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+        <span class="s2">&quot;keyAltNames&quot;</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">partialFilterExpression</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;keyAltNames&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}})</span>
+
+    <span class="n">client_encryption</span> <span class="o">=</span> <span class="n">ClientEncryption</span><span class="p">(</span>
+        <span class="n">kms_providers</span><span class="p">,</span>
+        <span class="n">key_vault_namespace</span><span class="p">,</span>
+        <span class="n">key_vault_client</span><span class="p">,</span>
+        <span class="c1"># The CodecOptions class used for encrypting and decrypting.</span>
+        <span class="c1"># This should be the same CodecOptions instance you have configured</span>
+        <span class="c1"># on MongoClient, Database, or Collection. We will not be calling</span>
+        <span class="c1"># encrypt() or decrypt() in this example so we can use any</span>
+        <span class="c1"># CodecOptions.</span>
+        <span class="n">CodecOptions</span><span class="p">())</span>
+
+    <span class="c1"># Create a new data key and json schema for the encryptedField.</span>
+    <span class="n">data_key_id</span> <span class="o">=</span> <span class="n">client_encryption</span><span class="o">.</span><span class="n">create_data_key</span><span class="p">(</span>
+        <span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="n">key_alt_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pymongo_encryption_example_2&#39;</span><span class="p">])</span>
+    <span class="n">json_schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;encryptedField&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;encrypt&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;keyId&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">data_key_id</span><span class="p">],</span>
+                    <span class="s2">&quot;bsonType&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span>
+                        <span class="n">Algorithm</span><span class="o">.</span><span class="n">AEAD_AES_256_CBC_HMAC_SHA_512_Deterministic</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;bsonType&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">auto_encryption_opts</span> <span class="o">=</span> <span class="n">AutoEncryptionOpts</span><span class="p">(</span>
+        <span class="n">kms_providers</span><span class="p">,</span> <span class="n">key_vault_namespace</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">auto_encryption_opts</span><span class="o">=</span><span class="n">auto_encryption_opts</span><span class="p">)</span>
+    <span class="n">db_name</span><span class="p">,</span> <span class="n">coll_name</span> <span class="o">=</span> <span class="n">encrypted_namespace</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">db_name</span><span class="p">]</span>
+    <span class="c1"># Clear old data</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">drop_collection</span><span class="p">(</span><span class="n">coll_name</span><span class="p">)</span>
+    <span class="c1"># Create the collection with the encryption JSON Schema.</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create_collection</span><span class="p">(</span>
+        <span class="n">coll_name</span><span class="p">,</span>
+        <span class="c1"># uuid_representation=STANDARD is required to ensure that any</span>
+        <span class="c1"># UUIDs in the $jsonSchema document are encoded to BSON Binary</span>
+        <span class="c1"># with the standard UUID subtype 4. This is only needed when</span>
+        <span class="c1"># running the &quot;create&quot; collection command with an encryption</span>
+        <span class="c1"># JSON Schema.</span>
+        <span class="n">codec_options</span><span class="o">=</span><span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">STANDARD</span><span class="p">),</span>
+        <span class="n">write_concern</span><span class="o">=</span><span class="n">WriteConcern</span><span class="p">(</span><span class="n">w</span><span class="o">=</span><span class="s2">&quot;majority&quot;</span><span class="p">),</span>
+        <span class="n">validator</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;$jsonSchema&quot;</span><span class="p">:</span> <span class="n">json_schema</span><span class="p">})</span>
+    <span class="n">coll</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">db_name</span><span class="p">][</span><span class="n">coll_name</span><span class="p">]</span>
+
+    <span class="n">coll</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s2">&quot;encryptedField&quot;</span><span class="p">:</span> <span class="s2">&quot;123456789&quot;</span><span class="p">})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Decrypted document: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">(),))</span>
+    <span class="n">unencrypted_coll</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()[</span><span class="n">db_name</span><span class="p">][</span><span class="n">coll_name</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Encrypted document: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">unencrypted_coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">(),))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">unencrypted_coll</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s2">&quot;encryptedField&quot;</span><span class="p">:</span> <span class="s2">&quot;123456789&quot;</span><span class="p">})</span>
+    <span class="k">except</span> <span class="n">OperationFailure</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unencrypted insert failed: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">details</span><span class="p">,))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="explicit-encryption">
+<span id="explicit-client-side-encryption"></span><h3>Explicit Encryption<a class="headerlink" href="#explicit-encryption" title="Permalink to this headline">¶</a></h3>
+<p>Explicit encryption is a MongoDB community feature and does not use the
+<code class="docutils literal notranslate"><span class="pre">mongocryptd</span></code> process. Explicit encryption is provided by the
+<a class="reference internal" href="../api/pymongo/encryption.html#pymongo.encryption.ClientEncryption" title="pymongo.encryption.ClientEncryption"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientEncryption</span></code></a> class, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">pymongo.encryption</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Algorithm</span><span class="p">,</span>
+                                <span class="n">ClientEncryption</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># This must be the same master key that was used to create</span>
+    <span class="c1"># the encryption key.</span>
+    <span class="n">local_master_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">96</span><span class="p">)</span>
+    <span class="n">kms_providers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;local&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">local_master_key</span><span class="p">}}</span>
+
+    <span class="c1"># The MongoDB namespace (db.collection) used to store</span>
+    <span class="c1"># the encryption data keys.</span>
+    <span class="n">key_vault_namespace</span> <span class="o">=</span> <span class="s2">&quot;encryption.__pymongoTestKeyVault&quot;</span>
+    <span class="n">key_vault_db_name</span><span class="p">,</span> <span class="n">key_vault_coll_name</span> <span class="o">=</span> <span class="n">key_vault_namespace</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># The MongoClient used to read/write application data.</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+    <span class="n">coll</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">coll</span>
+    <span class="c1"># Clear old data</span>
+    <span class="n">coll</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+
+    <span class="c1"># Set up the key vault (key_vault_namespace) for this example.</span>
+    <span class="n">key_vault</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">key_vault_db_name</span><span class="p">][</span><span class="n">key_vault_coll_name</span><span class="p">]</span>
+    <span class="c1"># Ensure that two data keys cannot share the same keyAltName.</span>
+    <span class="n">key_vault</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+    <span class="n">key_vault</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+        <span class="s2">&quot;keyAltNames&quot;</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">partialFilterExpression</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;keyAltNames&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}})</span>
+
+    <span class="n">client_encryption</span> <span class="o">=</span> <span class="n">ClientEncryption</span><span class="p">(</span>
+        <span class="n">kms_providers</span><span class="p">,</span>
+        <span class="n">key_vault_namespace</span><span class="p">,</span>
+        <span class="c1"># The MongoClient to use for reading/writing to the key vault.</span>
+        <span class="c1"># This can be the same MongoClient used by the main application.</span>
+        <span class="n">client</span><span class="p">,</span>
+        <span class="c1"># The CodecOptions class used for encrypting and decrypting.</span>
+        <span class="c1"># This should be the same CodecOptions instance you have configured</span>
+        <span class="c1"># on MongoClient, Database, or Collection.</span>
+        <span class="n">coll</span><span class="o">.</span><span class="n">codec_options</span><span class="p">)</span>
+
+    <span class="c1"># Create a new data key for the encryptedField.</span>
+    <span class="n">data_key_id</span> <span class="o">=</span> <span class="n">client_encryption</span><span class="o">.</span><span class="n">create_data_key</span><span class="p">(</span>
+        <span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="n">key_alt_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pymongo_encryption_example_3&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Explicitly encrypt a field:</span>
+    <span class="n">encrypted_field</span> <span class="o">=</span> <span class="n">client_encryption</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span>
+        <span class="s2">&quot;123456789&quot;</span><span class="p">,</span>
+        <span class="n">Algorithm</span><span class="o">.</span><span class="n">AEAD_AES_256_CBC_HMAC_SHA_512_Deterministic</span><span class="p">,</span>
+        <span class="n">key_id</span><span class="o">=</span><span class="n">data_key_id</span><span class="p">)</span>
+    <span class="n">coll</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s2">&quot;encryptedField&quot;</span><span class="p">:</span> <span class="n">encrypted_field</span><span class="p">})</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Encrypted document: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="p">,))</span>
+
+    <span class="c1"># Explicitly decrypt the field:</span>
+    <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;encryptedField&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">client_encryption</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;encryptedField&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Decrypted document: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="p">,))</span>
+
+    <span class="c1"># Cleanup resources.</span>
+    <span class="n">client_encryption</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="explicit-encryption-with-automatic-decryption">
+<h3>Explicit Encryption with Automatic Decryption<a class="headerlink" href="#explicit-encryption-with-automatic-decryption" title="Permalink to this headline">¶</a></h3>
+<p>Although automatic encryption requires MongoDB 4.2 enterprise or a
+MongoDB 4.2 Atlas cluster, automatic <em>decryption</em> is supported for all users.
+To configure automatic <em>decryption</em> without automatic <em>encryption</em> set
+<code class="docutils literal notranslate"><span class="pre">bypass_auto_encryption=True</span></code> in
+<a class="reference internal" href="../api/pymongo/encryption_options.html#pymongo.encryption_options.AutoEncryptionOpts" title="pymongo.encryption_options.AutoEncryptionOpts"><code class="xref py py-class docutils literal notranslate"><span class="pre">AutoEncryptionOpts</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">pymongo.encryption</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Algorithm</span><span class="p">,</span>
+                                <span class="n">ClientEncryption</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pymongo.encryption_options</span> <span class="kn">import</span> <span class="n">AutoEncryptionOpts</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># This must be the same master key that was used to create</span>
+    <span class="c1"># the encryption key.</span>
+    <span class="n">local_master_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">96</span><span class="p">)</span>
+    <span class="n">kms_providers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;local&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">local_master_key</span><span class="p">}}</span>
+
+    <span class="c1"># The MongoDB namespace (db.collection) used to store</span>
+    <span class="c1"># the encryption data keys.</span>
+    <span class="n">key_vault_namespace</span> <span class="o">=</span> <span class="s2">&quot;encryption.__pymongoTestKeyVault&quot;</span>
+    <span class="n">key_vault_db_name</span><span class="p">,</span> <span class="n">key_vault_coll_name</span> <span class="o">=</span> <span class="n">key_vault_namespace</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># bypass_auto_encryption=True disable automatic encryption but keeps</span>
+    <span class="c1"># the automatic _decryption_ behavior. bypass_auto_encryption will</span>
+    <span class="c1"># also disable spawning mongocryptd.</span>
+    <span class="n">auto_encryption_opts</span> <span class="o">=</span> <span class="n">AutoEncryptionOpts</span><span class="p">(</span>
+        <span class="n">kms_providers</span><span class="p">,</span> <span class="n">key_vault_namespace</span><span class="p">,</span> <span class="n">bypass_auto_encryption</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">auto_encryption_opts</span><span class="o">=</span><span class="n">auto_encryption_opts</span><span class="p">)</span>
+    <span class="n">coll</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">coll</span>
+    <span class="c1"># Clear old data</span>
+    <span class="n">coll</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+
+    <span class="c1"># Set up the key vault (key_vault_namespace) for this example.</span>
+    <span class="n">key_vault</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">key_vault_db_name</span><span class="p">][</span><span class="n">key_vault_coll_name</span><span class="p">]</span>
+    <span class="c1"># Ensure that two data keys cannot share the same keyAltName.</span>
+    <span class="n">key_vault</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+    <span class="n">key_vault</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+        <span class="s2">&quot;keyAltNames&quot;</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">partialFilterExpression</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;keyAltNames&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}})</span>
+
+    <span class="n">client_encryption</span> <span class="o">=</span> <span class="n">ClientEncryption</span><span class="p">(</span>
+        <span class="n">kms_providers</span><span class="p">,</span>
+        <span class="n">key_vault_namespace</span><span class="p">,</span>
+        <span class="c1"># The MongoClient to use for reading/writing to the key vault.</span>
+        <span class="c1"># This can be the same MongoClient used by the main application.</span>
+        <span class="n">client</span><span class="p">,</span>
+        <span class="c1"># The CodecOptions class used for encrypting and decrypting.</span>
+        <span class="c1"># This should be the same CodecOptions instance you have configured</span>
+        <span class="c1"># on MongoClient, Database, or Collection.</span>
+        <span class="n">coll</span><span class="o">.</span><span class="n">codec_options</span><span class="p">)</span>
+
+    <span class="c1"># Create a new data key for the encryptedField.</span>
+    <span class="n">data_key_id</span> <span class="o">=</span> <span class="n">client_encryption</span><span class="o">.</span><span class="n">create_data_key</span><span class="p">(</span>
+        <span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="n">key_alt_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pymongo_encryption_example_4&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Explicitly encrypt a field:</span>
+    <span class="n">encrypted_field</span> <span class="o">=</span> <span class="n">client_encryption</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span>
+        <span class="s2">&quot;123456789&quot;</span><span class="p">,</span>
+        <span class="n">Algorithm</span><span class="o">.</span><span class="n">AEAD_AES_256_CBC_HMAC_SHA_512_Deterministic</span><span class="p">,</span>
+        <span class="n">key_alt_name</span><span class="o">=</span><span class="s1">&#39;pymongo_encryption_example_4&#39;</span><span class="p">)</span>
+    <span class="n">coll</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s2">&quot;encryptedField&quot;</span><span class="p">:</span> <span class="n">encrypted_field</span><span class="p">})</span>
+    <span class="c1"># Automatically decrypts any encrypted fields.</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Decrypted document: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="p">,))</span>
+    <span class="n">unencrypted_coll</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">coll</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Encrypted document: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">unencrypted_coll</span><span class="o">.</span><span class="n">find_one</span><span class="p">(),))</span>
+
+    <span class="c1"># Cleanup resources.</span>
+    <span class="n">client_encryption</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Client-Side Field Level Encryption</a><ul>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#mongocryptd">mongocryptd</a><ul>
+<li><a class="reference internal" href="#automatic-client-side-field-level-encryption">Automatic Client-Side Field Level Encryption</a><ul>
+<li><a class="reference internal" href="#providing-local-automatic-encryption-rules">Providing Local Automatic Encryption Rules</a></li>
+<li><a class="reference internal" href="#server-side-field-level-encryption-enforcement">Server-Side Field Level Encryption Enforcement</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#explicit-encryption">Explicit Encryption</a></li>
+<li><a class="reference internal" href="#explicit-encryption-with-automatic-decryption">Explicit Encryption with Automatic Decryption</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tls.html"
+                        title="previous chapter">TLS/SSL and PyMongo</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="uuid.html"
+                        title="next chapter">Handling UUID Data</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/encryption.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="uuid.html" title="Handling UUID Data"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tls.html" title="TLS/SSL and PyMongo"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Client-Side Field Level Encryption</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

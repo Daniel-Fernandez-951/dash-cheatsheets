@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>code – Tools for representing JavaScript code — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="codec_options.html" rel="next" title="codec_options – Tools for specifying BSON codec options"/>
+<link href="binary.html" rel="prev" title="binary – Tools for representing binary data to be stored in MongoDB"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="codec_options.html" title="codec_options – Tools for specifying BSON codec options">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="binary.html" title="binary – Tools for representing binary data to be stored in MongoDB">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">code</span></code> – Tools for representing JavaScript code</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-bson.code">
+<span id="code-tools-for-representing-javascript-code"></span><h1><a name="//apple_ref/cpp/Module/bson.code"></a><a class="reference external" href="https://docs.python.org/3/library/code.html#module-code" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">code</span></code></a> – Tools for representing JavaScript code<a class="headerlink" href="#module-bson.code" title="Permalink to this headline">¶</a></h1>
+<p>Tools for representing JavaScript code in BSON.</p>
+<dl class="py class">
+<dt id="bson.code.Code"><a name="//apple_ref/cpp/Class/bson.code.Code"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.code.</code><code class="sig-name descname">Code</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span></em>, <em class="sig-param"><span class="n">scope</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.code.Code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+<p>BSON’s JavaScript code type.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>code</cite> is not an instance of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">basestring</span></code> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> in python 3) or <cite>scope</cite>
+is not <code class="docutils literal notranslate"><span class="pre">None</span></code> or an instance of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>.</p>
+<p>Scope variables can be set by passing a dictionary as the <cite>scope</cite>
+argument or by using keyword arguments. If a variable is set as a
+keyword argument it will override any setting for that variable in
+the <cite>scope</cite> dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>code</cite>: A string containing JavaScript code to be evaluated or another
+instance of Code. In the latter case, the scope of <cite>code</cite> becomes this
+Code’s <a class="reference internal" href="#bson.code.Code.scope" title="bson.code.Code.scope"><code class="xref py py-attr docutils literal notranslate"><span class="pre">scope</span></code></a>.</p></li>
+<li><p><cite>scope</cite> (optional): dictionary representing the scope in which
+<cite>code</cite> should be evaluated - a mapping from identifiers (as
+strings) to values. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>. This is applied after any
+scope associated with a given <cite>code</cite> above.</p></li>
+<li><p><cite>**kwargs</cite> (optional): scope variables can also be passed as
+keyword arguments. These are applied after <cite>scope</cite> and <cite>code</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.4: </span>The default value for <a class="reference internal" href="#bson.code.Code.scope" title="bson.code.Code.scope"><code class="xref py py-attr docutils literal notranslate"><span class="pre">scope</span></code></a> is <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of <code class="docutils literal notranslate"><span class="pre">{}</span></code>.</p>
+</div>
+<dl class="py method">
+<dt id="bson.code.Code.scope"><a name="//apple_ref/cpp/Method/bson.code.Code.scope"></a>
+<em class="property">property </em><code class="sig-name descname">scope</code><a class="headerlink" href="#bson.code.Code.scope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scope dictionary for this instance or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="binary.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">binary</span></code> – Tools for representing binary data to be stored in MongoDB</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="codec_options.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">codec_options</span></code> – Tools for specifying BSON codec options</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/code.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="codec_options.html" title="codec_options – Tools for specifying BSON codec options">next</a> |</li>
+<li class="right">
+<a href="binary.html" title="binary – Tools for representing binary data to be stored in MongoDB">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">code</span></code> – Tools for representing JavaScript code</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

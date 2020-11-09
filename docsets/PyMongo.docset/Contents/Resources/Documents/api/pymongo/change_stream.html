@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>change_stream – Watch changes on a collection, database, or cluster — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="client_session.html" rel="next" title="client_session – Logical sessions for sequential operations"/>
+<link href="bulk.html" rel="prev" title="bulk – The bulk write operations interface"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="client_session.html" title="client_session – Logical sessions for sequential operations">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="bulk.html" title="bulk – The bulk write operations interface">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">change_stream</span></code> – Watch changes on a collection, database, or cluster</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.change_stream">
+<span id="change-stream-watch-changes-on-a-collection-database-or-cluster"></span><h1><a name="//apple_ref/cpp/Module/pymongo.change_stream"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">change_stream</span></code> – Watch changes on a collection, database, or cluster<a class="headerlink" href="#module-pymongo.change_stream" title="Permalink to this headline">¶</a></h1>
+<p>Watch changes on a collection, a database, or the entire cluster.</p>
+<dl class="py class">
+<dt id="pymongo.change_stream.ChangeStream"><a name="//apple_ref/cpp/Class/pymongo.change_stream.ChangeStream"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.change_stream.</code><code class="sig-name descname">ChangeStream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">full_document</span></em>, <em class="sig-param"><span class="n">resume_after</span></em>, <em class="sig-param"><span class="n">max_await_time_ms</span></em>, <em class="sig-param"><span class="n">batch_size</span></em>, <em class="sig-param"><span class="n">collation</span></em>, <em class="sig-param"><span class="n">start_at_operation_time</span></em>, <em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">start_after</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.change_stream.ChangeStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The internal abstract base class for change stream cursors.</p>
+<p>Should not be called directly by application developers. Use 
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.watch" title="pymongo.collection.Collection.watch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pymongo.collection.Collection.watch()</span></code></a>,
+<a class="reference internal" href="database.html#pymongo.database.Database.watch" title="pymongo.database.Database.watch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pymongo.database.Database.watch()</span></code></a>, or
+<a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient.watch" title="pymongo.mongo_client.MongoClient.watch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pymongo.mongo_client.MongoClient.watch()</span></code></a> instead.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.6.</span></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/changeStreams" name="pymongo.change_stream.ChangeStream"><em>changeStreams</em></a></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.change_stream.ChangeStream.alive"><a name="//apple_ref/cpp/Method/pymongo.change_stream.ChangeStream.alive"></a>
+<em class="property">property </em><code class="sig-name descname">alive</code><a class="headerlink" href="#pymongo.change_stream.ChangeStream.alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does this cursor have the potential to return more data?</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Even if <a class="reference internal" href="#pymongo.change_stream.ChangeStream.alive" title="pymongo.change_stream.ChangeStream.alive"><code class="xref py py-attr docutils literal notranslate"><span class="pre">alive</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, <a class="reference internal" href="#pymongo.change_stream.ChangeStream.next" title="pymongo.change_stream.ChangeStream.next"><code class="xref py py-meth docutils literal notranslate"><span class="pre">next()</span></code></a> can raise
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#StopIteration" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">StopIteration</span></code></a> and <a class="reference internal" href="#pymongo.change_stream.ChangeStream.try_next" title="pymongo.change_stream.ChangeStream.try_next"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_next()</span></code></a> can return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.8.</span></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.change_stream.ChangeStream.close"><a name="//apple_ref/cpp/Method/pymongo.change_stream.ChangeStream.close"></a>
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.change_stream.ChangeStream.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close this ChangeStream.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.change_stream.ChangeStream.next"><a name="//apple_ref/cpp/Method/pymongo.change_stream.ChangeStream.next"></a>
+<code class="sig-name descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.change_stream.ChangeStream.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advance the cursor.</p>
+<p>This method blocks until the next change document is returned or an
+unrecoverable error is raised. This method is used when iterating over
+all changes in the cursor. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">resume_token</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'$match'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'operationType'</span><span class="p">:</span> <span class="s1">'insert'</span><span class="p">}}]</span>
+    <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">insert_change</span> <span class="ow">in</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">insert_change</span><span class="p">)</span>
+            <span class="n">resume_token</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">resume_token</span>
+<span class="k">except</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">PyMongoError</span><span class="p">:</span>
+    <span class="c1"># The ChangeStream encountered an unrecoverable error or the</span>
+    <span class="c1"># resume attempt failed to recreate the cursor.</span>
+    <span class="k">if</span> <span class="n">resume_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># There is no usable resume token because there was a</span>
+        <span class="c1"># failure during ChangeStream initialization.</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">'...'</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Use the interrupted ChangeStream's resume token to create</span>
+        <span class="c1"># a new ChangeStream. The new stream will continue from the</span>
+        <span class="c1"># last seen insert change without missing any events.</span>
+        <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span>
+                <span class="n">pipeline</span><span class="p">,</span> <span class="n">resume_after</span><span class="o">=</span><span class="n">resume_token</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">insert_change</span> <span class="ow">in</span> <span class="n">stream</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">insert_change</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#StopIteration" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">StopIteration</span></code></a> if this ChangeStream is closed.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.change_stream.ChangeStream.resume_token"><a name="//apple_ref/cpp/Method/pymongo.change_stream.ChangeStream.resume_token"></a>
+<em class="property">property </em><code class="sig-name descname">resume_token</code><a class="headerlink" href="#pymongo.change_stream.ChangeStream.resume_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>The cached resume token that will be used to resume after the most
+recently returned change.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.change_stream.ChangeStream.try_next"><a name="//apple_ref/cpp/Method/pymongo.change_stream.ChangeStream.try_next"></a>
+<code class="sig-name descname">try_next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.change_stream.ChangeStream.try_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advance the cursor without blocking indefinitely.</p>
+<p>This method returns the next change document without waiting
+indefinitely for the next change. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">watch</span><span class="p">()</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+    <span class="k">while</span> <span class="n">stream</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+        <span class="n">change</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">try_next</span><span class="p">()</span>
+        <span class="c1"># Note that the ChangeStream's resume token may be updated</span>
+        <span class="c1"># even when no changes are returned.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Current resume token: </span><span class="si">%r</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">resume_token</span><span class="p">,))</span>
+        <span class="k">if</span> <span class="n">change</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Change document: </span><span class="si">%r</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">change</span><span class="p">,))</span>
+            <span class="k">continue</span>
+        <span class="c1"># We end up here when there are no recent changes.</span>
+        <span class="c1"># Sleep for a while before trying again to avoid flooding</span>
+        <span class="c1"># the server with getMore requests when no changes are</span>
+        <span class="c1"># available.</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no change document is cached locally then this method runs a single
+getMore command. If the getMore yields any documents, the next
+document is returned, otherwise, if the getMore returns no documents
+(because there have been no changes) then <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The next change document or <code class="docutils literal notranslate"><span class="pre">None</span></code> when no document is available
+after running a single getMore or when the cursor is closed.</p>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.8.</span></p>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.change_stream.ClusterChangeStream"><a name="//apple_ref/cpp/Class/pymongo.change_stream.ClusterChangeStream"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.change_stream.</code><code class="sig-name descname">ClusterChangeStream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">full_document</span></em>, <em class="sig-param"><span class="n">resume_after</span></em>, <em class="sig-param"><span class="n">max_await_time_ms</span></em>, <em class="sig-param"><span class="n">batch_size</span></em>, <em class="sig-param"><span class="n">collation</span></em>, <em class="sig-param"><span class="n">start_at_operation_time</span></em>, <em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">start_after</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.change_stream.ClusterChangeStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>A change stream that watches changes on all collections in the cluster.</p>
+<p>Should not be called directly by application developers. Use
+helper method <a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient.watch" title="pymongo.mongo_client.MongoClient.watch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pymongo.mongo_client.MongoClient.watch()</span></code></a> instead.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.7.</span></p>
+</div>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.change_stream.CollectionChangeStream"><a name="//apple_ref/cpp/Class/pymongo.change_stream.CollectionChangeStream"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.change_stream.</code><code class="sig-name descname">CollectionChangeStream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">full_document</span></em>, <em class="sig-param"><span class="n">resume_after</span></em>, <em class="sig-param"><span class="n">max_await_time_ms</span></em>, <em class="sig-param"><span class="n">batch_size</span></em>, <em class="sig-param"><span class="n">collation</span></em>, <em class="sig-param"><span class="n">start_at_operation_time</span></em>, <em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">start_after</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.change_stream.CollectionChangeStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>A change stream that watches changes on a single collection.</p>
+<p>Should not be called directly by application developers. Use
+helper method <a class="reference internal" href="collection.html#pymongo.collection.Collection.watch" title="pymongo.collection.Collection.watch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pymongo.collection.Collection.watch()</span></code></a> instead.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.7.</span></p>
+</div>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.change_stream.DatabaseChangeStream"><a name="//apple_ref/cpp/Class/pymongo.change_stream.DatabaseChangeStream"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.change_stream.</code><code class="sig-name descname">DatabaseChangeStream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">pipeline</span></em>, <em class="sig-param"><span class="n">full_document</span></em>, <em class="sig-param"><span class="n">resume_after</span></em>, <em class="sig-param"><span class="n">max_await_time_ms</span></em>, <em class="sig-param"><span class="n">batch_size</span></em>, <em class="sig-param"><span class="n">collation</span></em>, <em class="sig-param"><span class="n">start_at_operation_time</span></em>, <em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">start_after</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.change_stream.DatabaseChangeStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>A change stream that watches changes on all collections in a database.</p>
+<p>Should not be called directly by application developers. Use
+helper method <a class="reference internal" href="database.html#pymongo.database.Database.watch" title="pymongo.database.Database.watch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pymongo.database.Database.watch()</span></code></a> instead.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.7.</span></p>
+</div>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="bulk.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bulk</span></code> – The bulk write operations interface</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="client_session.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">client_session</span></code> – Logical sessions for sequential operations</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/change_stream.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="client_session.html" title="client_session – Logical sessions for sequential operations">next</a> |</li>
+<li class="right">
+<a href="bulk.html" title="bulk – The bulk write operations interface">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">change_stream</span></code> – Watch changes on a collection, database, or cluster</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

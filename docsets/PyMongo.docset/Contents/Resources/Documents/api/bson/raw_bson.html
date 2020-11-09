@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>raw_bson – Tools for representing raw BSON documents. — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="regex.html" rel="next" title="regex – Tools for representing MongoDB regular expressions"/>
+<link href="objectid.html" rel="prev" title="objectid – Tools for working with MongoDB ObjectIds"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="regex.html" title="regex – Tools for representing MongoDB regular expressions">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="objectid.html" title="objectid – Tools for working with MongoDB ObjectIds">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">raw_bson</span></code> – Tools for representing raw BSON documents.</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-bson.raw_bson">
+<span id="raw-bson-tools-for-representing-raw-bson-documents"></span><h1><a name="//apple_ref/cpp/Module/bson.raw_bson"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">raw_bson</span></code> – Tools for representing raw BSON documents.<a class="headerlink" href="#module-bson.raw_bson" title="Permalink to this headline">¶</a></h1>
+<p>Tools for representing raw BSON documents.</p>
+<dl class="py data">
+<dt id="bson.raw_bson.DEFAULT_RAW_BSON_OPTIONS"><a name="//apple_ref/cpp/Value/bson.raw_bson.DEFAULT_RAW_BSON_OPTIONS"></a>
+<code class="sig-prename descclassname">bson.raw_bson.</code><code class="sig-name descname">DEFAULT_RAW_BSON_OPTIONS</code><em class="property"> = CodecOptions(document_class=&lt;class 'bson.raw_bson.RawBSONDocument'&gt;, tz_aware=False, uuid_representation=UuidRepresentation.PYTHON_LEGACY, unicode_decode_error_handler='strict', tzinfo=None, type_registry=TypeRegistry(type_codecs=[], fallback_encoder=None))</em><a class="headerlink" href="#bson.raw_bson.DEFAULT_RAW_BSON_OPTIONS" title="Permalink to this definition">¶</a></dt>
+<dd><p>The default <a class="reference internal" href="codec_options.html#bson.codec_options.CodecOptions" title="bson.codec_options.CodecOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a> for
+<a class="reference internal" href="#bson.raw_bson.RawBSONDocument" title="bson.raw_bson.RawBSONDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawBSONDocument</span></code></a>.</p>
+</dd></dl>
+<dl class="py class">
+<dt id="bson.raw_bson.RawBSONDocument"><a name="//apple_ref/cpp/Class/bson.raw_bson.RawBSONDocument"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.raw_bson.</code><code class="sig-name descname">RawBSONDocument</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bson_bytes</span></em>, <em class="sig-param"><span class="n">codec_options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.raw_bson.RawBSONDocument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new <a class="reference internal" href="#bson.raw_bson.RawBSONDocument" title="bson.raw_bson.RawBSONDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawBSONDocument</span></code></a></p>
+<p><a class="reference internal" href="#bson.raw_bson.RawBSONDocument" title="bson.raw_bson.RawBSONDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawBSONDocument</span></code></a> is a representation of a BSON document that
+provides access to the underlying raw BSON bytes. Only when a field is
+accessed or modified within the document does RawBSONDocument decode
+its bytes.</p>
+<p><a class="reference internal" href="#bson.raw_bson.RawBSONDocument" title="bson.raw_bson.RawBSONDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawBSONDocument</span></code></a> implements the <code class="docutils literal notranslate"><span class="pre">Mapping</span></code> abstract base
+class from the standard library so it can be used like a read-only
+<code class="docutils literal notranslate"><span class="pre">dict</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">encode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_doc</span> <span class="o">=</span> <span class="n">RawBSONDocument</span><span class="p">(</span><span class="n">encode</span><span class="p">({</span><span class="s1">'_id'</span><span class="p">:</span> <span class="s1">'my_doc'</span><span class="p">}))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_doc</span><span class="o">.</span><span class="n">raw</span>
+<span class="go">b'...'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_doc</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span>
+<span class="go">'my_doc'</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>bson_bytes</cite>: the BSON bytes that compose this document</p></li>
+<li><p><cite>codec_options</cite> (optional): An instance of
+<a class="reference internal" href="codec_options.html#bson.codec_options.CodecOptions" title="bson.codec_options.CodecOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a> whose <code class="docutils literal notranslate"><span class="pre">document_class</span></code>
+must be <a class="reference internal" href="#bson.raw_bson.RawBSONDocument" title="bson.raw_bson.RawBSONDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawBSONDocument</span></code></a>. The default is
+<a class="reference internal" href="#bson.raw_bson.DEFAULT_RAW_BSON_OPTIONS" title="bson.raw_bson.DEFAULT_RAW_BSON_OPTIONS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DEFAULT_RAW_BSON_OPTIONS</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.8: </span><a class="reference internal" href="#bson.raw_bson.RawBSONDocument" title="bson.raw_bson.RawBSONDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawBSONDocument</span></code></a> now validates that the <code class="docutils literal notranslate"><span class="pre">bson_bytes</span></code>
+passed in represent a single bson document.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>If a <a class="reference internal" href="codec_options.html#bson.codec_options.CodecOptions" title="bson.codec_options.CodecOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a> is passed in, its
+<cite>document_class</cite> must be <a class="reference internal" href="#bson.raw_bson.RawBSONDocument" title="bson.raw_bson.RawBSONDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawBSONDocument</span></code></a>.</p>
+</div>
+<dl class="py method">
+<dt id="bson.raw_bson.RawBSONDocument.items"><a name="//apple_ref/cpp/Method/bson.raw_bson.RawBSONDocument.items"></a>
+<code class="sig-name descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bson.raw_bson.RawBSONDocument.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lazily decode and iterate elements in this document.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.raw_bson.RawBSONDocument.raw"><a name="//apple_ref/cpp/Method/bson.raw_bson.RawBSONDocument.raw"></a>
+<em class="property">property </em><code class="sig-name descname">raw</code><a class="headerlink" href="#bson.raw_bson.RawBSONDocument.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>The raw BSON bytes composing this document.</p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="objectid.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">objectid</span></code> – Tools for working with MongoDB ObjectIds</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="regex.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regex</span></code> – Tools for representing MongoDB regular expressions</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/raw_bson.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="regex.html" title="regex – Tools for representing MongoDB regular expressions">next</a> |</li>
+<li class="right">
+<a href="objectid.html" title="objectid – Tools for working with MongoDB ObjectIds">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">raw_bson</span></code> – Tools for representing raw BSON documents.</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

@@ -1,0 +1,923 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>gridfs – Tools for working with GridFS — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="errors.html" rel="next" title="errors – Exceptions raised by the gridfs package"/>
+<link href="../pymongo/event_loggers.html" rel="prev" title="event_loggers – Example loggers"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="errors.html" title="errors – Exceptions raised by the gridfs package">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="../pymongo/event_loggers.html" title="event_loggers – Example loggers">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a accesskey="U" href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> – Tools for working with GridFS</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-gridfs">
+<span id="gridfs-tools-for-working-with-gridfs"></span><h1><a name="//apple_ref/cpp/Module/gridfs"></a><a class="reference internal" href="#module-gridfs" title="gridfs: Tools for working with GridFS"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code></a> – Tools for working with GridFS<a class="headerlink" href="#module-gridfs" title="Permalink to this headline">¶</a></h1>
+<p>GridFS is a specification for storing large objects in Mongo.</p>
+<p>The <a class="reference internal" href="#module-gridfs" title="gridfs: Tools for working with GridFS"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code></a> package is an implementation of GridFS on top of
+<a class="reference internal" href="../pymongo/index.html#module-pymongo" title="pymongo: Python driver for MongoDB"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code></a>, exposing a file-like interface.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/gridfs" name="gridfs.GridFS"><em>gridfs</em></a></p>
+</div>
+<dl class="py class">
+<dt id="gridfs.GridFS"><a name="//apple_ref/cpp/Class/gridfs.GridFS"></a>
+<em class="property">class </em><code class="sig-prename descclassname">gridfs.</code><code class="sig-name descname">GridFS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">database</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'fs'</span></em>, <em class="sig-param"><span class="n">disable_md5</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new instance of <a class="reference internal" href="#gridfs.GridFS" title="gridfs.GridFS"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFS</span></code></a>.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>database</cite> is not an instance of
+<a class="reference internal" href="../pymongo/database.html#pymongo.database.Database" title="pymongo.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>database</cite>: database to use</p></li>
+<li><p><cite>collection</cite> (optional): root collection to use</p></li>
+<li><p><cite>disable_md5</cite> (optional): When True, MD5 checksums will not be
+computed for uploaded files. Useful in environments where MD5
+cannot be used for regulatory or other reasons. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.11: </span>Running a GridFS operation in a transaction now always raises an
+error. GridFS does not support multi-document transactions.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.1: </span>Indexes are only ensured on the first write to the DB.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span><cite>database</cite> must use an acknowledged
+<a class="reference internal" href="../pymongo/database.html#pymongo.database.Database.write_concern" title="pymongo.database.Database.write_concern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code></a></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/gridfs" name="gridfs.GridFS"><em>gridfs</em></a></p>
+</div>
+<dl class="py method">
+<dt id="gridfs.GridFS.delete"><a name="//apple_ref/cpp/Method/gridfs.GridFS.delete"></a>
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_id</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a file from GridFS by <code class="docutils literal notranslate"><span class="pre">"_id"</span></code>.</p>
+<p>Deletes all data belonging to the file with <code class="docutils literal notranslate"><span class="pre">"_id"</span></code>:
+<cite>file_id</cite>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Any processes/threads reading from the file while
+this method is executing will likely see an invalid/corrupt
+file. Care should be taken to avoid concurrent reads to a file
+while it is being deleted.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Deletes of non-existent files are considered successful
+since the end result is the same: no file with that _id remains.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>file_id</cite>: <code class="docutils literal notranslate"><span class="pre">"_id"</span></code> of the file to delete</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.1: </span><code class="docutils literal notranslate"><span class="pre">delete</span></code> no longer ensures indexes.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFS.exists"><a name="//apple_ref/cpp/Method/gridfs.GridFS.exists"></a>
+<code class="sig-name descname">exists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">document_or_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a file exists in this instance of <a class="reference internal" href="#gridfs.GridFS" title="gridfs.GridFS"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFS</span></code></a>.</p>
+<p>The file to check for can be specified by the value of its
+<code class="docutils literal notranslate"><span class="pre">_id</span></code> key, or by passing in a query document. A query
+document can be passed in as dictionary, or by using keyword
+arguments. Thus, the following three calls are equivalent:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">file_id</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">file_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As are the following two calls:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">({</span><span class="s2">"filename"</span><span class="p">:</span> <span class="s2">"mike.txt"</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">"mike.txt"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And the following two:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">({</span><span class="s2">"foo"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="mi">12</span><span class="p">}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fs</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">foo</span><span class="o">=</span><span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if a matching file exists, <code class="docutils literal notranslate"><span class="pre">False</span></code>
+otherwise. Calls to <a class="reference internal" href="#gridfs.GridFS.exists" title="gridfs.GridFS.exists"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exists()</span></code></a> will not automatically
+create appropriate indexes; application developers should be
+sure to create indexes if needed and as appropriate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>document_or_id</cite> (optional): query document, or _id of the
+document to check for</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+<li><p><cite>**kwargs</cite> (optional): keyword arguments are used as a
+query document, if they’re present.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFS.find"><a name="//apple_ref/cpp/Method/gridfs.GridFS.find"></a>
+<code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query GridFS for files.</p>
+<p>Returns a cursor that iterates across files matching
+arbitrary queries on the files collection. Can be combined
+with other modifiers for additional control. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">grid_out</span> <span class="ow">in</span> <span class="n">fs</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"filename"</span><span class="p">:</span> <span class="s2">"lisa.txt"</span><span class="p">},</span>
+                        <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">grid_out</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>would iterate through all versions of “lisa.txt” stored in GridFS.
+Note that setting no_cursor_timeout to True may be important to
+prevent the cursor from timing out during long multi-file processing
+work.</p>
+<p>As another example, the call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">most_recent_three</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">"uploadDate"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>would return a cursor to the three most recently uploaded files
+in GridFS.</p>
+<p>Follows a similar interface to
+<a class="reference internal" href="../pymongo/collection.html#pymongo.collection.Collection.find" title="pymongo.collection.Collection.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a>
+in <a class="reference internal" href="../pymongo/collection.html#pymongo.collection.Collection" title="pymongo.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a>.</p>
+<p>If a <a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a> is passed to
+<a class="reference internal" href="#gridfs.GridFS.find" title="gridfs.GridFS.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a>, all returned <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridOut" title="gridfs.grid_file.GridOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridOut</span></code></a> instances
+are associated with that session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filter</cite> (optional): a SON object specifying elements which
+must be present for a document to be included in the
+result set</p></li>
+<li><p><cite>skip</cite> (optional): the number of files to omit (from
+the start of the result set) when returning the results</p></li>
+<li><p><cite>limit</cite> (optional): the maximum number of results to
+return</p></li>
+<li><p><cite>no_cursor_timeout</cite> (optional): if False (the default), any
+returned cursor is closed by the server after 10 minutes of
+inactivity. If set to True, the returned cursor will never
+time out on the server. Care should be taken to ensure that
+cursors with no_cursor_timeout turned on are properly closed.</p></li>
+<li><p><cite>sort</cite> (optional): a list of (key, direction) pairs
+specifying the sort order for this query. See
+<a class="reference internal" href="../pymongo/cursor.html#pymongo.cursor.Cursor.sort" title="pymongo.cursor.Cursor.sort"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sort()</span></code></a> for details.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if any of the arguments are of
+improper type. Returns an instance of
+<a class="reference internal" href="grid_file.html#gridfs.grid_file.GridOutCursor" title="gridfs.grid_file.GridOutCursor"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridOutCursor</span></code></a>
+corresponding to this query.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>Removed the read_preference, tag_sets, and
+secondary_acceptable_latency_ms options.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7.</span></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/find" name="gridfs.GridFS.find"><em>find</em></a></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFS.find_one"><a name="//apple_ref/cpp/Method/gridfs.GridFS.find_one"></a>
+<code class="sig-name descname">find_one</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.find_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a single file from gridfs.</p>
+<p>All arguments to <a class="reference internal" href="#gridfs.GridFS.find" title="gridfs.GridFS.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a> are also valid arguments for
+<a class="reference internal" href="#gridfs.GridFS.find_one" title="gridfs.GridFS.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one()</span></code></a>, although any <cite>limit</cite> argument will be
+ignored. Returns a single <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridOut" title="gridfs.grid_file.GridOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridOut</span></code></a>,
+or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no matching file is found. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"filename"</span><span class="p">:</span> <span class="s2">"lisa.txt"</span><span class="p">})</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filter</cite> (optional): a dictionary specifying
+the query to be performing OR any other type to be used as
+the value for a query for <code class="docutils literal notranslate"><span class="pre">"_id"</span></code> in the file collection.</p></li>
+<li><p><cite>*args</cite> (optional): any additional positional arguments are
+the same as the arguments to <a class="reference internal" href="#gridfs.GridFS.find" title="gridfs.GridFS.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a>.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+<li><p><cite>**kwargs</cite> (optional): any additional keyword arguments
+are the same as the arguments to <a class="reference internal" href="#gridfs.GridFS.find" title="gridfs.GridFS.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFS.get"><a name="//apple_ref/cpp/Method/gridfs.GridFS.get"></a>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_id</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a file from GridFS by <code class="docutils literal notranslate"><span class="pre">"_id"</span></code>.</p>
+<p>Returns an instance of <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridOut" title="gridfs.grid_file.GridOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridOut</span></code></a>,
+which provides a file-like interface for reading.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>file_id</cite>: <code class="docutils literal notranslate"><span class="pre">"_id"</span></code> of the file to get</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFS.get_last_version"><a name="//apple_ref/cpp/Method/gridfs.GridFS.get_last_version"></a>
+<code class="sig-name descname">get_last_version</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.get_last_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the most recent version of a file in GridFS by <code class="docutils literal notranslate"><span class="pre">"filename"</span></code>
+or metadata fields.</p>
+<p>Equivalent to calling <a class="reference internal" href="#gridfs.GridFS.get_version" title="gridfs.GridFS.get_version"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_version()</span></code></a> with the default
+<cite>version</cite> (<code class="docutils literal notranslate"><span class="pre">-1</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filename</cite>: <code class="docutils literal notranslate"><span class="pre">"filename"</span></code> of the file to get, or <cite>None</cite></p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+<li><p><cite>**kwargs</cite> (optional): find files by custom metadata.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFS.get_version"><a name="//apple_ref/cpp/Method/gridfs.GridFS.get_version"></a>
+<code class="sig-name descname">get_version</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">version</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.get_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a file from GridFS by <code class="docutils literal notranslate"><span class="pre">"filename"</span></code> or metadata fields.</p>
+<p>Returns a version of the file in GridFS whose filename matches
+<cite>filename</cite> and whose metadata fields match the supplied keyword
+arguments, as an instance of <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridOut" title="gridfs.grid_file.GridOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridOut</span></code></a>.</p>
+<p>Version numbering is a convenience atop the GridFS API provided
+by MongoDB. If more than one file matches the query (either by
+<cite>filename</cite> alone, by metadata fields, or by a combination of
+both), then version <code class="docutils literal notranslate"><span class="pre">-1</span></code> will be the most recently uploaded
+matching file, <code class="docutils literal notranslate"><span class="pre">-2</span></code> the second most recently
+uploaded, etc. Version <code class="docutils literal notranslate"><span class="pre">0</span></code> will be the first version
+uploaded, <code class="docutils literal notranslate"><span class="pre">1</span></code> the second version, etc. So if three versions
+have been uploaded, then version <code class="docutils literal notranslate"><span class="pre">0</span></code> is the same as version
+<code class="docutils literal notranslate"><span class="pre">-3</span></code>, version <code class="docutils literal notranslate"><span class="pre">1</span></code> is the same as version <code class="docutils literal notranslate"><span class="pre">-2</span></code>, and
+version <code class="docutils literal notranslate"><span class="pre">2</span></code> is the same as version <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no such version of
+that file exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filename</cite>: <code class="docutils literal notranslate"><span class="pre">"filename"</span></code> of the file to get, or <cite>None</cite></p></li>
+<li><p><cite>version</cite> (optional): version of the file to get (defaults
+to -1, the most recent version uploaded)</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+<li><p><cite>**kwargs</cite> (optional): find files by custom metadata.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.1: </span><code class="docutils literal notranslate"><span class="pre">get_version</span></code> no longer ensures indexes.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFS.list"><a name="//apple_ref/cpp/Method/gridfs.GridFS.list"></a>
+<code class="sig-name descname">list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.list" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the names of all files stored in this instance of
+<a class="reference internal" href="#gridfs.GridFS" title="gridfs.GridFS"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFS</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.1: </span><code class="docutils literal notranslate"><span class="pre">list</span></code> no longer ensures indexes.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFS.new_file"><a name="//apple_ref/cpp/Method/gridfs.GridFS.new_file"></a>
+<code class="sig-name descname">new_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.new_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new file in GridFS.</p>
+<p>Returns a new <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridIn" title="gridfs.grid_file.GridIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridIn</span></code></a> instance to
+which data can be written. Any keyword arguments will be
+passed through to <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridIn" title="gridfs.grid_file.GridIn"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GridIn()</span></code></a>.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">"_id"</span></code> of the file is manually specified, it must
+not already exist in GridFS. Otherwise
+<a class="reference internal" href="errors.html#gridfs.errors.FileExists" title="gridfs.errors.FileExists"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileExists</span></code></a> is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>**kwargs</cite> (optional): keyword arguments for file creation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFS.put"><a name="//apple_ref/cpp/Method/gridfs.GridFS.put"></a>
+<code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFS.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put data in GridFS as a new file.</p>
+<p>Equivalent to doing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">new_file</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><cite>data</cite> can be either an instance of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>
+in python 3) or a file-like object providing a <code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code> method.
+If an <cite>encoding</cite> keyword argument is passed, <cite>data</cite> can also be a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">unicode</span></code> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> in python 3) instance, which will
+be encoded as <cite>encoding</cite> before being written. Any keyword arguments
+will be passed through to the created file - see
+<a class="reference internal" href="grid_file.html#gridfs.grid_file.GridIn" title="gridfs.grid_file.GridIn"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GridIn()</span></code></a> for possible arguments. Returns the
+<code class="docutils literal notranslate"><span class="pre">"_id"</span></code> of the created file.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">"_id"</span></code> of the file is manually specified, it must
+not already exist in GridFS. Otherwise
+<a class="reference internal" href="errors.html#gridfs.errors.FileExists" title="gridfs.errors.FileExists"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileExists</span></code></a> is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>data</cite>: data to be written as a file.</p></li>
+<li><p><cite>**kwargs</cite> (optional): keyword arguments for file creation</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>w=0 writes to GridFS are now prohibited.</p>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="gridfs.GridFSBucket"><a name="//apple_ref/cpp/Class/gridfs.GridFSBucket"></a>
+<em class="property">class </em><code class="sig-prename descclassname">gridfs.</code><code class="sig-name descname">GridFSBucket</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db</span></em>, <em class="sig-param"><span class="n">bucket_name</span><span class="o">=</span><span class="default_value">'fs'</span></em>, <em class="sig-param"><span class="n">chunk_size_bytes</span><span class="o">=</span><span class="default_value">261120</span></em>, <em class="sig-param"><span class="n">write_concern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">read_preference</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable_md5</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new instance of <a class="reference internal" href="#gridfs.GridFSBucket" title="gridfs.GridFSBucket"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFSBucket</span></code></a>.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>database</cite> is not an instance of
+<a class="reference internal" href="../pymongo/database.html#pymongo.database.Database" title="pymongo.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a>.</p>
+<p>Raises <a class="reference internal" href="../pymongo/errors.html#pymongo.errors.ConfigurationError" title="pymongo.errors.ConfigurationError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ConfigurationError</span></code></a> if <cite>write_concern</cite>
+is not acknowledged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>database</cite>: database to use.</p></li>
+<li><p><cite>bucket_name</cite> (optional): The name of the bucket. Defaults to ‘fs’.</p></li>
+<li><p><cite>chunk_size_bytes</cite> (optional): The chunk size in bytes. Defaults
+to 255KB.</p></li>
+<li><p><cite>write_concern</cite> (optional): The
+<a class="reference internal" href="../pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a> to use. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+(the default) db.write_concern is used.</p></li>
+<li><p><cite>read_preference</cite> (optional): The read preference to use. If
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) db.read_preference is used.</p></li>
+<li><p><cite>disable_md5</cite> (optional): When True, MD5 checksums will not be
+computed for uploaded files. Useful in environments where MD5
+cannot be used for regulatory or other reasons. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.11: </span>Running a GridFS operation in a transaction now always raises an
+error. GridFSBucket does not support multi-document transactions.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.1.</span></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/gridfs" name="gridfs.GridFSBucket"><em>gridfs</em></a></p>
+</div>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.delete"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.delete"></a>
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_id</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an file_id, delete this stored file’s files collection document
+and associated chunks from a GridFS bucket.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="c1"># Get _id of file to delete</span>
+<span class="n">file_id</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">upload_from_stream</span><span class="p">(</span><span class="s2">"test_file"</span><span class="p">,</span> <span class="s2">"data I want to store!"</span><span class="p">)</span>
+<span class="n">fs</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no file with file_id exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>file_id</cite>: The _id of the file to be deleted.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.download_to_stream"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.download_to_stream"></a>
+<code class="sig-name descname">download_to_stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_id</span></em>, <em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.download_to_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads the contents of the stored file specified by file_id and
+writes the contents to <cite>destination</cite>.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="c1"># Get _id of file to read</span>
+<span class="n">file_id</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">upload_from_stream</span><span class="p">(</span><span class="s2">"test_file"</span><span class="p">,</span> <span class="s2">"data I want to store!"</span><span class="p">)</span>
+<span class="c1"># Get file to write to</span>
+<span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'myfile'</span><span class="p">,</span><span class="s1">'wb+'</span><span class="p">)</span>
+<span class="n">fs</span><span class="o">.</span><span class="n">download_to_stream</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+<span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">contents</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no file with file_id exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>file_id</cite>: The _id of the file to be downloaded.</p></li>
+<li><p><cite>destination</cite>: a file-like object implementing <code class="xref py py-meth docutils literal notranslate"><span class="pre">write()</span></code>.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.download_to_stream_by_name"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.download_to_stream_by_name"></a>
+<code class="sig-name descname">download_to_stream_by_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="n">revision</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.download_to_stream_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the contents of <cite>filename</cite> (with optional <cite>revision</cite>) to
+<cite>destination</cite>.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="c1"># Get file to write to</span>
+<span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'myfile'</span><span class="p">,</span><span class="s1">'wb'</span><span class="p">)</span>
+<span class="n">fs</span><span class="o">.</span><span class="n">download_to_stream_by_name</span><span class="p">(</span><span class="s2">"test_file"</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no such version of
+that file exists.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>filename</cite> is not a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filename</cite>: The name of the file to read from.</p></li>
+<li><p><cite>destination</cite>: A file-like object that implements <code class="xref py py-meth docutils literal notranslate"><span class="pre">write()</span></code>.</p></li>
+<li><p><cite>revision</cite> (optional): Which revision (documents with the same
+filename and different uploadDate) of the file to retrieve.
+Defaults to -1 (the most recent revision).</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Note</dt>
+<dd class="field-even"><p>Revision numbers are defined as follows:</p>
+<ul class="simple">
+<li><p>0 = the original stored file</p></li>
+<li><p>1 = the first revision</p></li>
+<li><p>2 = the second revision</p></li>
+<li><p>etc…</p></li>
+<li><p>-2 = the second most recent revision</p></li>
+<li><p>-1 = the most recent revision</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.find"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.find"></a>
+<code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and return the files collection documents that match <code class="docutils literal notranslate"><span class="pre">filter</span></code></p>
+<p>Returns a cursor that iterates across files matching
+arbitrary queries on the files collection. Can be combined
+with other modifiers for additional control.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">grid_data</span> <span class="ow">in</span> <span class="n">fs</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"filename"</span><span class="p">:</span> <span class="s2">"lisa.txt"</span><span class="p">},</span>
+                        <span class="n">no_cursor_timeout</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">grid_data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>would iterate through all versions of “lisa.txt” stored in GridFS.
+Note that setting no_cursor_timeout to True may be important to
+prevent the cursor from timing out during long multi-file processing
+work.</p>
+<p>As another example, the call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">most_recent_three</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">"uploadDate"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>would return a cursor to the three most recently uploaded files
+in GridFS.</p>
+<p>Follows a similar interface to
+<a class="reference internal" href="../pymongo/collection.html#pymongo.collection.Collection.find" title="pymongo.collection.Collection.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a>
+in <a class="reference internal" href="../pymongo/collection.html#pymongo.collection.Collection" title="pymongo.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a>.</p>
+<p>If a <a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a> is passed to
+<a class="reference internal" href="#gridfs.GridFSBucket.find" title="gridfs.GridFSBucket.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a>, all returned <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridOut" title="gridfs.grid_file.GridOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridOut</span></code></a> instances
+are associated with that session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filter</cite>: Search query.</p></li>
+<li><p><cite>batch_size</cite> (optional): The number of documents to return per
+batch.</p></li>
+<li><p><cite>limit</cite> (optional): The maximum number of documents to return.</p></li>
+<li><p><cite>no_cursor_timeout</cite> (optional): The server normally times out idle
+cursors after an inactivity period (10 minutes) to prevent excess
+memory use. Set this option to True prevent that.</p></li>
+<li><p><cite>skip</cite> (optional): The number of documents to skip before
+returning.</p></li>
+<li><p><cite>sort</cite> (optional): The order by which to sort results. Defaults to
+None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.open_download_stream"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.open_download_stream"></a>
+<code class="sig-name descname">open_download_stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_id</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.open_download_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a Stream from which the application can read the contents of
+the stored file specified by file_id.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="c1"># get _id of file to read.</span>
+<span class="n">file_id</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">upload_from_stream</span><span class="p">(</span><span class="s2">"test_file"</span><span class="p">,</span> <span class="s2">"data I want to store!"</span><span class="p">)</span>
+<span class="n">grid_out</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">open_download_stream</span><span class="p">(</span><span class="n">file_id</span><span class="p">)</span>
+<span class="n">contents</span> <span class="o">=</span> <span class="n">grid_out</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Returns an instance of <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridOut" title="gridfs.grid_file.GridOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridOut</span></code></a>.</p>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no file with file_id exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>file_id</cite>: The _id of the file to be downloaded.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.open_download_stream_by_name"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.open_download_stream_by_name"></a>
+<code class="sig-name descname">open_download_stream_by_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">revision</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.open_download_stream_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a Stream from which the application can read the contents of
+<cite>filename</cite> and optional <cite>revision</cite>.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="n">grid_out</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">open_download_stream_by_name</span><span class="p">(</span><span class="s2">"test_file"</span><span class="p">)</span>
+<span class="n">contents</span> <span class="o">=</span> <span class="n">grid_out</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Returns an instance of <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridOut" title="gridfs.grid_file.GridOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridOut</span></code></a>.</p>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no such version of
+that file exists.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> filename is not a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filename</cite>: The name of the file to read from.</p></li>
+<li><p><cite>revision</cite> (optional): Which revision (documents with the same
+filename and different uploadDate) of the file to retrieve.
+Defaults to -1 (the most recent revision).</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Note</dt>
+<dd class="field-even"><p>Revision numbers are defined as follows:</p>
+<ul class="simple">
+<li><p>0 = the original stored file</p></li>
+<li><p>1 = the first revision</p></li>
+<li><p>2 = the second revision</p></li>
+<li><p>etc…</p></li>
+<li><p>-2 = the second most recent revision</p></li>
+<li><p>-1 = the most recent revision</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.open_upload_stream"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.open_upload_stream"></a>
+<code class="sig-name descname">open_upload_stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">chunk_size_bytes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.open_upload_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a Stream that the application can write the contents of the
+file to.</p>
+<p>The user must specify the filename, and can choose to add any
+additional information in the metadata field of the file document or
+modify the chunk size.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="n">grid_in</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">open_upload_stream</span><span class="p">(</span>
+      <span class="s2">"test_file"</span><span class="p">,</span> <span class="n">chunk_size_bytes</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+      <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"contentType"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">})</span>
+<span class="n">grid_in</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"data I want to store!"</span><span class="p">)</span>
+<span class="n">grid_in</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># uploaded on close</span>
+</pre></div>
+</div>
+<p>Returns an instance of <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridIn" title="gridfs.grid_file.GridIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridIn</span></code></a>.</p>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no such version of
+that file exists.
+Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>filename</cite> is not a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filename</cite>: The name of the file to upload.</p></li>
+<li><p><cite>chunk_size_bytes</cite> (options): The number of bytes per chunk of this
+file. Defaults to the chunk_size_bytes in <a class="reference internal" href="#gridfs.GridFSBucket" title="gridfs.GridFSBucket"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFSBucket</span></code></a>.</p></li>
+<li><p><cite>metadata</cite> (optional): User data for the ‘metadata’ field of the
+files collection document. If not provided the metadata field will
+be omitted from the files collection document.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.open_upload_stream_with_id"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.open_upload_stream_with_id"></a>
+<code class="sig-name descname">open_upload_stream_with_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_id</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">chunk_size_bytes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.open_upload_stream_with_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a Stream that the application can write the contents of the
+file to.</p>
+<p>The user must specify the file id and filename, and can choose to add
+any additional information in the metadata field of the file document
+or modify the chunk size.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="n">grid_in</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">open_upload_stream_with_id</span><span class="p">(</span>
+      <span class="n">ObjectId</span><span class="p">(),</span>
+      <span class="s2">"test_file"</span><span class="p">,</span>
+      <span class="n">chunk_size_bytes</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+      <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"contentType"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">})</span>
+<span class="n">grid_in</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"data I want to store!"</span><span class="p">)</span>
+<span class="n">grid_in</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># uploaded on close</span>
+</pre></div>
+</div>
+<p>Returns an instance of <a class="reference internal" href="grid_file.html#gridfs.grid_file.GridIn" title="gridfs.grid_file.GridIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridIn</span></code></a>.</p>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no such version of
+that file exists.
+Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>filename</cite> is not a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>file_id</cite>: The id to use for this file. The id must not have
+already been used for another file.</p></li>
+<li><p><cite>filename</cite>: The name of the file to upload.</p></li>
+<li><p><cite>chunk_size_bytes</cite> (options): The number of bytes per chunk of this
+file. Defaults to the chunk_size_bytes in <a class="reference internal" href="#gridfs.GridFSBucket" title="gridfs.GridFSBucket"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFSBucket</span></code></a>.</p></li>
+<li><p><cite>metadata</cite> (optional): User data for the ‘metadata’ field of the
+files collection document. If not provided the metadata field will
+be omitted from the files collection document.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.rename"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.rename"></a>
+<code class="sig-name descname">rename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_id</span></em>, <em class="sig-param"><span class="n">new_filename</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.rename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renames the stored file with the specified file_id.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="c1"># Get _id of file to rename</span>
+<span class="n">file_id</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">upload_from_stream</span><span class="p">(</span><span class="s2">"test_file"</span><span class="p">,</span> <span class="s2">"data I want to store!"</span><span class="p">)</span>
+<span class="n">fs</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s2">"new_test_name"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no file with file_id exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>file_id</cite>: The _id of the file to be renamed.</p></li>
+<li><p><cite>new_filename</cite>: The new name of the file.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.upload_from_stream"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.upload_from_stream"></a>
+<code class="sig-name descname">upload_from_stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">chunk_size_bytes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.upload_from_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads a user file to a GridFS bucket.</p>
+<p>Reads the contents of the user file from <cite>source</cite> and uploads
+it to the file <cite>filename</cite>. Source can be a string or file-like object.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="n">file_id</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">upload_from_stream</span><span class="p">(</span>
+    <span class="s2">"test_file"</span><span class="p">,</span>
+    <span class="s2">"data I want to store!"</span><span class="p">,</span>
+    <span class="n">chunk_size_bytes</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"contentType"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Returns the _id of the uploaded file.</p>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no such version of
+that file exists.
+Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>filename</cite> is not a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filename</cite>: The name of the file to upload.</p></li>
+<li><p><cite>source</cite>: The source stream of the content to be uploaded. Must be
+a file-like object that implements <code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code> or a string.</p></li>
+<li><p><cite>chunk_size_bytes</cite> (options): The number of bytes per chunk of this
+file. Defaults to the chunk_size_bytes of <a class="reference internal" href="#gridfs.GridFSBucket" title="gridfs.GridFSBucket"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFSBucket</span></code></a>.</p></li>
+<li><p><cite>metadata</cite> (optional): User data for the ‘metadata’ field of the
+files collection document. If not provided the metadata field will
+be omitted from the files collection document.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.GridFSBucket.upload_from_stream_with_id"><a name="//apple_ref/cpp/Method/gridfs.GridFSBucket.upload_from_stream_with_id"></a>
+<code class="sig-name descname">upload_from_stream_with_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_id</span></em>, <em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">chunk_size_bytes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.GridFSBucket.upload_from_stream_with_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads a user file to a GridFS bucket with a custom file id.</p>
+<p>Reads the contents of the user file from <cite>source</cite> and uploads
+it to the file <cite>filename</cite>. Source can be a string or file-like object.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">test</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">GridFSBucket</span><span class="p">(</span><span class="n">my_db</span><span class="p">)</span>
+<span class="n">file_id</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">upload_from_stream</span><span class="p">(</span>
+    <span class="n">ObjectId</span><span class="p">(),</span>
+    <span class="s2">"test_file"</span><span class="p">,</span>
+    <span class="s2">"data I want to store!"</span><span class="p">,</span>
+    <span class="n">chunk_size_bytes</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"contentType"</span><span class="p">:</span> <span class="s2">"text/plain"</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Raises <a class="reference internal" href="errors.html#gridfs.errors.NoFile" title="gridfs.errors.NoFile"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoFile</span></code></a> if no such version of
+that file exists.
+Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>filename</cite> is not a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>file_id</cite>: The id to use for this file. The id must not have
+already been used for another file.</p></li>
+<li><p><cite>filename</cite>: The name of the file to upload.</p></li>
+<li><p><cite>source</cite>: The source stream of the content to be uploaded. Must be
+a file-like object that implements <code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code> or a string.</p></li>
+<li><p><cite>chunk_size_bytes</cite> (options): The number of bytes per chunk of this
+file. Defaults to the chunk_size_bytes of <a class="reference internal" href="#gridfs.GridFSBucket" title="gridfs.GridFSBucket"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFSBucket</span></code></a>.</p></li>
+<li><p><cite>metadata</cite> (optional): User data for the ‘metadata’ field of the
+files collection document. If not provided the metadata field will
+be omitted from the files collection document.</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+</dd></dl>
+<p>Sub-modules:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="errors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grid_file.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">grid_file</span></code> – Tools for representing files stored in GridFS</a></li>
+</ul>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="../pymongo/event_loggers.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">event_loggers</span></code> – Example loggers</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="errors.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> package</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/gridfs/index.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="errors.html" title="errors – Exceptions raised by the gridfs package">next</a> |</li>
+<li class="right">
+<a href="../pymongo/event_loggers.html" title="event_loggers – Example loggers">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> – Tools for working with GridFS</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

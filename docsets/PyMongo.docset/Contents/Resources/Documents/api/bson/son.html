@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>son – Tools for working with SON, an ordered mapping — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="timestamp.html" rel="next" title="timestamp – Tools for representing MongoDB internal Timestamps"/>
+<link href="regex.html" rel="prev" title="regex – Tools for representing MongoDB regular expressions"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="timestamp.html" title="timestamp – Tools for representing MongoDB internal Timestamps">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="regex.html" title="regex – Tools for representing MongoDB regular expressions">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">son</span></code> – Tools for working with SON, an ordered mapping</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-bson.son">
+<span id="son-tools-for-working-with-son-an-ordered-mapping"></span><h1><a name="//apple_ref/cpp/Module/bson.son"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">son</span></code> – Tools for working with SON, an ordered mapping<a class="headerlink" href="#module-bson.son" title="Permalink to this headline">¶</a></h1>
+<p>Tools for creating and manipulating SON, the Serialized Ocument Notation.</p>
+<p>Regular dictionaries can be used instead of SON objects, but not when the order
+of keys is important. A SON object can be used just like a normal Python
+dictionary.</p>
+<dl class="py class">
+<dt id="bson.son.SON"><a name="//apple_ref/cpp/Class/bson.son.SON"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.son.</code><code class="sig-name descname">SON</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.son.SON" title="Permalink to this definition">¶</a></dt>
+<dd><p>SON data.</p>
+<p>A subclass of dict that maintains ordering of keys and provides a
+few extra niceties for dealing with SON. SON provides an API
+similar to collections.OrderedDict from Python 2.7+.</p>
+<dl class="py method">
+<dt id="bson.son.SON.clear"><a name="//apple_ref/cpp/Method/bson.son.SON.clear"></a>
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span> → None.  Remove all items from D.<a class="headerlink" href="#bson.son.SON.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.copy"><a name="//apple_ref/cpp/Method/bson.son.SON.copy"></a>
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> → a shallow copy of D<a class="headerlink" href="#bson.son.SON.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.get"><a name="//apple_ref/cpp/Method/bson.son.SON.get"></a>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.son.SON.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value for key if key is in the dictionary, else default.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.items"><a name="//apple_ref/cpp/Method/bson.son.SON.items"></a>
+<code class="sig-name descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span> → a set-like object providing a view on D’s items<a class="headerlink" href="#bson.son.SON.items" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.keys"><a name="//apple_ref/cpp/Method/bson.son.SON.keys"></a>
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span> → a set-like object providing a view on D’s keys<a class="headerlink" href="#bson.son.SON.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.pop"><a name="//apple_ref/cpp/Method/bson.son.SON.pop"></a>
+<code class="sig-name descname">pop</code><span class="sig-paren">(</span><em class="sig-param">k</em><span class="optional">[</span>, <em class="sig-param">d</em><span class="optional">]</span><span class="sig-paren">)</span> → v, remove specified key and return the corresponding value.<a class="headerlink" href="#bson.son.SON.pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>If key is not found, d is returned if given, otherwise KeyError is raised</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.popitem"><a name="//apple_ref/cpp/Method/bson.son.SON.popitem"></a>
+<code class="sig-name descname">popitem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bson.son.SON.popitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove and return a (key, value) pair as a 2-tuple.</p>
+<p>Pairs are returned in LIFO (last-in, first-out) order.
+Raises KeyError if the dict is empty.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.setdefault"><a name="//apple_ref/cpp/Method/bson.son.SON.setdefault"></a>
+<code class="sig-name descname">setdefault</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.son.SON.setdefault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert key with a value of default if key is not in the dictionary.</p>
+<p>Return the value for key if key is in the dictionary, else default.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.to_dict"><a name="//apple_ref/cpp/Method/bson.son.SON.to_dict"></a>
+<code class="sig-name descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bson.son.SON.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a SON document to a normal Python dictionary instance.</p>
+<p>This is trickier than just <em>dict(…)</em> because it needs to be
+recursive.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.update"><a name="//apple_ref/cpp/Method/bson.son.SON.update"></a>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param">E</em>, <span class="optional">]</span><em class="sig-param">**F</em><span class="sig-paren">)</span> → None.  Update D from dict/iterable E and F.<a class="headerlink" href="#bson.son.SON.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+In either case, this is followed by: for k in F:  D[k] = F[k]</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.son.SON.values"><a name="//apple_ref/cpp/Method/bson.son.SON.values"></a>
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span> → an object providing a view on D’s values<a class="headerlink" href="#bson.son.SON.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="regex.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regex</span></code> – Tools for representing MongoDB regular expressions</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="timestamp.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">timestamp</span></code> – Tools for representing MongoDB internal Timestamps</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/son.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="timestamp.html" title="timestamp – Tools for representing MongoDB internal Timestamps">next</a> |</li>
+<li class="right">
+<a href="regex.html" title="regex – Tools for representing MongoDB regular expressions">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">son</span></code> – Tools for working with SON, an ordered mapping</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

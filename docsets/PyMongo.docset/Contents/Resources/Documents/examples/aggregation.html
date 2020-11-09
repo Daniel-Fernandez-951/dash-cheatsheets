@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aggregation Examples &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Authentication Examples" href="authentication.html" />
+    <link rel="prev" title="Examples" href="index.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="authentication.html" title="Authentication Examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Examples"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Aggregation Examples</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="aggregation-examples">
+<h1>Aggregation Examples<a class="headerlink" href="#aggregation-examples" title="Permalink to this headline">¶</a></h1>
+<p>There are several methods of performing aggregations in MongoDB.  These
+examples cover the new aggregation framework, using map reduce and using the
+group method.</p>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>To start, we’ll insert some example data which we can perform
+aggregations on:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">aggregation_example</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">things</span><span class="o">.</span><span class="n">insert_many</span><span class="p">([{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">]},</span>
+<span class="gp">... </span>                                <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;cat&quot;</span><span class="p">]},</span>
+<span class="gp">... </span>                                <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;mouse&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="s2">&quot;dog&quot;</span><span class="p">]},</span>
+<span class="gp">... </span>                                <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[]}])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">inserted_ids</span>
+<span class="go">[ObjectId(&#39;...&#39;), ObjectId(&#39;...&#39;), ObjectId(&#39;...&#39;), ObjectId(&#39;...&#39;)]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="aggregation-framework">
+<span id="aggregate-examples"></span><h2>Aggregation Framework<a class="headerlink" href="#aggregation-framework" title="Permalink to this headline">¶</a></h2>
+<p>This example shows how to use the
+<a class="reference internal" href="../api/pymongo/collection.html#pymongo.collection.Collection.aggregate" title="pymongo.collection.Collection.aggregate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aggregate()</span></code></a> method to use the aggregation
+framework.  We’ll perform a simple aggregation to count the number of
+occurrences for each tag in the <code class="docutils literal notranslate"><span class="pre">tags</span></code> array, across the entire collection.
+To achieve this we need to pass in three operations to the pipeline.
+First, we need to unwind the <code class="docutils literal notranslate"><span class="pre">tags</span></code> array, then group by the tags and
+sum them up, finally we sort by count.</p>
+<p>As python dictionaries don’t maintain order you should use <a class="reference internal" href="../api/bson/son.html#bson.son.SON" title="bson.son.SON"><code class="xref py py-class docutils literal notranslate"><span class="pre">SON</span></code></a>
+or <a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a> where explicit ordering is required
+eg “$sort”:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>aggregate requires server version <strong>&gt;= 2.1.0</strong>.</p>
+</div>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.son</span> <span class="kn">import</span> <span class="n">SON</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;$unwind&quot;</span><span class="p">:</span> <span class="s2">&quot;$tags&quot;</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;$group&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="s2">&quot;$tags&quot;</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$sum&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}},</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;$sort&quot;</span><span class="p">:</span> <span class="n">SON</span><span class="p">([(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)])}</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">things</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)))</span>
+<span class="go">[{u&#39;_id&#39;: u&#39;cat&#39;, u&#39;count&#39;: 3},</span>
+<span class="go"> {u&#39;_id&#39;: u&#39;dog&#39;, u&#39;count&#39;: 2},</span>
+<span class="go"> {u&#39;_id&#39;: u&#39;mouse&#39;, u&#39;count&#39;: 1}]</span>
+</pre></div>
+</div>
+<p>To run an explain plan for this aggregation use the
+<a class="reference internal" href="../api/pymongo/database.html#pymongo.database.Database.command" title="pymongo.database.Database.command"><code class="xref py py-meth docutils literal notranslate"><span class="pre">command()</span></code></a> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;aggregate&#39;</span><span class="p">,</span> <span class="s1">&#39;things&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">explain</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">{u&#39;ok&#39;: 1.0, u&#39;stages&#39;: [...]}</span>
+</pre></div>
+</div>
+<p>As well as simple aggregations the aggregation framework provides projection
+capabilities to reshape the returned data. Using projections and aggregation,
+you can add computed fields, create new virtual sub-objects, and extract
+sub-fields into the top-level of results.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The full documentation for MongoDB’s <a class="reference external" href="http://docs.mongodb.org/manual/applications/aggregation">aggregation framework</a></p>
+</div>
+</div>
+<div class="section" id="map-reduce">
+<h2>Map/Reduce<a class="headerlink" href="#map-reduce" title="Permalink to this headline">¶</a></h2>
+<p>Another option for aggregation is to use the map reduce framework.  Here we
+will define <strong>map</strong> and <strong>reduce</strong> functions to also count the number of
+occurrences for each tag in the <code class="docutils literal notranslate"><span class="pre">tags</span></code> array, across the entire collection.</p>
+<p>Our <strong>map</strong> function just emits a single <cite>(key, 1)</cite> pair for each tag in
+the array:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.code</span> <span class="kn">import</span> <span class="n">Code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mapper</span> <span class="o">=</span> <span class="n">Code</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">              function () {</span>
+<span class="gp">... </span><span class="s2">                this.tags.forEach(function(z) {</span>
+<span class="gp">... </span><span class="s2">                  emit(z, 1);</span>
+<span class="gp">... </span><span class="s2">                });</span>
+<span class="gp">... </span><span class="s2">              }</span>
+<span class="gp">... </span><span class="s2">              &quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <strong>reduce</strong> function sums over all of the emitted values for a given key:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reducer</span> <span class="o">=</span> <span class="n">Code</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">               function (key, values) {</span>
+<span class="gp">... </span><span class="s2">                 var total = 0;</span>
+<span class="gp">... </span><span class="s2">                 for (var i = 0; i &lt; values.length; i++) {</span>
+<span class="gp">... </span><span class="s2">                   total += values[i];</span>
+<span class="gp">... </span><span class="s2">                 }</span>
+<span class="gp">... </span><span class="s2">                 return total;</span>
+<span class="gp">... </span><span class="s2">               }</span>
+<span class="gp">... </span><span class="s2">               &quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We can’t just return <code class="docutils literal notranslate"><span class="pre">values.length</span></code> as the <strong>reduce</strong> function
+might be called iteratively on the results of other reduce steps.</p>
+</div>
+<p>Finally, we call <a class="reference internal" href="../api/pymongo/collection.html#pymongo.collection.Collection.map_reduce" title="pymongo.collection.Collection.map_reduce"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> and
+iterate over the result collection:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">things</span><span class="o">.</span><span class="n">map_reduce</span><span class="p">(</span><span class="n">mapper</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="s2">&quot;myresults&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{u&#39;_id&#39;: u&#39;cat&#39;, u&#39;value&#39;: 3.0}</span>
+<span class="go">{u&#39;_id&#39;: u&#39;dog&#39;, u&#39;value&#39;: 2.0}</span>
+<span class="go">{u&#39;_id&#39;: u&#39;mouse&#39;, u&#39;value&#39;: 1.0}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-map-reduce">
+<h2>Advanced Map/Reduce<a class="headerlink" href="#advanced-map-reduce" title="Permalink to this headline">¶</a></h2>
+<p>PyMongo’s API supports all of the features of MongoDB’s map/reduce engine.
+One interesting feature is the ability to get more detailed results when
+desired, by passing <cite>full_response=True</cite> to
+<a class="reference internal" href="../api/pymongo/collection.html#pymongo.collection.Collection.map_reduce" title="pymongo.collection.Collection.map_reduce"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map_reduce()</span></code></a>. This returns the full
+response to the map/reduce command, rather than just the result collection:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">db</span><span class="o">.</span><span class="n">things</span><span class="o">.</span><span class="n">map_reduce</span><span class="p">(</span><span class="n">mapper</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="s2">&quot;myresults&quot;</span><span class="p">,</span> <span class="n">full_response</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="go">{...u&#39;ok&#39;: 1.0,... u&#39;result&#39;: u&#39;myresults&#39;...}</span>
+</pre></div>
+</div>
+<p>All of the optional map/reduce parameters are also supported, simply pass them
+as keyword arguments. In this example we use the <cite>query</cite> parameter to limit the
+documents that will be mapped over:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">things</span><span class="o">.</span><span class="n">map_reduce</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">mapper</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="s2">&quot;myresults&quot;</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;_id&quot;</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{u&#39;_id&#39;: u&#39;cat&#39;, u&#39;value&#39;: 1.0}</span>
+<span class="go">{u&#39;_id&#39;: u&#39;dog&#39;, u&#39;value&#39;: 1.0}</span>
+</pre></div>
+</div>
+<p>You can use <a class="reference internal" href="../api/bson/son.html#bson.son.SON" title="bson.son.SON"><code class="xref py py-class docutils literal notranslate"><span class="pre">SON</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></a> to
+specify a different database to store the result collection:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.son</span> <span class="kn">import</span> <span class="n">SON</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">db</span><span class="o">.</span><span class="n">things</span><span class="o">.</span><span class="n">map_reduce</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">mapper</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">reducer</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">out</span><span class="o">=</span><span class="n">SON</span><span class="p">([(</span><span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;db&quot;</span><span class="p">,</span> <span class="s2">&quot;outdb&quot;</span><span class="p">)]),</span>
+<span class="gp">... </span>        <span class="n">full_response</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="go">{...u&#39;ok&#39;: 1.0,... u&#39;result&#39;: {u&#39;collection&#39;: u&#39;results&#39;, u&#39;db&#39;: u&#39;outdb&#39;}...}</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The full list of options for MongoDB’s <a class="reference external" href="http://www.mongodb.org/display/DOCS/MapReduce">map reduce engine</a></p>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Aggregation Examples</a><ul>
+<li><a class="reference internal" href="#setup">Setup</a></li>
+<li><a class="reference internal" href="#aggregation-framework">Aggregation Framework</a></li>
+<li><a class="reference internal" href="#map-reduce">Map/Reduce</a></li>
+<li><a class="reference internal" href="#advanced-map-reduce">Advanced Map/Reduce</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Examples</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="authentication.html"
+                        title="next chapter">Authentication Examples</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/aggregation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="authentication.html" title="Authentication Examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Examples"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Aggregation Examples</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

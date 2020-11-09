@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>timestamp – Tools for representing MongoDB internal Timestamps — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="tz_util.html" rel="next" title="tz_util – Utilities for dealing with timezones in Python"/>
+<link href="son.html" rel="prev" title="son – Tools for working with SON, an ordered mapping"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="tz_util.html" title="tz_util – Utilities for dealing with timezones in Python">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="son.html" title="son – Tools for working with SON, an ordered mapping">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">timestamp</span></code> – Tools for representing MongoDB internal Timestamps</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-bson.timestamp">
+<span id="timestamp-tools-for-representing-mongodb-internal-timestamps"></span><h1><a name="//apple_ref/cpp/Module/bson.timestamp"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">timestamp</span></code> – Tools for representing MongoDB internal Timestamps<a class="headerlink" href="#module-bson.timestamp" title="Permalink to this headline">¶</a></h1>
+<p>Tools for representing MongoDB internal Timestamps.</p>
+<dl class="py class">
+<dt id="bson.timestamp.Timestamp"><a name="//apple_ref/cpp/Class/bson.timestamp.Timestamp"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.timestamp.</code><code class="sig-name descname">Timestamp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">inc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.timestamp.Timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new <a class="reference internal" href="#bson.timestamp.Timestamp" title="bson.timestamp.Timestamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timestamp</span></code></a>.</p>
+<p>This class is only for use with the MongoDB opLog. If you need
+to store a regular timestamp, please use a
+<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>time</cite> is not an instance of
+:class: <cite>int</cite> or <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>, or <cite>inc</cite> is not
+an instance of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>. Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a> if
+<cite>time</cite> or <cite>inc</cite> is not in [0, 2**32).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>time</cite>: time in seconds since epoch UTC, or a naive UTC
+<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>, or an aware
+<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a></p></li>
+<li><p><cite>inc</cite>: the incrementing counter</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="bson.timestamp.Timestamp.as_datetime"><a name="//apple_ref/cpp/Method/bson.timestamp.Timestamp.as_datetime"></a>
+<code class="sig-name descname">as_datetime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bson.timestamp.Timestamp.as_datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> instance corresponding
+to the time portion of this <a class="reference internal" href="#bson.timestamp.Timestamp" title="bson.timestamp.Timestamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timestamp</span></code></a>.</p>
+<p>The returned datetime’s timezone is UTC.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.timestamp.Timestamp.inc"><a name="//apple_ref/cpp/Method/bson.timestamp.Timestamp.inc"></a>
+<em class="property">property </em><code class="sig-name descname">inc</code><a class="headerlink" href="#bson.timestamp.Timestamp.inc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the inc portion of this <a class="reference internal" href="#bson.timestamp.Timestamp" title="bson.timestamp.Timestamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timestamp</span></code></a>.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.timestamp.Timestamp.time"><a name="//apple_ref/cpp/Method/bson.timestamp.Timestamp.time"></a>
+<em class="property">property </em><code class="sig-name descname">time</code><a class="headerlink" href="#bson.timestamp.Timestamp.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time portion of this <a class="reference internal" href="#bson.timestamp.Timestamp" title="bson.timestamp.Timestamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timestamp</span></code></a>.</p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="son.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">son</span></code> – Tools for working with SON, an ordered mapping</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="tz_util.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tz_util</span></code> – Utilities for dealing with timezones in Python</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/timestamp.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="tz_util.html" title="tz_util – Utilities for dealing with timezones in Python">next</a> |</li>
+<li class="right">
+<a href="son.html" title="son – Tools for working with SON, an ordered mapping">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">timestamp</span></code> – Tools for representing MongoDB internal Timestamps</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

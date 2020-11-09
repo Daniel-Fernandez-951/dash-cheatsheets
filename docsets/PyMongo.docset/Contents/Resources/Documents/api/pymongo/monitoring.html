@@ -1,0 +1,1278 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>monitoring – Tools for monitoring driver events. — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="operations.html" rel="next" title="operations – Operation class definitions"/>
+<link href="mongo_replica_set_client.html" rel="prev" title="mongo_replica_set_client – Tools for connecting to a MongoDB replica set"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="operations.html" title="operations – Operation class definitions">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="mongo_replica_set_client.html" title="mongo_replica_set_client – Tools for connecting to a MongoDB replica set">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">monitoring</span></code> – Tools for monitoring driver events.</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.monitoring">
+<span id="monitoring-tools-for-monitoring-driver-events"></span><h1><a name="//apple_ref/cpp/Module/pymongo.monitoring"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">monitoring</span></code> – Tools for monitoring driver events.<a class="headerlink" href="#module-pymongo.monitoring" title="Permalink to this headline">¶</a></h1>
+<p>Tools to monitor driver events.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.1.</span></p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Starting in PyMongo 3.11, the monitoring classes outlined below
+are included in the PyMongo distribution under the
+<a class="reference internal" href="event_loggers.html#module-pymongo.event_loggers" title="pymongo.event_loggers: A collection of simple listeners for monitoring driver events."><code class="xref py py-mod docutils literal notranslate"><span class="pre">event_loggers</span></code></a> submodule.</p>
+</div>
+<p>Use <a class="reference internal" href="#pymongo.monitoring.register" title="pymongo.monitoring.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code></a> to register global listeners for specific events.
+Listeners must inherit from one of the abstract classes below and implement
+the correct functions for that class.</p>
+<p>For example, a simple command logger might be implemented like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">monitoring</span>
+
+<span class="k">class</span> <span class="nc">CommandLogger</span><span class="p">(</span><span class="n">monitoring</span><span class="o">.</span><span class="n">CommandListener</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">started</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Command </span><span class="si">{0.command_name}</span><span class="s2"> with request id "</span>
+                     <span class="s2">"</span><span class="si">{0.request_id}</span><span class="s2"> started on server "</span>
+                     <span class="s2">"</span><span class="si">{0.connection_id}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">succeeded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Command </span><span class="si">{0.command_name}</span><span class="s2"> with request id "</span>
+                     <span class="s2">"</span><span class="si">{0.request_id}</span><span class="s2"> on server </span><span class="si">{0.connection_id}</span><span class="s2"> "</span>
+                     <span class="s2">"succeeded in </span><span class="si">{0.duration_micros}</span><span class="s2"> "</span>
+                     <span class="s2">"microseconds"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">failed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Command </span><span class="si">{0.command_name}</span><span class="s2"> with request id "</span>
+                     <span class="s2">"</span><span class="si">{0.request_id}</span><span class="s2"> on server </span><span class="si">{0.connection_id}</span><span class="s2"> "</span>
+                     <span class="s2">"failed in </span><span class="si">{0.duration_micros}</span><span class="s2"> "</span>
+                     <span class="s2">"microseconds"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+<span class="n">monitoring</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">CommandLogger</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Server discovery and monitoring events are also available. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ServerLogger</span><span class="p">(</span><span class="n">monitoring</span><span class="o">.</span><span class="n">ServerListener</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">opened</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Server </span><span class="si">{0.server_address}</span><span class="s2"> added to topology "</span>
+                     <span class="s2">"</span><span class="si">{0.topology_id}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">description_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">previous_server_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">previous_description</span><span class="o">.</span><span class="n">server_type</span>
+        <span class="n">new_server_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">server_type</span>
+        <span class="k">if</span> <span class="n">new_server_type</span> <span class="o">!=</span> <span class="n">previous_server_type</span><span class="p">:</span>
+            <span class="c1"># server_type_name was added in PyMongo 3.4</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">"Server </span><span class="si">{0.server_address}</span><span class="s2"> changed type from "</span>
+                <span class="s2">"</span><span class="si">{0.previous_description.server_type_name}</span><span class="s2"> to "</span>
+                <span class="s2">"</span><span class="si">{0.new_description.server_type_name}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">closed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Server </span><span class="si">{0.server_address}</span><span class="s2"> removed from topology "</span>
+                        <span class="s2">"</span><span class="si">{0.topology_id}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">HeartbeatLogger</span><span class="p">(</span><span class="n">monitoring</span><span class="o">.</span><span class="n">ServerHeartbeatListener</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">started</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Heartbeat sent to server "</span>
+                     <span class="s2">"</span><span class="si">{0.connection_id}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">succeeded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># The reply.document attribute was added in PyMongo 3.4.</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Heartbeat to server </span><span class="si">{0.connection_id}</span><span class="s2"> "</span>
+                     <span class="s2">"succeeded with reply "</span>
+                     <span class="s2">"</span><span class="si">{0.reply.document}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">failed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Heartbeat to server </span><span class="si">{0.connection_id}</span><span class="s2"> "</span>
+                        <span class="s2">"failed with error </span><span class="si">{0.reply}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">TopologyLogger</span><span class="p">(</span><span class="n">monitoring</span><span class="o">.</span><span class="n">TopologyListener</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">opened</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Topology with id </span><span class="si">{0.topology_id}</span><span class="s2"> "</span>
+                     <span class="s2">"opened"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">description_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Topology description updated for "</span>
+                     <span class="s2">"topology id </span><span class="si">{0.topology_id}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+        <span class="n">previous_topology_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">previous_description</span><span class="o">.</span><span class="n">topology_type</span>
+        <span class="n">new_topology_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">topology_type</span>
+        <span class="k">if</span> <span class="n">new_topology_type</span> <span class="o">!=</span> <span class="n">previous_topology_type</span><span class="p">:</span>
+            <span class="c1"># topology_type_name was added in PyMongo 3.4</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">"Topology </span><span class="si">{0.topology_id}</span><span class="s2"> changed type from "</span>
+                <span class="s2">"</span><span class="si">{0.previous_description.topology_type_name}</span><span class="s2"> to "</span>
+                <span class="s2">"</span><span class="si">{0.new_description.topology_type_name}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+        <span class="c1"># The has_writable_server and has_readable_server methods</span>
+        <span class="c1"># were added in PyMongo 3.4.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">has_writable_server</span><span class="p">():</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"No writable servers available."</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">has_readable_server</span><span class="p">():</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"No readable servers available."</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">closed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Topology with id </span><span class="si">{0.topology_id}</span><span class="s2"> "</span>
+                     <span class="s2">"closed"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Connection monitoring and pooling events are also available. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ConnectionPoolLogger</span><span class="p">(</span><span class="n">ConnectionPoolListener</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">pool_created</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">] pool created"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">pool_cleared</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">] pool cleared"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">pool_closed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">] pool closed"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">connection_created</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">][conn #</span><span class="si">{0.connection_id}</span><span class="s2">] "</span>
+                     <span class="s2">"connection created"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">connection_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">][conn #</span><span class="si">{0.connection_id}</span><span class="s2">] "</span>
+                     <span class="s2">"connection setup succeeded"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">connection_closed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">][conn #</span><span class="si">{0.connection_id}</span><span class="s2">] "</span>
+                     <span class="s2">"connection closed, reason: "</span>
+                     <span class="s2">"</span><span class="si">{0.reason}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">connection_check_out_started</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">] connection check out "</span>
+                     <span class="s2">"started"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">connection_check_out_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">] connection check out "</span>
+                     <span class="s2">"failed, reason: </span><span class="si">{0.reason}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">connection_checked_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">][conn #</span><span class="si">{0.connection_id}</span><span class="s2">] "</span>
+                     <span class="s2">"connection checked out of pool"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">connection_checked_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"[pool </span><span class="si">{0.address}</span><span class="s2">][conn #</span><span class="si">{0.connection_id}</span><span class="s2">] "</span>
+                     <span class="s2">"connection checked into pool"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Event listeners can also be registered per instance of
+<a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient" title="pymongo.mongo_client.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">event_listeners</span><span class="o">=</span><span class="p">[</span><span class="n">CommandLogger</span><span class="p">()])</span>
+</pre></div>
+</div>
+<p>Note that previously registered global listeners are automatically included
+when configuring per client event listeners. Registering a new global listener
+will not add that listener to existing client instances.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Events are delivered <strong>synchronously</strong>. Application threads block
+waiting for event handlers (e.g. <a class="reference internal" href="#pymongo.monitoring.CommandListener.started" title="pymongo.monitoring.CommandListener.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">started()</span></code></a>) to
+return. Care must be taken to ensure that your event handlers are efficient
+enough to not adversely affect overall application performance.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The command documents published through this API are <em>not</em> copies.
+If you intend to modify them in any way you must copy them in your event
+handler first.</p>
+</div>
+<dl class="py function">
+<dt id="pymongo.monitoring.register"><a name="//apple_ref/cpp/Function/pymongo.monitoring.register"></a>
+<code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">listener</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a global event listener.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>listener</cite>: A subclasses of <a class="reference internal" href="#pymongo.monitoring.CommandListener" title="pymongo.monitoring.CommandListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandListener</span></code></a>,
+<a class="reference internal" href="#pymongo.monitoring.ServerHeartbeatListener" title="pymongo.monitoring.ServerHeartbeatListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatListener</span></code></a>, <a class="reference internal" href="#pymongo.monitoring.ServerListener" title="pymongo.monitoring.ServerListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerListener</span></code></a>,
+<a class="reference internal" href="#pymongo.monitoring.TopologyListener" title="pymongo.monitoring.TopologyListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyListener</span></code></a>, or <a class="reference internal" href="#pymongo.monitoring.ConnectionPoolListener" title="pymongo.monitoring.ConnectionPoolListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionPoolListener</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.CommandListener"><a name="//apple_ref/cpp/Class/pymongo.monitoring.CommandListener"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">CommandListener</code><a class="headerlink" href="#pymongo.monitoring.CommandListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for command listeners.</p>
+<p>Handles <cite>CommandStartedEvent</cite>, <cite>CommandSucceededEvent</cite>,
+and <cite>CommandFailedEvent</cite>.</p>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandListener.failed"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandListener.failed"></a>
+<code class="sig-name descname">failed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.CommandListener.failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>CommandFailedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.CommandFailedEvent" title="pymongo.monitoring.CommandFailedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandFailedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandListener.started"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandListener.started"></a>
+<code class="sig-name descname">started</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.CommandListener.started" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>CommandStartedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.CommandStartedEvent" title="pymongo.monitoring.CommandStartedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandStartedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandListener.succeeded"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandListener.succeeded"></a>
+<code class="sig-name descname">succeeded</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.CommandListener.succeeded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>CommandSucceededEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.CommandSucceededEvent" title="pymongo.monitoring.CommandSucceededEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandSucceededEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ServerListener"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ServerListener"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ServerListener</code><a class="headerlink" href="#pymongo.monitoring.ServerListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for server listeners.
+Handles <cite>ServerOpeningEvent</cite>, <cite>ServerDescriptionChangedEvent</cite>, and
+<cite>ServerClosedEvent</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerListener.closed"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerListener.closed"></a>
+<code class="sig-name descname">closed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerListener.closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerClosedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ServerClosedEvent" title="pymongo.monitoring.ServerClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerClosedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerListener.description_changed"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerListener.description_changed"></a>
+<code class="sig-name descname">description_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerListener.description_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerDescriptionChangedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ServerDescriptionChangedEvent" title="pymongo.monitoring.ServerDescriptionChangedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerDescriptionChangedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerListener.opened"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerListener.opened"></a>
+<code class="sig-name descname">opened</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerListener.opened" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerOpeningEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ServerOpeningEvent" title="pymongo.monitoring.ServerOpeningEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerOpeningEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ServerHeartbeatListener"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ServerHeartbeatListener"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ServerHeartbeatListener</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for server heartbeat listeners.</p>
+<p>Handles <cite>ServerHeartbeatStartedEvent</cite>, <cite>ServerHeartbeatSucceededEvent</cite>,
+and <cite>ServerHeartbeatFailedEvent</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatListener.failed"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatListener.failed"></a>
+<code class="sig-name descname">failed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatListener.failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerHeartbeatFailedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ServerHeartbeatFailedEvent" title="pymongo.monitoring.ServerHeartbeatFailedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatFailedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatListener.started"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatListener.started"></a>
+<code class="sig-name descname">started</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatListener.started" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerHeartbeatStartedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ServerHeartbeatStartedEvent" title="pymongo.monitoring.ServerHeartbeatStartedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatStartedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatListener.succeeded"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatListener.succeeded"></a>
+<code class="sig-name descname">succeeded</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatListener.succeeded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerHeartbeatSucceededEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ServerHeartbeatSucceededEvent" title="pymongo.monitoring.ServerHeartbeatSucceededEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatSucceededEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.TopologyListener"><a name="//apple_ref/cpp/Class/pymongo.monitoring.TopologyListener"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">TopologyListener</code><a class="headerlink" href="#pymongo.monitoring.TopologyListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for topology monitoring listeners.
+Handles <cite>TopologyOpenedEvent</cite>, <cite>TopologyDescriptionChangedEvent</cite>, and
+<cite>TopologyClosedEvent</cite>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.TopologyListener.closed"><a name="//apple_ref/cpp/Method/pymongo.monitoring.TopologyListener.closed"></a>
+<code class="sig-name descname">closed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.TopologyListener.closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>TopologyClosedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.TopologyClosedEvent" title="pymongo.monitoring.TopologyClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyClosedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.TopologyListener.description_changed"><a name="//apple_ref/cpp/Method/pymongo.monitoring.TopologyListener.description_changed"></a>
+<code class="sig-name descname">description_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.TopologyListener.description_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>TopologyDescriptionChangedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.TopologyDescriptionChangedEvent" title="pymongo.monitoring.TopologyDescriptionChangedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyDescriptionChangedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.TopologyListener.opened"><a name="//apple_ref/cpp/Method/pymongo.monitoring.TopologyListener.opened"></a>
+<code class="sig-name descname">opened</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.TopologyListener.opened" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>TopologyOpenedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.TopologyOpenedEvent" title="pymongo.monitoring.TopologyOpenedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyOpenedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionPoolListener"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionPoolListener"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionPoolListener</code><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for connection pool listeners.</p>
+<p>Handles all of the connection pool events defined in the Connection
+Monitoring and Pooling Specification:
+<a class="reference internal" href="#pymongo.monitoring.PoolCreatedEvent" title="pymongo.monitoring.PoolCreatedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolCreatedEvent</span></code></a>, <a class="reference internal" href="#pymongo.monitoring.PoolClearedEvent" title="pymongo.monitoring.PoolClearedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolClearedEvent</span></code></a>,
+<a class="reference internal" href="#pymongo.monitoring.PoolClosedEvent" title="pymongo.monitoring.PoolClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolClosedEvent</span></code></a>, <a class="reference internal" href="#pymongo.monitoring.ConnectionCreatedEvent" title="pymongo.monitoring.ConnectionCreatedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCreatedEvent</span></code></a>,
+<a class="reference internal" href="#pymongo.monitoring.ConnectionReadyEvent" title="pymongo.monitoring.ConnectionReadyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionReadyEvent</span></code></a>, <a class="reference internal" href="#pymongo.monitoring.ConnectionClosedEvent" title="pymongo.monitoring.ConnectionClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionClosedEvent</span></code></a>,
+<a class="reference internal" href="#pymongo.monitoring.ConnectionCheckOutStartedEvent" title="pymongo.monitoring.ConnectionCheckOutStartedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutStartedEvent</span></code></a>,
+<a class="reference internal" href="#pymongo.monitoring.ConnectionCheckOutFailedEvent" title="pymongo.monitoring.ConnectionCheckOutFailedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutFailedEvent</span></code></a>,
+<a class="reference internal" href="#pymongo.monitoring.ConnectionCheckedOutEvent" title="pymongo.monitoring.ConnectionCheckedOutEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedOutEvent</span></code></a>,
+and <a class="reference internal" href="#pymongo.monitoring.ConnectionCheckedInEvent" title="pymongo.monitoring.ConnectionCheckedInEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedInEvent</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.connection_check_out_failed"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.connection_check_out_failed"></a>
+<code class="sig-name descname">connection_check_out_failed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.connection_check_out_failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <a class="reference internal" href="#pymongo.monitoring.ConnectionCheckOutFailedEvent" title="pymongo.monitoring.ConnectionCheckOutFailedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutFailedEvent</span></code></a>.</p>
+<p>Emitted when the driver’s attempt to check out a connection fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ConnectionCheckOutFailedEvent" title="pymongo.monitoring.ConnectionCheckOutFailedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutFailedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.connection_check_out_started"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.connection_check_out_started"></a>
+<code class="sig-name descname">connection_check_out_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.connection_check_out_started" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <a class="reference internal" href="#pymongo.monitoring.ConnectionCheckOutStartedEvent" title="pymongo.monitoring.ConnectionCheckOutStartedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutStartedEvent</span></code></a>.</p>
+<p>Emitted when the driver starts attempting to check out a connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ConnectionCheckOutStartedEvent" title="pymongo.monitoring.ConnectionCheckOutStartedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutStartedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.connection_checked_in"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.connection_checked_in"></a>
+<code class="sig-name descname">connection_checked_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.connection_checked_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <a class="reference internal" href="#pymongo.monitoring.ConnectionCheckedInEvent" title="pymongo.monitoring.ConnectionCheckedInEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedInEvent</span></code></a>.</p>
+<p>Emitted when the driver checks in a Connection back to the Connection
+Pool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ConnectionCheckedInEvent" title="pymongo.monitoring.ConnectionCheckedInEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedInEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.connection_checked_out"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.connection_checked_out"></a>
+<code class="sig-name descname">connection_checked_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.connection_checked_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <a class="reference internal" href="#pymongo.monitoring.ConnectionCheckedOutEvent" title="pymongo.monitoring.ConnectionCheckedOutEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedOutEvent</span></code></a>.</p>
+<p>Emitted when the driver successfully checks out a Connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ConnectionCheckedOutEvent" title="pymongo.monitoring.ConnectionCheckedOutEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedOutEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.connection_closed"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.connection_closed"></a>
+<code class="sig-name descname">connection_closed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.connection_closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <a class="reference internal" href="#pymongo.monitoring.ConnectionClosedEvent" title="pymongo.monitoring.ConnectionClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionClosedEvent</span></code></a>.</p>
+<p>Emitted when a Connection Pool closes a Connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ConnectionClosedEvent" title="pymongo.monitoring.ConnectionClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionClosedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.connection_created"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.connection_created"></a>
+<code class="sig-name descname">connection_created</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.connection_created" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <a class="reference internal" href="#pymongo.monitoring.ConnectionCreatedEvent" title="pymongo.monitoring.ConnectionCreatedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCreatedEvent</span></code></a>.</p>
+<p>Emitted when a Connection Pool creates a Connection object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ConnectionCreatedEvent" title="pymongo.monitoring.ConnectionCreatedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCreatedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.connection_ready"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.connection_ready"></a>
+<code class="sig-name descname">connection_ready</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.connection_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <a class="reference internal" href="#pymongo.monitoring.ConnectionReadyEvent" title="pymongo.monitoring.ConnectionReadyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionReadyEvent</span></code></a>.</p>
+<p>Emitted when a Connection has finished its setup, and is now ready to
+use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.ConnectionReadyEvent" title="pymongo.monitoring.ConnectionReadyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionReadyEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.pool_cleared"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.pool_cleared"></a>
+<code class="sig-name descname">pool_cleared</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.pool_cleared" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>PoolClearedEvent</cite>.</p>
+<p>Emitted when a Connection Pool is cleared.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.PoolClearedEvent" title="pymongo.monitoring.PoolClearedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolClearedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.pool_closed"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.pool_closed"></a>
+<code class="sig-name descname">pool_closed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.pool_closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>PoolClosedEvent</cite>.</p>
+<p>Emitted when a Connection Pool is closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.PoolClosedEvent" title="pymongo.monitoring.PoolClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolClosedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionPoolListener.pool_created"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionPoolListener.pool_created"></a>
+<code class="sig-name descname">pool_created</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionPoolListener.pool_created" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <a class="reference internal" href="#pymongo.monitoring.PoolCreatedEvent" title="pymongo.monitoring.PoolCreatedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolCreatedEvent</span></code></a>.</p>
+<p>Emitted when a Connection Pool is created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <a class="reference internal" href="#pymongo.monitoring.PoolCreatedEvent" title="pymongo.monitoring.PoolCreatedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolCreatedEvent</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.CommandStartedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.CommandStartedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">CommandStartedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">database_name</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.CommandStartedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event published when a command starts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>command</cite>: The command document.</p></li>
+<li><p><cite>database_name</cite>: The name of the database this command was run against.</p></li>
+<li><p><cite>request_id</cite>: The request id for this operation.</p></li>
+<li><p><cite>connection_id</cite>: The address (host, port) of the server this command
+was sent to.</p></li>
+<li><p><cite>operation_id</cite>: An optional identifier for a series of related events.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandStartedEvent.command"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandStartedEvent.command"></a>
+<em class="property">property </em><code class="sig-name descname">command</code><a class="headerlink" href="#pymongo.monitoring.CommandStartedEvent.command" title="Permalink to this definition">¶</a></dt>
+<dd><p>The command document.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandStartedEvent.command_name"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandStartedEvent.command_name"></a>
+<em class="property">property </em><code class="sig-name descname">command_name</code><a class="headerlink" href="#pymongo.monitoring.CommandStartedEvent.command_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The command name.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandStartedEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandStartedEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.CommandStartedEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) of the server this command was sent to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandStartedEvent.database_name"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandStartedEvent.database_name"></a>
+<em class="property">property </em><code class="sig-name descname">database_name</code><a class="headerlink" href="#pymongo.monitoring.CommandStartedEvent.database_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the database this command was run against.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandStartedEvent.operation_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandStartedEvent.operation_id"></a>
+<em class="property">property </em><code class="sig-name descname">operation_id</code><a class="headerlink" href="#pymongo.monitoring.CommandStartedEvent.operation_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>An id for this series of events or None.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandStartedEvent.request_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandStartedEvent.request_id"></a>
+<em class="property">property </em><code class="sig-name descname">request_id</code><a class="headerlink" href="#pymongo.monitoring.CommandStartedEvent.request_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The request id for this operation.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.CommandSucceededEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.CommandSucceededEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">CommandSucceededEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">reply</span></em>, <em class="sig-param"><span class="n">command_name</span></em>, <em class="sig-param"><span class="n">request_id</span></em>, <em class="sig-param"><span class="n">connection_id</span></em>, <em class="sig-param"><span class="n">operation_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.CommandSucceededEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event published when a command succeeds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>duration</cite>: The command duration as a datetime.timedelta.</p></li>
+<li><p><cite>reply</cite>: The server reply document.</p></li>
+<li><p><cite>command_name</cite>: The command name.</p></li>
+<li><p><cite>request_id</cite>: The request id for this operation.</p></li>
+<li><p><cite>connection_id</cite>: The address (host, port) of the server this command
+was sent to.</p></li>
+<li><p><cite>operation_id</cite>: An optional identifier for a series of related events.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandSucceededEvent.command_name"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandSucceededEvent.command_name"></a>
+<em class="property">property </em><code class="sig-name descname">command_name</code><a class="headerlink" href="#pymongo.monitoring.CommandSucceededEvent.command_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The command name.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandSucceededEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandSucceededEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.CommandSucceededEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) of the server this command was sent to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandSucceededEvent.duration_micros"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandSucceededEvent.duration_micros"></a>
+<em class="property">property </em><code class="sig-name descname">duration_micros</code><a class="headerlink" href="#pymongo.monitoring.CommandSucceededEvent.duration_micros" title="Permalink to this definition">¶</a></dt>
+<dd><p>The duration of this operation in microseconds.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandSucceededEvent.operation_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandSucceededEvent.operation_id"></a>
+<em class="property">property </em><code class="sig-name descname">operation_id</code><a class="headerlink" href="#pymongo.monitoring.CommandSucceededEvent.operation_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>An id for this series of events or None.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandSucceededEvent.reply"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandSucceededEvent.reply"></a>
+<em class="property">property </em><code class="sig-name descname">reply</code><a class="headerlink" href="#pymongo.monitoring.CommandSucceededEvent.reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>The server failure document for this operation.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandSucceededEvent.request_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandSucceededEvent.request_id"></a>
+<em class="property">property </em><code class="sig-name descname">request_id</code><a class="headerlink" href="#pymongo.monitoring.CommandSucceededEvent.request_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The request id for this operation.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.CommandFailedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.CommandFailedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">CommandFailedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">failure</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.CommandFailedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event published when a command fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>duration</cite>: The command duration as a datetime.timedelta.</p></li>
+<li><p><cite>failure</cite>: The server reply document.</p></li>
+<li><p><cite>command_name</cite>: The command name.</p></li>
+<li><p><cite>request_id</cite>: The request id for this operation.</p></li>
+<li><p><cite>connection_id</cite>: The address (host, port) of the server this command
+was sent to.</p></li>
+<li><p><cite>operation_id</cite>: An optional identifier for a series of related events.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandFailedEvent.command_name"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandFailedEvent.command_name"></a>
+<em class="property">property </em><code class="sig-name descname">command_name</code><a class="headerlink" href="#pymongo.monitoring.CommandFailedEvent.command_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The command name.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandFailedEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandFailedEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.CommandFailedEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) of the server this command was sent to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandFailedEvent.duration_micros"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandFailedEvent.duration_micros"></a>
+<em class="property">property </em><code class="sig-name descname">duration_micros</code><a class="headerlink" href="#pymongo.monitoring.CommandFailedEvent.duration_micros" title="Permalink to this definition">¶</a></dt>
+<dd><p>The duration of this operation in microseconds.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandFailedEvent.failure"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandFailedEvent.failure"></a>
+<em class="property">property </em><code class="sig-name descname">failure</code><a class="headerlink" href="#pymongo.monitoring.CommandFailedEvent.failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>The server failure document for this operation.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandFailedEvent.operation_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandFailedEvent.operation_id"></a>
+<em class="property">property </em><code class="sig-name descname">operation_id</code><a class="headerlink" href="#pymongo.monitoring.CommandFailedEvent.operation_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>An id for this series of events or None.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.CommandFailedEvent.request_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.CommandFailedEvent.request_id"></a>
+<em class="property">property </em><code class="sig-name descname">request_id</code><a class="headerlink" href="#pymongo.monitoring.CommandFailedEvent.request_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The request id for this operation.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ServerDescriptionChangedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ServerDescriptionChangedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ServerDescriptionChangedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">previous_description</span></em>, <em class="sig-param"><span class="n">new_description</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerDescriptionChangedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when server description changes.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerDescriptionChangedEvent.new_description"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerDescriptionChangedEvent.new_description"></a>
+<em class="property">property </em><code class="sig-name descname">new_description</code><a class="headerlink" href="#pymongo.monitoring.ServerDescriptionChangedEvent.new_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>The new
+<a class="reference internal" href="server_description.html#pymongo.server_description.ServerDescription" title="pymongo.server_description.ServerDescription"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerDescription</span></code></a>.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerDescriptionChangedEvent.previous_description"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerDescriptionChangedEvent.previous_description"></a>
+<em class="property">property </em><code class="sig-name descname">previous_description</code><a class="headerlink" href="#pymongo.monitoring.ServerDescriptionChangedEvent.previous_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>The previous
+<a class="reference internal" href="server_description.html#pymongo.server_description.ServerDescription" title="pymongo.server_description.ServerDescription"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerDescription</span></code></a>.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerDescriptionChangedEvent.server_address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerDescriptionChangedEvent.server_address"></a>
+<em class="property">property </em><code class="sig-name descname">server_address</code><a class="headerlink" href="#pymongo.monitoring.ServerDescriptionChangedEvent.server_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerDescriptionChangedEvent.topology_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerDescriptionChangedEvent.topology_id"></a>
+<em class="property">property </em><code class="sig-name descname">topology_id</code><a class="headerlink" href="#pymongo.monitoring.ServerDescriptionChangedEvent.topology_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for the topology this server is a part of.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ServerOpeningEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ServerOpeningEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ServerOpeningEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">server_address</span></em>, <em class="sig-param"><span class="n">topology_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerOpeningEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when server is initialized.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerOpeningEvent.server_address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerOpeningEvent.server_address"></a>
+<em class="property">property </em><code class="sig-name descname">server_address</code><a class="headerlink" href="#pymongo.monitoring.ServerOpeningEvent.server_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerOpeningEvent.topology_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerOpeningEvent.topology_id"></a>
+<em class="property">property </em><code class="sig-name descname">topology_id</code><a class="headerlink" href="#pymongo.monitoring.ServerOpeningEvent.topology_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for the topology this server is a part of.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ServerClosedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ServerClosedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ServerClosedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">server_address</span></em>, <em class="sig-param"><span class="n">topology_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerClosedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when server is closed.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerClosedEvent.server_address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerClosedEvent.server_address"></a>
+<em class="property">property </em><code class="sig-name descname">server_address</code><a class="headerlink" href="#pymongo.monitoring.ServerClosedEvent.server_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerClosedEvent.topology_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerClosedEvent.topology_id"></a>
+<em class="property">property </em><code class="sig-name descname">topology_id</code><a class="headerlink" href="#pymongo.monitoring.ServerClosedEvent.topology_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for the topology this server is a part of.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.TopologyDescriptionChangedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.TopologyDescriptionChangedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">TopologyDescriptionChangedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">previous_description</span></em>, <em class="sig-param"><span class="n">new_description</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.TopologyDescriptionChangedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when the topology description changes.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.TopologyDescriptionChangedEvent.new_description"><a name="//apple_ref/cpp/Method/pymongo.monitoring.TopologyDescriptionChangedEvent.new_description"></a>
+<em class="property">property </em><code class="sig-name descname">new_description</code><a class="headerlink" href="#pymongo.monitoring.TopologyDescriptionChangedEvent.new_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>The new
+<a class="reference internal" href="topology_description.html#pymongo.topology_description.TopologyDescription" title="pymongo.topology_description.TopologyDescription"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyDescription</span></code></a>.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.TopologyDescriptionChangedEvent.previous_description"><a name="//apple_ref/cpp/Method/pymongo.monitoring.TopologyDescriptionChangedEvent.previous_description"></a>
+<em class="property">property </em><code class="sig-name descname">previous_description</code><a class="headerlink" href="#pymongo.monitoring.TopologyDescriptionChangedEvent.previous_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>The previous
+<a class="reference internal" href="topology_description.html#pymongo.topology_description.TopologyDescription" title="pymongo.topology_description.TopologyDescription"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyDescription</span></code></a>.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.TopologyDescriptionChangedEvent.topology_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.TopologyDescriptionChangedEvent.topology_id"></a>
+<em class="property">property </em><code class="sig-name descname">topology_id</code><a class="headerlink" href="#pymongo.monitoring.TopologyDescriptionChangedEvent.topology_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for the topology this server is a part of.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.TopologyOpenedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.TopologyOpenedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">TopologyOpenedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topology_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.TopologyOpenedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when the topology is initialized.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.TopologyOpenedEvent.topology_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.TopologyOpenedEvent.topology_id"></a>
+<em class="property">property </em><code class="sig-name descname">topology_id</code><a class="headerlink" href="#pymongo.monitoring.TopologyOpenedEvent.topology_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for the topology this server is a part of.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.TopologyClosedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.TopologyClosedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">TopologyClosedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topology_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.TopologyClosedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when the topology is closed.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.TopologyClosedEvent.topology_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.TopologyClosedEvent.topology_id"></a>
+<em class="property">property </em><code class="sig-name descname">topology_id</code><a class="headerlink" href="#pymongo.monitoring.TopologyClosedEvent.topology_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A unique identifier for the topology this server is a part of.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ServerHeartbeatStartedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ServerHeartbeatStartedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ServerHeartbeatStartedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">connection_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatStartedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when a heartbeat is started.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatStartedEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatStartedEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatStartedEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) of the server this heartbeat was sent
+to.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ServerHeartbeatSucceededEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ServerHeartbeatSucceededEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ServerHeartbeatSucceededEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">reply</span></em>, <em class="sig-param"><span class="n">connection_id</span></em>, <em class="sig-param"><span class="n">awaited</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatSucceededEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fired when the server heartbeat succeeds.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatSucceededEvent.awaited"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatSucceededEvent.awaited"></a>
+<em class="property">property </em><code class="sig-name descname">awaited</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatSucceededEvent.awaited" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the heartbeat was awaited.</p>
+<p>If true, then <a class="reference internal" href="#pymongo.monitoring.ServerHeartbeatSucceededEvent.duration" title="pymongo.monitoring.ServerHeartbeatSucceededEvent.duration"><code class="xref py py-meth docutils literal notranslate"><span class="pre">duration()</span></code></a> reflects the sum of the round trip time
+to the server and the time that the server waited before sending a
+response.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatSucceededEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatSucceededEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatSucceededEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) of the server this heartbeat was sent
+to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatSucceededEvent.duration"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatSucceededEvent.duration"></a>
+<em class="property">property </em><code class="sig-name descname">duration</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatSucceededEvent.duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>The duration of this heartbeat in microseconds.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatSucceededEvent.reply"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatSucceededEvent.reply"></a>
+<em class="property">property </em><code class="sig-name descname">reply</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatSucceededEvent.reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of <a class="reference internal" href="ismaster.html#pymongo.ismaster.IsMaster" title="pymongo.ismaster.IsMaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">IsMaster</span></code></a>.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ServerHeartbeatFailedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ServerHeartbeatFailedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ServerHeartbeatFailedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">reply</span></em>, <em class="sig-param"><span class="n">connection_id</span></em>, <em class="sig-param"><span class="n">awaited</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatFailedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fired when the server heartbeat fails, either with an “ok: 0”
+or a socket exception.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.3.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatFailedEvent.awaited"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatFailedEvent.awaited"></a>
+<em class="property">property </em><code class="sig-name descname">awaited</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatFailedEvent.awaited" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the heartbeat was awaited.</p>
+<p>If true, then <a class="reference internal" href="#pymongo.monitoring.ServerHeartbeatFailedEvent.duration" title="pymongo.monitoring.ServerHeartbeatFailedEvent.duration"><code class="xref py py-meth docutils literal notranslate"><span class="pre">duration()</span></code></a> reflects the sum of the round trip time
+to the server and the time that the server waited before sending a
+response.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatFailedEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatFailedEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatFailedEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) of the server this heartbeat was sent
+to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatFailedEvent.duration"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatFailedEvent.duration"></a>
+<em class="property">property </em><code class="sig-name descname">duration</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatFailedEvent.duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>The duration of this heartbeat in microseconds.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ServerHeartbeatFailedEvent.reply"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ServerHeartbeatFailedEvent.reply"></a>
+<em class="property">property </em><code class="sig-name descname">reply</code><a class="headerlink" href="#pymongo.monitoring.ServerHeartbeatFailedEvent.reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>A subclass of <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Exception</span></code></a>.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.PoolCreatedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.PoolCreatedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">PoolCreatedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">options</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.PoolCreatedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when a Connection Pool is created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this Pool is
+attempting to connect to.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.PoolCreatedEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.PoolCreatedEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.PoolCreatedEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server the pool is attempting
+to connect to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.PoolCreatedEvent.options"><a name="//apple_ref/cpp/Method/pymongo.monitoring.PoolCreatedEvent.options"></a>
+<em class="property">property </em><code class="sig-name descname">options</code><a class="headerlink" href="#pymongo.monitoring.PoolCreatedEvent.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any non-default pool options that were set on this Connection Pool.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.PoolClearedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.PoolClearedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">PoolClearedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.PoolClearedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when a Connection Pool is cleared.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this Pool is
+attempting to connect to.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.PoolClearedEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.PoolClearedEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.PoolClearedEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server the pool is attempting
+to connect to.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.PoolClosedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.PoolClosedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">PoolClosedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.PoolClosedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when a Connection Pool is closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this Pool is
+attempting to connect to.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.PoolClosedEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.PoolClosedEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.PoolClosedEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server the pool is attempting
+to connect to.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionCreatedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionCreatedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionCreatedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">connection_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionCreatedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when a Connection Pool creates a Connection object.</p>
+<p>NOTE: This connection is not ready for use until the
+<a class="reference internal" href="#pymongo.monitoring.ConnectionReadyEvent" title="pymongo.monitoring.ConnectionReadyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionReadyEvent</span></code></a> is published.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this
+Connection is attempting to connect to.</p></li>
+<li><p><cite>connection_id</cite>: The integer ID of the Connection in this Pool.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionCreatedEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionCreatedEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCreatedEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server this connection is
+attempting to connect to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionCreatedEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionCreatedEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCreatedEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ID of the Connection.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionReadyEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionReadyEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionReadyEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">connection_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionReadyEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when a Connection has finished its setup, and is ready to use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this
+Connection is attempting to connect to.</p></li>
+<li><p><cite>connection_id</cite>: The integer ID of the Connection in this Pool.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionReadyEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionReadyEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.ConnectionReadyEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server this connection is
+attempting to connect to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionReadyEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionReadyEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.ConnectionReadyEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ID of the Connection.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionClosedReason"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionClosedReason"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionClosedReason</code><a class="headerlink" href="#pymongo.monitoring.ConnectionClosedReason" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enum that defines values for <cite>reason</cite> on a
+<a class="reference internal" href="#pymongo.monitoring.ConnectionClosedEvent" title="pymongo.monitoring.ConnectionClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionClosedEvent</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py attribute">
+<dt id="pymongo.monitoring.ConnectionClosedReason.ERROR"><a name="//apple_ref/cpp/Attribute/pymongo.monitoring.ConnectionClosedReason.ERROR"></a>
+<code class="sig-name descname">ERROR</code><em class="property"> = 'error'</em><a class="headerlink" href="#pymongo.monitoring.ConnectionClosedReason.ERROR" title="Permalink to this definition">¶</a></dt>
+<dd><p>The connection experienced an error, making it no longer valid.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.monitoring.ConnectionClosedReason.IDLE"><a name="//apple_ref/cpp/Attribute/pymongo.monitoring.ConnectionClosedReason.IDLE"></a>
+<code class="sig-name descname">IDLE</code><em class="property"> = 'idle'</em><a class="headerlink" href="#pymongo.monitoring.ConnectionClosedReason.IDLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The connection became stale by being idle for too long (maxIdleTimeMS).</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.monitoring.ConnectionClosedReason.POOL_CLOSED"><a name="//apple_ref/cpp/Attribute/pymongo.monitoring.ConnectionClosedReason.POOL_CLOSED"></a>
+<code class="sig-name descname">POOL_CLOSED</code><em class="property"> = 'poolClosed'</em><a class="headerlink" href="#pymongo.monitoring.ConnectionClosedReason.POOL_CLOSED" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pool was closed, making the connection no longer valid.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.monitoring.ConnectionClosedReason.STALE"><a name="//apple_ref/cpp/Attribute/pymongo.monitoring.ConnectionClosedReason.STALE"></a>
+<code class="sig-name descname">STALE</code><em class="property"> = 'stale'</em><a class="headerlink" href="#pymongo.monitoring.ConnectionClosedReason.STALE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pool was cleared, making the connection no longer valid.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionClosedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionClosedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionClosedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">connection_id</span></em>, <em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionClosedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when a Connection is closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this
+Connection is attempting to connect to.</p></li>
+<li><p><cite>connection_id</cite>: The integer ID of the Connection in this Pool.</p></li>
+<li><p><cite>reason</cite>: A reason explaining why this connection was closed.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionClosedEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionClosedEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.ConnectionClosedEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server this connection is
+attempting to connect to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionClosedEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionClosedEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.ConnectionClosedEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ID of the Connection.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionClosedEvent.reason"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionClosedEvent.reason"></a>
+<em class="property">property </em><code class="sig-name descname">reason</code><a class="headerlink" href="#pymongo.monitoring.ConnectionClosedEvent.reason" title="Permalink to this definition">¶</a></dt>
+<dd><p>A reason explaining why this connection was closed.</p>
+<p>The reason must be one of the strings from the
+<a class="reference internal" href="#pymongo.monitoring.ConnectionClosedReason" title="pymongo.monitoring.ConnectionClosedReason"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionClosedReason</span></code></a> enum.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionCheckOutStartedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionCheckOutStartedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionCheckOutStartedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckOutStartedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when the driver starts attempting to check out a connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this
+Connection is attempting to connect to.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionCheckOutStartedEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionCheckOutStartedEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckOutStartedEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server this connection is
+attempting to connect to.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionCheckOutFailedReason"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionCheckOutFailedReason"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionCheckOutFailedReason</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckOutFailedReason" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enum that defines values for <cite>reason</cite> on a
+<a class="reference internal" href="#pymongo.monitoring.ConnectionCheckOutFailedEvent" title="pymongo.monitoring.ConnectionCheckOutFailedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutFailedEvent</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py attribute">
+<dt id="pymongo.monitoring.ConnectionCheckOutFailedReason.CONN_ERROR"><a name="//apple_ref/cpp/Attribute/pymongo.monitoring.ConnectionCheckOutFailedReason.CONN_ERROR"></a>
+<code class="sig-name descname">CONN_ERROR</code><em class="property"> = 'connectionError'</em><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckOutFailedReason.CONN_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd><p>The connection check out attempt experienced an error while setting up
+a new connection.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.monitoring.ConnectionCheckOutFailedReason.POOL_CLOSED"><a name="//apple_ref/cpp/Attribute/pymongo.monitoring.ConnectionCheckOutFailedReason.POOL_CLOSED"></a>
+<code class="sig-name descname">POOL_CLOSED</code><em class="property"> = 'poolClosed'</em><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckOutFailedReason.POOL_CLOSED" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pool was previously closed, and cannot provide new connections.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.monitoring.ConnectionCheckOutFailedReason.TIMEOUT"><a name="//apple_ref/cpp/Attribute/pymongo.monitoring.ConnectionCheckOutFailedReason.TIMEOUT"></a>
+<code class="sig-name descname">TIMEOUT</code><em class="property"> = 'timeout'</em><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckOutFailedReason.TIMEOUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The connection check out attempt exceeded the specified timeout.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionCheckOutFailedEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionCheckOutFailedEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionCheckOutFailedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckOutFailedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when the driver’s attempt to check out a connection fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this
+Connection is attempting to connect to.</p></li>
+<li><p><cite>reason</cite>: A reason explaining why connection check out failed.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionCheckOutFailedEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionCheckOutFailedEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckOutFailedEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server this connection is
+attempting to connect to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionCheckOutFailedEvent.reason"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionCheckOutFailedEvent.reason"></a>
+<em class="property">property </em><code class="sig-name descname">reason</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckOutFailedEvent.reason" title="Permalink to this definition">¶</a></dt>
+<dd><p>A reason explaining why connection check out failed.</p>
+<p>The reason must be one of the strings from the
+<a class="reference internal" href="#pymongo.monitoring.ConnectionCheckOutFailedReason" title="pymongo.monitoring.ConnectionCheckOutFailedReason"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutFailedReason</span></code></a> enum.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionCheckedOutEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionCheckedOutEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionCheckedOutEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">connection_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckedOutEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when the driver successfully checks out a Connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this
+Connection is attempting to connect to.</p></li>
+<li><p><cite>connection_id</cite>: The integer ID of the Connection in this Pool.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionCheckedOutEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionCheckedOutEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckedOutEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server this connection is
+attempting to connect to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionCheckedOutEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionCheckedOutEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckedOutEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ID of the Connection.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.monitoring.ConnectionCheckedInEvent"><a name="//apple_ref/cpp/Class/pymongo.monitoring.ConnectionCheckedInEvent"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.monitoring.</code><code class="sig-name descname">ConnectionCheckedInEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">connection_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckedInEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Published when the driver checks in a Connection into the Pool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: The address (host, port) pair of the server this
+Connection is attempting to connect to.</p></li>
+<li><p><cite>connection_id</cite>: The integer ID of the Connection in this Pool.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionCheckedInEvent.address"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionCheckedInEvent.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckedInEvent.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) pair of the server this connection is
+attempting to connect to.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.monitoring.ConnectionCheckedInEvent.connection_id"><a name="//apple_ref/cpp/Method/pymongo.monitoring.ConnectionCheckedInEvent.connection_id"></a>
+<em class="property">property </em><code class="sig-name descname">connection_id</code><a class="headerlink" href="#pymongo.monitoring.ConnectionCheckedInEvent.connection_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ID of the Connection.</p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="mongo_replica_set_client.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mongo_replica_set_client</span></code> – Tools for connecting to a MongoDB replica set</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="operations.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">operations</span></code> – Operation class definitions</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/monitoring.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="operations.html" title="operations – Operation class definitions">next</a> |</li>
+<li class="right">
+<a href="mongo_replica_set_client.html" title="mongo_replica_set_client – Tools for connecting to a MongoDB replica set">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">monitoring</span></code> – Tools for monitoring driver events.</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

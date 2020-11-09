@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>pool – Pool module for use with a MongoDB client. — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="read_concern.html" rel="next" title="read_concern – Tools for working with read concern."/>
+<link href="operations.html" rel="prev" title="operations – Operation class definitions"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="read_concern.html" title="read_concern – Tools for working with read concern.">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="operations.html" title="operations – Operation class definitions">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">pool</span></code> – Pool module for use with a MongoDB client.</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.pool">
+<span id="pool-pool-module-for-use-with-a-mongodb-client"></span><h1><a name="//apple_ref/cpp/Module/pymongo.pool"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">pool</span></code> – Pool module for use with a MongoDB client.<a class="headerlink" href="#module-pymongo.pool" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pymongo.pool.SocketInfo"><a name="//apple_ref/cpp/Class/pymongo.pool.SocketInfo"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.pool.</code><code class="sig-name descname">SocketInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sock</span></em>, <em class="sig-param"><span class="n">pool</span></em>, <em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store a socket with some metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>sock</cite>: a raw socket object</p></li>
+<li><p><cite>pool</cite>: a Pool instance</p></li>
+<li><p><cite>address</cite>: the server’s (host, port)</p></li>
+<li><p><cite>id</cite>: the id of this socket in it’s pool</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.authenticate"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.authenticate"></a>
+<code class="sig-name descname">authenticate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">credentials</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log in to the server and store these credentials in <cite>authset</cite>.</p>
+<p>Can raise ConnectionFailure or OperationFailure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>credentials</cite>: A MongoCredential.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.check_auth"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.check_auth"></a>
+<code class="sig-name descname">check_auth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">all_credentials</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.check_auth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update this socket’s authentication.</p>
+<p>Log in or out to bring this socket’s credentials up to date with
+those provided. Can raise ConnectionFailure or OperationFailure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>all_credentials</cite>: dict, maps auth source to MongoCredential.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.close_socket"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.close_socket"></a>
+<code class="sig-name descname">close_socket</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.close_socket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close this connection with a reason.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.command"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.command"></a>
+<code class="sig-name descname">command</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dbname</span></em>, <em class="sig-param"><span class="n">spec</span></em>, <em class="sig-param"><span class="n">slave_ok</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">read_preference</span><span class="o">=</span><span class="default_value">Primary()</span></em>, <em class="sig-param"><span class="n">codec_options</span><span class="o">=</span><span class="default_value">CodecOptions(document_class=dict, tz_aware=False, uuid_representation=UuidRepresentation.PYTHON_LEGACY, unicode_decode_error_handler='strict', tzinfo=None, type_registry=TypeRegistry(type_codecs=[], fallback_encoder=None))</span></em>, <em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">allowable_errors</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">check_keys</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">read_concern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">write_concern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parse_write_concern_error</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">collation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">client</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">retryable_write</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">publish_events</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">user_fields</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exhaust_allowed</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a command or raise an error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>dbname</cite>: name of the database on which to run the command</p></li>
+<li><p><cite>spec</cite>: a command document as a dict, SON, or mapping object</p></li>
+<li><p><cite>slave_ok</cite>: whether to set the SlaveOkay wire protocol bit</p></li>
+<li><p><cite>read_preference</cite>: a read preference</p></li>
+<li><p><cite>codec_options</cite>: a CodecOptions instance</p></li>
+<li><p><cite>check</cite>: raise OperationFailure if there are errors</p></li>
+<li><p><cite>allowable_errors</cite>: errors to ignore if <cite>check</cite> is True</p></li>
+<li><p><cite>check_keys</cite>: if True, check <cite>spec</cite> for invalid keys</p></li>
+<li><p><cite>read_concern</cite>: The read concern for this command.</p></li>
+<li><p><cite>write_concern</cite>: The write concern for this command.</p></li>
+<li><p><cite>parse_write_concern_error</cite>: Whether to parse the
+<code class="docutils literal notranslate"><span class="pre">writeConcernError</span></code> field in the command response.</p></li>
+<li><p><cite>collation</cite>: The collation for this command.</p></li>
+<li><p><cite>session</cite>: optional ClientSession instance.</p></li>
+<li><p><cite>client</cite>: optional MongoClient for gossipping $clusterTime.</p></li>
+<li><p><cite>retryable_write</cite>: True if this command is a retryable write.</p></li>
+<li><p><cite>publish_events</cite>: Should we publish events for this command?</p></li>
+<li><p><cite>user_fields</cite> (optional): Response fields that should be decoded
+using the TypeDecoders from codec_options, passed to
+bson._decode_all_selective.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.idle_time_seconds"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.idle_time_seconds"></a>
+<code class="sig-name descname">idle_time_seconds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.idle_time_seconds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Seconds since this socket was last checked into its pool.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.legacy_write"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.legacy_write"></a>
+<code class="sig-name descname">legacy_write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request_id</span></em>, <em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="n">max_doc_size</span></em>, <em class="sig-param"><span class="n">with_last_error</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.legacy_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send OP_INSERT, etc., optionally returning response as a dict.</p>
+<p>Can raise ConnectionFailure or OperationFailure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>request_id</cite>: an int.</p></li>
+<li><p><cite>msg</cite>: bytes, an OP_INSERT, OP_UPDATE, or OP_DELETE message,
+perhaps with a getlasterror command appended.</p></li>
+<li><p><cite>max_doc_size</cite>: size in bytes of the largest document in <cite>msg</cite>.</p></li>
+<li><p><cite>with_last_error</cite>: True if a getlasterror command is appended.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.receive_message"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.receive_message"></a>
+<code class="sig-name descname">receive_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request_id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.receive_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive a raw BSON message or raise ConnectionFailure.</p>
+<p>If any exception is raised, the socket is closed.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.send_cluster_time"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.send_cluster_time"></a>
+<code class="sig-name descname">send_cluster_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">command</span></em>, <em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.send_cluster_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add cluster time for MongoDB &gt;= 3.6.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.send_message"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.send_message"></a>
+<code class="sig-name descname">send_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">max_doc_size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a raw BSON message or raise ConnectionFailure.</p>
+<p>If a network exception is raised, the socket is closed.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.socket_closed"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.socket_closed"></a>
+<code class="sig-name descname">socket_closed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.socket_closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if we know socket has been closed, False otherwise.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.validate_session"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.validate_session"></a>
+<code class="sig-name descname">validate_session</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em>, <em class="sig-param"><span class="n">session</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.validate_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate this session before use with client.</p>
+<p>Raises error if this session is logged in as a different user or
+the client is not the one that created the session.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.pool.SocketInfo.write_command"><a name="//apple_ref/cpp/Method/pymongo.pool.SocketInfo.write_command"></a>
+<code class="sig-name descname">write_command</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request_id</span></em>, <em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.pool.SocketInfo.write_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send “insert” etc. command, returning response as a dict.</p>
+<p>Can raise ConnectionFailure or OperationFailure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>request_id</cite>: an int.</p></li>
+<li><p><cite>msg</cite>: bytes, the command message.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="operations.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">operations</span></code> – Operation class definitions</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="read_concern.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_concern</span></code> – Tools for working with read concern.</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/pool.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="read_concern.html" title="read_concern – Tools for working with read concern.">next</a> |</li>
+<li class="right">
+<a href="operations.html" title="operations – Operation class definitions">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">pool</span></code> – Pool module for use with a MongoDB client.</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

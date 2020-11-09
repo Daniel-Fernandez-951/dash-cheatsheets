@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>topology_description – An object representation of a deployment of MongoDB servers. — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">topology_description</span></code> – An object representation of a deployment of MongoDB servers.</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.topology_description">
+<span id="topology-description-an-object-representation-of-a-deployment-of-mongodb-servers"></span><h1><a name="//apple_ref/cpp/Module/pymongo.topology_description"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">topology_description</span></code> – An object representation of a deployment of MongoDB servers.<a class="headerlink" href="#module-pymongo.topology_description" title="Permalink to this headline">¶</a></h1>
+<p>Represent a deployment of MongoDB servers.</p>
+<dl class="py class">
+<dt id="pymongo.topology_description.TopologyDescription"><a name="//apple_ref/cpp/Class/pymongo.topology_description.TopologyDescription"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.topology_description.</code><code class="sig-name descname">TopologyDescription</code><a class="headerlink" href="#pymongo.topology_description.TopologyDescription" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of a deployment of MongoDB servers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>topology_type</cite>: initial type</p></li>
+<li><p><cite>server_descriptions</cite>: dict of (address, ServerDescription) for
+all seeds</p></li>
+<li><p><cite>replica_set_name</cite>: replica set name or None</p></li>
+<li><p><cite>max_set_version</cite>: greatest setVersion seen from a primary, or None</p></li>
+<li><p><cite>max_election_id</cite>: greatest electionId seen from a primary, or None</p></li>
+<li><p><cite>topology_settings</cite>: a TopologySettings</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pymongo.topology_description.TopologyDescription.has_readable_server"><a name="//apple_ref/cpp/Method/pymongo.topology_description.TopologyDescription.has_readable_server"></a>
+<code class="sig-name descname">has_readable_server</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">read_preference</span><span class="o">=</span><span class="default_value">ReadPreference.PRIMARY</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.topology_description.TopologyDescription.has_readable_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does this topology have any readable servers available matching the
+given read preference?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>read_preference</cite>: an instance of a read preference from
+<a class="reference internal" href="read_preferences.html#module-pymongo.read_preferences" title="pymongo.read_preferences: Utilities for choosing which member of a replica set to read from."><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code></a>. Defaults to
+<a class="reference internal" href="read_preferences.html#pymongo.read_preferences.ReadPreference.PRIMARY" title="pymongo.read_preferences.ReadPreference.PRIMARY"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PRIMARY</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When connected directly to a single server this method
+always returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.topology_description.TopologyDescription.has_writable_server"><a name="//apple_ref/cpp/Method/pymongo.topology_description.TopologyDescription.has_writable_server"></a>
+<code class="sig-name descname">has_writable_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.topology_description.TopologyDescription.has_writable_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does this topology have a writable server available?</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When connected directly to a single server this method
+always returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.topology_description.TopologyDescription.server_descriptions"><a name="//apple_ref/cpp/Method/pymongo.topology_description.TopologyDescription.server_descriptions"></a>
+<code class="sig-name descname">server_descriptions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.topology_description.TopologyDescription.server_descriptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dict of (address,
+<a class="reference internal" href="server_description.html#pymongo.server_description.ServerDescription" title="pymongo.server_description.ServerDescription"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerDescription</span></code></a>).</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.topology_description.TopologyDescription.topology_type"><a name="//apple_ref/cpp/Attribute/pymongo.topology_description.TopologyDescription.topology_type"></a>
+<code class="sig-name descname">topology_type</code><a class="headerlink" href="#pymongo.topology_description.TopologyDescription.topology_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of this topology.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.topology_description.TopologyDescription.topology_type_name"><a name="//apple_ref/cpp/Attribute/pymongo.topology_description.TopologyDescription.topology_type_name"></a>
+<code class="sig-name descname">topology_type_name</code><a class="headerlink" href="#pymongo.topology_description.TopologyDescription.topology_type_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The topology type as a human readable string.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/topology_description.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">topology_description</span></code> – An object representation of a deployment of MongoDB servers.</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

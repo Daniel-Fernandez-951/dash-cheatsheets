@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>command_cursor – Tools for iterating over MongoDB command results — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="cursor.html" rel="next" title="cursor – Tools for iterating over MongoDB query results"/>
+<link href="collection.html" rel="prev" title="collection – Collection level operations"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="cursor.html" title="cursor – Tools for iterating over MongoDB query results">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="collection.html" title="collection – Collection level operations">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">command_cursor</span></code> – Tools for iterating over MongoDB command results</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.command_cursor">
+<span id="command-cursor-tools-for-iterating-over-mongodb-command-results"></span><h1><a name="//apple_ref/cpp/Module/pymongo.command_cursor"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">command_cursor</span></code> – Tools for iterating over MongoDB command results<a class="headerlink" href="#module-pymongo.command_cursor" title="Permalink to this headline">¶</a></h1>
+<p>CommandCursor class to iterate over command results.</p>
+<dl class="py class">
+<dt id="pymongo.command_cursor.CommandCursor"><a name="//apple_ref/cpp/Class/pymongo.command_cursor.CommandCursor"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.command_cursor.</code><code class="sig-name descname">CommandCursor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span></em>, <em class="sig-param"><span class="n">cursor_info</span></em>, <em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">retrieved</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">max_await_time_ms</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">explicit_session</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.command_cursor.CommandCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new command cursor.</p>
+<p>The parameter ‘retrieved’ is unused.</p>
+<dl class="py method">
+<dt id="pymongo.command_cursor.CommandCursor.address"><a name="//apple_ref/cpp/Method/pymongo.command_cursor.CommandCursor.address"></a>
+<em class="property">property </em><code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.command_cursor.CommandCursor.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The (host, port) of the server used, or None.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.0.</span></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.command_cursor.CommandCursor.alive"><a name="//apple_ref/cpp/Method/pymongo.command_cursor.CommandCursor.alive"></a>
+<em class="property">property </em><code class="sig-name descname">alive</code><a class="headerlink" href="#pymongo.command_cursor.CommandCursor.alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does this cursor have the potential to return more data?</p>
+<p>Even if <a class="reference internal" href="#pymongo.command_cursor.CommandCursor.alive" title="pymongo.command_cursor.CommandCursor.alive"><code class="xref py py-attr docutils literal notranslate"><span class="pre">alive</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, <a class="reference internal" href="#pymongo.command_cursor.CommandCursor.next" title="pymongo.command_cursor.CommandCursor.next"><code class="xref py py-meth docutils literal notranslate"><span class="pre">next()</span></code></a> can raise
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#StopIteration" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">StopIteration</span></code></a>. Best to use a for loop:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">collection</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#pymongo.command_cursor.CommandCursor.alive" title="pymongo.command_cursor.CommandCursor.alive"><code class="xref py py-attr docutils literal notranslate"><span class="pre">alive</span></code></a> can be True while iterating a cursor from
+a failed server. In this case <a class="reference internal" href="#pymongo.command_cursor.CommandCursor.alive" title="pymongo.command_cursor.CommandCursor.alive"><code class="xref py py-attr docutils literal notranslate"><span class="pre">alive</span></code></a> will return False after
+<a class="reference internal" href="#pymongo.command_cursor.CommandCursor.next" title="pymongo.command_cursor.CommandCursor.next"><code class="xref py py-meth docutils literal notranslate"><span class="pre">next()</span></code></a> fails to retrieve the next batch of results from the
+server.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.command_cursor.CommandCursor.batch_size"><a name="//apple_ref/cpp/Method/pymongo.command_cursor.CommandCursor.batch_size"></a>
+<code class="sig-name descname">batch_size</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch_size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.command_cursor.CommandCursor.batch_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Limits the number of documents returned in one batch. Each batch
+requires a round trip to the server. It can be adjusted to optimize
+performance and limit data transfer.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>batch_size can not override MongoDB’s internal limits on the
+amount of data it will return to the client in a single batch (i.e
+if you set batch size to 1,000,000,000, MongoDB will currently only
+return 4-16MB of results per batch).</p>
+</div>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>batch_size</cite> is not an integer.
+Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> if <cite>batch_size</cite> is less than <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>batch_size</cite>: The size of each batch of results requested.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.command_cursor.CommandCursor.close"><a name="//apple_ref/cpp/Method/pymongo.command_cursor.CommandCursor.close"></a>
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.command_cursor.CommandCursor.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Explicitly close / kill this cursor.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.command_cursor.CommandCursor.cursor_id"><a name="//apple_ref/cpp/Method/pymongo.command_cursor.CommandCursor.cursor_id"></a>
+<em class="property">property </em><code class="sig-name descname">cursor_id</code><a class="headerlink" href="#pymongo.command_cursor.CommandCursor.cursor_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the id of the cursor.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.command_cursor.CommandCursor.next"><a name="//apple_ref/cpp/Method/pymongo.command_cursor.CommandCursor.next"></a>
+<code class="sig-name descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.command_cursor.CommandCursor.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advance the cursor.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.command_cursor.CommandCursor.session"><a name="//apple_ref/cpp/Method/pymongo.command_cursor.CommandCursor.session"></a>
+<em class="property">property </em><code class="sig-name descname">session</code><a class="headerlink" href="#pymongo.command_cursor.CommandCursor.session" title="Permalink to this definition">¶</a></dt>
+<dd><p>The cursor’s <a class="reference internal" href="client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a>, or None.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.6.</span></p>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.command_cursor.RawBatchCommandCursor"><a name="//apple_ref/cpp/Class/pymongo.command_cursor.RawBatchCommandCursor"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.command_cursor.</code><code class="sig-name descname">RawBatchCommandCursor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span></em>, <em class="sig-param"><span class="n">cursor_info</span></em>, <em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">retrieved</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">max_await_time_ms</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">explicit_session</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.command_cursor.RawBatchCommandCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new cursor / iterator over raw batches of BSON data.</p>
+<p>Should not be called directly by application developers -
+see <a class="reference internal" href="collection.html#pymongo.collection.Collection.aggregate_raw_batches" title="pymongo.collection.Collection.aggregate_raw_batches"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aggregate_raw_batches()</span></code></a>
+instead.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/cursors" name="pymongo.command_cursor.RawBatchCommandCursor"><em>cursors</em></a></p>
+</div>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="collection.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">collection</span></code> – Collection level operations</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="cursor.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cursor</span></code> – Tools for iterating over MongoDB query results</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/command_cursor.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="cursor.html" title="cursor – Tools for iterating over MongoDB query results">next</a> |</li>
+<li class="right">
+<a href="collection.html" title="collection – Collection level operations">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">command_cursor</span></code> – Tools for iterating over MongoDB command results</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

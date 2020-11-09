@@ -1,0 +1,448 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>event_loggers – Example loggers — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="../gridfs/index.html" rel="next" title="gridfs – Tools for working with GridFS"/>
+<link href="write_concern.html" rel="prev" title="write_concern – Tools for specifying write concern"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="../gridfs/index.html" title="gridfs – Tools for working with GridFS">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="write_concern.html" title="write_concern – Tools for specifying write concern">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">event_loggers</span></code> – Example loggers</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.event_loggers">
+<span id="event-loggers-example-loggers"></span><h1><a name="//apple_ref/cpp/Module/pymongo.event_loggers"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">event_loggers</span></code> – Example loggers<a class="headerlink" href="#module-pymongo.event_loggers" title="Permalink to this headline">¶</a></h1>
+<p>Example event logger classes.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.11.</span></p>
+</div>
+<p>These loggers can be registered using <code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code> or
+<a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient" title="pymongo.mongo_client.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">monitoring.register(CommandLogger())</span></code></p>
+<p>or</p>
+<p><code class="docutils literal notranslate"><span class="pre">MongoClient(event_listeners=[CommandLogger()])</span></code></p>
+<dl class="py class">
+<dt id="pymongo.event_loggers.CommandLogger"><a name="//apple_ref/cpp/Class/pymongo.event_loggers.CommandLogger"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.event_loggers.</code><code class="sig-name descname">CommandLogger</code><a class="headerlink" href="#pymongo.event_loggers.CommandLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple listener that logs command events.</p>
+<p>Listens for <a class="reference internal" href="monitoring.html#pymongo.monitoring.CommandStartedEvent" title="pymongo.monitoring.CommandStartedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandStartedEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.CommandSucceededEvent" title="pymongo.monitoring.CommandSucceededEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandSucceededEvent</span></code></a> and
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.CommandFailedEvent" title="pymongo.monitoring.CommandFailedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommandFailedEvent</span></code></a> events and
+logs them at the <cite>INFO</cite> severity level using <a class="reference external" href="https://docs.python.org/3/library/logging.html#module-logging" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">logging</span></code></a>.
+.. versionadded:: 3.11</p>
+<dl class="py method">
+<dt id="pymongo.event_loggers.CommandLogger.failed"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.CommandLogger.failed"></a>
+<code class="sig-name descname">failed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.CommandLogger.failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>CommandFailedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">CommandFailedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.CommandLogger.started"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.CommandLogger.started"></a>
+<code class="sig-name descname">started</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.CommandLogger.started" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>CommandStartedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">CommandStartedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.CommandLogger.succeeded"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.CommandLogger.succeeded"></a>
+<code class="sig-name descname">succeeded</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.CommandLogger.succeeded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>CommandSucceededEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">CommandSucceededEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger"><a name="//apple_ref/cpp/Class/pymongo.event_loggers.ConnectionPoolLogger"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.event_loggers.</code><code class="sig-name descname">ConnectionPoolLogger</code><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple listener that logs server connection pool events.</p>
+<p>Listens for <a class="reference internal" href="monitoring.html#pymongo.monitoring.PoolCreatedEvent" title="pymongo.monitoring.PoolCreatedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolCreatedEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.PoolClearedEvent" title="pymongo.monitoring.PoolClearedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolClearedEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.PoolClosedEvent" title="pymongo.monitoring.PoolClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoolClosedEvent</span></code></a>,
+:~pymongo.monitoring.class:<cite>ConnectionCreatedEvent</cite>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.ConnectionReadyEvent" title="pymongo.monitoring.ConnectionReadyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionReadyEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.ConnectionClosedEvent" title="pymongo.monitoring.ConnectionClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionClosedEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.ConnectionCheckOutStartedEvent" title="pymongo.monitoring.ConnectionCheckOutStartedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutStartedEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.ConnectionCheckOutFailedEvent" title="pymongo.monitoring.ConnectionCheckOutFailedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutFailedEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.ConnectionCheckedOutEvent" title="pymongo.monitoring.ConnectionCheckedOutEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedOutEvent</span></code></a>,
+and <a class="reference internal" href="monitoring.html#pymongo.monitoring.ConnectionCheckedInEvent" title="pymongo.monitoring.ConnectionCheckedInEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedInEvent</span></code></a>
+events and logs them at the <cite>INFO</cite> severity level using <a class="reference external" href="https://docs.python.org/3/library/logging.html#module-logging" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">logging</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.11.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.connection_check_out_failed"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.connection_check_out_failed"></a>
+<code class="sig-name descname">connection_check_out_failed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.connection_check_out_failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutFailedEvent</span></code>.</p>
+<p>Emitted when the driver’s attempt to check out a connection fails.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutFailedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.connection_check_out_started"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.connection_check_out_started"></a>
+<code class="sig-name descname">connection_check_out_started</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.connection_check_out_started" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutStartedEvent</span></code>.</p>
+<p>Emitted when the driver starts attempting to check out a connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckOutStartedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.connection_checked_in"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.connection_checked_in"></a>
+<code class="sig-name descname">connection_checked_in</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.connection_checked_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedInEvent</span></code>.</p>
+<p>Emitted when the driver checks in a Connection back to the Connection
+Pool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedInEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.connection_checked_out"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.connection_checked_out"></a>
+<code class="sig-name descname">connection_checked_out</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.connection_checked_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedOutEvent</span></code>.</p>
+<p>Emitted when the driver successfully checks out a Connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCheckedOutEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.connection_closed"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.connection_closed"></a>
+<code class="sig-name descname">connection_closed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.connection_closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionClosedEvent</span></code>.</p>
+<p>Emitted when a Connection Pool closes a Connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionClosedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.connection_created"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.connection_created"></a>
+<code class="sig-name descname">connection_created</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.connection_created" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCreatedEvent</span></code>.</p>
+<p>Emitted when a Connection Pool creates a Connection object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionCreatedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.connection_ready"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.connection_ready"></a>
+<code class="sig-name descname">connection_ready</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.connection_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionReadyEvent</span></code>.</p>
+<p>Emitted when a Connection has finished its setup, and is now ready to
+use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionReadyEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.pool_cleared"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.pool_cleared"></a>
+<code class="sig-name descname">pool_cleared</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.pool_cleared" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>PoolClearedEvent</cite>.</p>
+<p>Emitted when a Connection Pool is cleared.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">PoolClearedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.pool_closed"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.pool_closed"></a>
+<code class="sig-name descname">pool_closed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.pool_closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>PoolClosedEvent</cite>.</p>
+<p>Emitted when a Connection Pool is closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">PoolClosedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ConnectionPoolLogger.pool_created"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ConnectionPoolLogger.pool_created"></a>
+<code class="sig-name descname">pool_created</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ConnectionPoolLogger.pool_created" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <code class="xref py py-class docutils literal notranslate"><span class="pre">PoolCreatedEvent</span></code>.</p>
+<p>Emitted when a Connection Pool is created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">PoolCreatedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.event_loggers.HeartbeatLogger"><a name="//apple_ref/cpp/Class/pymongo.event_loggers.HeartbeatLogger"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.event_loggers.</code><code class="sig-name descname">HeartbeatLogger</code><a class="headerlink" href="#pymongo.event_loggers.HeartbeatLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple listener that logs server heartbeat events.</p>
+<p>Listens for <a class="reference internal" href="monitoring.html#pymongo.monitoring.ServerHeartbeatStartedEvent" title="pymongo.monitoring.ServerHeartbeatStartedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatStartedEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.ServerHeartbeatSucceededEvent" title="pymongo.monitoring.ServerHeartbeatSucceededEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatSucceededEvent</span></code></a>,
+and <a class="reference internal" href="monitoring.html#pymongo.monitoring.ServerHeartbeatFailedEvent" title="pymongo.monitoring.ServerHeartbeatFailedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatFailedEvent</span></code></a>
+events and logs them at the <cite>INFO</cite> severity level using <a class="reference external" href="https://docs.python.org/3/library/logging.html#module-logging" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">logging</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.11.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.event_loggers.HeartbeatLogger.failed"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.HeartbeatLogger.failed"></a>
+<code class="sig-name descname">failed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.HeartbeatLogger.failed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerHeartbeatFailedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatFailedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.HeartbeatLogger.started"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.HeartbeatLogger.started"></a>
+<code class="sig-name descname">started</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.HeartbeatLogger.started" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerHeartbeatStartedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatStartedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.HeartbeatLogger.succeeded"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.HeartbeatLogger.succeeded"></a>
+<code class="sig-name descname">succeeded</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.HeartbeatLogger.succeeded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerHeartbeatSucceededEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ServerHeartbeatSucceededEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.event_loggers.ServerLogger"><a name="//apple_ref/cpp/Class/pymongo.event_loggers.ServerLogger"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.event_loggers.</code><code class="sig-name descname">ServerLogger</code><a class="headerlink" href="#pymongo.event_loggers.ServerLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple listener that logs server discovery events.</p>
+<p>Listens for <a class="reference internal" href="monitoring.html#pymongo.monitoring.ServerOpeningEvent" title="pymongo.monitoring.ServerOpeningEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerOpeningEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.ServerDescriptionChangedEvent" title="pymongo.monitoring.ServerDescriptionChangedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerDescriptionChangedEvent</span></code></a>,
+and <a class="reference internal" href="monitoring.html#pymongo.monitoring.ServerClosedEvent" title="pymongo.monitoring.ServerClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerClosedEvent</span></code></a>
+events and logs them at the <cite>INFO</cite> severity level using <a class="reference external" href="https://docs.python.org/3/library/logging.html#module-logging" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">logging</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.11.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ServerLogger.closed"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ServerLogger.closed"></a>
+<code class="sig-name descname">closed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ServerLogger.closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerClosedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ServerClosedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ServerLogger.description_changed"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ServerLogger.description_changed"></a>
+<code class="sig-name descname">description_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ServerLogger.description_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerDescriptionChangedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ServerDescriptionChangedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.ServerLogger.opened"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.ServerLogger.opened"></a>
+<code class="sig-name descname">opened</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.ServerLogger.opened" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>ServerOpeningEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ServerOpeningEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.event_loggers.TopologyLogger"><a name="//apple_ref/cpp/Class/pymongo.event_loggers.TopologyLogger"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.event_loggers.</code><code class="sig-name descname">TopologyLogger</code><a class="headerlink" href="#pymongo.event_loggers.TopologyLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple listener that logs server topology events.</p>
+<p>Listens for <a class="reference internal" href="monitoring.html#pymongo.monitoring.TopologyOpenedEvent" title="pymongo.monitoring.TopologyOpenedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyOpenedEvent</span></code></a>,
+<a class="reference internal" href="monitoring.html#pymongo.monitoring.TopologyDescriptionChangedEvent" title="pymongo.monitoring.TopologyDescriptionChangedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyDescriptionChangedEvent</span></code></a>,
+and <a class="reference internal" href="monitoring.html#pymongo.monitoring.TopologyClosedEvent" title="pymongo.monitoring.TopologyClosedEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyClosedEvent</span></code></a>
+events and logs them at the <cite>INFO</cite> severity level using <a class="reference external" href="https://docs.python.org/3/library/logging.html#module-logging" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">logging</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.11.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.event_loggers.TopologyLogger.closed"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.TopologyLogger.closed"></a>
+<code class="sig-name descname">closed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.TopologyLogger.closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>TopologyClosedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyClosedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.TopologyLogger.description_changed"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.TopologyLogger.description_changed"></a>
+<code class="sig-name descname">description_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.TopologyLogger.description_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>TopologyDescriptionChangedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyDescriptionChangedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.event_loggers.TopologyLogger.opened"><a name="//apple_ref/cpp/Method/pymongo.event_loggers.TopologyLogger.opened"></a>
+<code class="sig-name descname">opened</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.event_loggers.TopologyLogger.opened" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method to handle a <cite>TopologyOpenedEvent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>event</cite>: An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyOpenedEvent</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="write_concern.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">write_concern</span></code> – Tools for specifying write concern</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="../gridfs/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> – Tools for working with GridFS</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/event_loggers.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="../gridfs/index.html" title="gridfs – Tools for working with GridFS">next</a> |</li>
+<li class="right">
+<a href="write_concern.html" title="write_concern – Tools for specifying write concern">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">event_loggers</span></code> – Example loggers</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

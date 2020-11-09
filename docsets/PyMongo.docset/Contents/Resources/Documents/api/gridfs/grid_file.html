@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>grid_file – Tools for representing files stored in GridFS — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="../../tools.html" rel="next" title="Tools"/>
+<link href="errors.html" rel="prev" title="errors – Exceptions raised by the gridfs package"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="../../tools.html" title="Tools">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="errors.html" title="errors – Exceptions raised by the gridfs package">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> – Tools for working with GridFS</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">grid_file</span></code> – Tools for representing files stored in GridFS</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-gridfs.grid_file">
+<span id="grid-file-tools-for-representing-files-stored-in-gridfs"></span><h1><a name="//apple_ref/cpp/Module/gridfs.grid_file"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">grid_file</span></code> – Tools for representing files stored in GridFS<a class="headerlink" href="#module-gridfs.grid_file" title="Permalink to this headline">¶</a></h1>
+<p>Tools for representing files stored in GridFS.</p>
+<dl class="py class">
+<dt id="gridfs.grid_file.GridIn"><a name="//apple_ref/cpp/Class/gridfs.grid_file.GridIn"></a>
+<em class="property">class </em><code class="sig-prename descclassname">gridfs.grid_file.</code><code class="sig-name descname">GridIn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root_collection</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable_md5</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridIn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a file to GridFS</p>
+<p>Application developers should generally not need to
+instantiate this class directly - instead see the methods
+provided by <a class="reference internal" href="index.html#gridfs.GridFS" title="gridfs.GridFS"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFS</span></code></a>.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>root_collection</cite> is not an
+instance of <a class="reference internal" href="../pymongo/collection.html#pymongo.collection.Collection" title="pymongo.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a>.</p>
+<p>Any of the file level options specified in the <a class="reference external" href="http://dochub.mongodb.org/core/gridfsspec">GridFS Spec</a> may be passed as
+keyword arguments. Any additional keyword arguments will be
+set as additional fields on the file document. Valid keyword
+arguments include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">"_id"</span></code>: unique ID for this file (default:
+<a class="reference internal" href="../bson/objectid.html#bson.objectid.ObjectId" title="bson.objectid.ObjectId"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectId</span></code></a>) - this <code class="docutils literal notranslate"><span class="pre">"_id"</span></code> must
+not have already been used for another file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">"filename"</span></code>: human name for the file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">"contentType"</span></code> or <code class="docutils literal notranslate"><span class="pre">"content_type"</span></code>: valid mime-type
+for the file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">"chunkSize"</span></code> or <code class="docutils literal notranslate"><span class="pre">"chunk_size"</span></code>: size of each of the
+chunks, in bytes (default: 255 kb)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">"encoding"</span></code>: encoding used for this file. In Python 2,
+any <code class="xref py py-class docutils literal notranslate"><span class="pre">unicode</span></code> that is written to the file will be
+converted to a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>. In Python 3, any <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>
+that is written to the file will be converted to
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>root_collection</cite>: root collection to write to</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a> to use for all
+commands</p></li>
+<li><p><cite>disable_md5</cite> (optional): When True, an MD5 checksum will not be
+computed for the uploaded file. Useful in environments where
+MD5 cannot be used for regulatory or other reasons. Defaults to
+False.</p></li>
+<li><p><cite>**kwargs</cite> (optional): file level options (see above)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span><cite>root_collection</cite> must use an acknowledged
+<a class="reference internal" href="../pymongo/collection.html#pymongo.collection.Collection.write_concern" title="pymongo.collection.Collection.write_concern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code></a></p>
+</div>
+<dl class="py attribute">
+<dt id="gridfs.grid_file.GridIn._id"><a name="//apple_ref/cpp/Attribute/gridfs.grid_file.GridIn._id"></a>
+<code class="sig-name descname">_id</code><a class="headerlink" href="#gridfs.grid_file.GridIn._id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">'_id'</span></code> value for this file.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.abort"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.abort"></a>
+<code class="sig-name descname">abort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridIn.abort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all chunks/files that may have been uploaded and close.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.chunk_size"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.chunk_size"></a>
+<em class="property">property </em><code class="sig-name descname">chunk_size</code><a class="headerlink" href="#gridfs.grid_file.GridIn.chunk_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chunk size for this file.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.close"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.close"></a>
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridIn.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush the file and close it.</p>
+<p>A closed file cannot be written any more. Calling
+<a class="reference internal" href="#gridfs.grid_file.GridIn.close" title="gridfs.grid_file.GridIn.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> more than once is allowed.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.closed"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.closed"></a>
+<em class="property">property </em><code class="sig-name descname">closed</code><a class="headerlink" href="#gridfs.grid_file.GridIn.closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this file closed?</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.content_type"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.content_type"></a>
+<em class="property">property </em><code class="sig-name descname">content_type</code><a class="headerlink" href="#gridfs.grid_file.GridIn.content_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mime-type for this file.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.filename"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.filename"></a>
+<em class="property">property </em><code class="sig-name descname">filename</code><a class="headerlink" href="#gridfs.grid_file.GridIn.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of this file.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.length"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.length"></a>
+<em class="property">property </em><code class="sig-name descname">length</code><a class="headerlink" href="#gridfs.grid_file.GridIn.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length (in bytes) of this file.</p>
+<p>This attribute is read-only and can only be read after <a class="reference internal" href="#gridfs.grid_file.GridIn.close" title="gridfs.grid_file.GridIn.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> has been called.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.md5"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.md5"></a>
+<em class="property">property </em><code class="sig-name descname">md5</code><a class="headerlink" href="#gridfs.grid_file.GridIn.md5" title="Permalink to this definition">¶</a></dt>
+<dd><p>MD5 of the contents of this file if an md5 sum was created.</p>
+<p>This attribute is read-only and can only be read after <a class="reference internal" href="#gridfs.grid_file.GridIn.close" title="gridfs.grid_file.GridIn.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> has been called.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.name"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.name"></a>
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#gridfs.grid_file.GridIn.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>filename</cite>.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.upload_date"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.upload_date"></a>
+<em class="property">property </em><code class="sig-name descname">upload_date</code><a class="headerlink" href="#gridfs.grid_file.GridIn.upload_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Date that this file was uploaded.</p>
+<p>This attribute is read-only and can only be read after <a class="reference internal" href="#gridfs.grid_file.GridIn.close" title="gridfs.grid_file.GridIn.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> has been called.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.write"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.write"></a>
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridIn.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write data to the file. There is no return value.</p>
+<p><cite>data</cite> can be either a string of bytes or a file-like object
+(implementing <code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code>). If the file has an
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">encoding</span></code> attribute, <cite>data</cite> can also be a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">unicode</span></code> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> in python 3) instance, which
+will be encoded as <code class="xref py py-attr docutils literal notranslate"><span class="pre">encoding</span></code> before being written.</p>
+<p>Due to buffering, the data may not actually be written to the
+database until the <a class="reference internal" href="#gridfs.grid_file.GridIn.close" title="gridfs.grid_file.GridIn.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is called. Raises
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a> if this file is already closed. Raises
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>data</cite> is not an instance of
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> in python 3), a file-like object,
+or an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">unicode</span></code> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> in python 3).
+Unicode data is only allowed if the file has an <code class="xref py py-attr docutils literal notranslate"><span class="pre">encoding</span></code>
+attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>data</cite>: string of bytes or file-like object to be written
+to the file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridIn.writelines"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridIn.writelines"></a>
+<code class="sig-name descname">writelines</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sequence</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridIn.writelines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a sequence of strings to the file.</p>
+<p>Does not add seperators.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="gridfs.grid_file.GridOut"><a name="//apple_ref/cpp/Class/gridfs.grid_file.GridOut"></a>
+<em class="property">class </em><code class="sig-prename descclassname">gridfs.grid_file.</code><code class="sig-name descname">GridOut</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root_collection</span></em>, <em class="sig-param"><span class="n">file_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">file_document</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a file from GridFS</p>
+<p>Application developers should generally not need to
+instantiate this class directly - instead see the methods
+provided by <a class="reference internal" href="index.html#gridfs.GridFS" title="gridfs.GridFS"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFS</span></code></a>.</p>
+<p>Either <cite>file_id</cite> or <cite>file_document</cite> must be specified,
+<cite>file_document</cite> will be given priority if present. Raises
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>root_collection</cite> is not an instance of
+<a class="reference internal" href="../pymongo/collection.html#pymongo.collection.Collection" title="pymongo.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>root_collection</cite>: root collection to read from</p></li>
+<li><p><cite>file_id</cite> (optional): value of <code class="docutils literal notranslate"><span class="pre">"_id"</span></code> for the file to read</p></li>
+<li><p><cite>file_document</cite> (optional): file document from
+<cite>root_collection.files</cite></p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="../pymongo/client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a> to use for all
+commands</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.8: </span>For better performance and to better follow the GridFS spec,
+<a class="reference internal" href="#gridfs.grid_file.GridOut" title="gridfs.grid_file.GridOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridOut</span></code></a> now uses a single cursor to read all the chunks in
+the file.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>Creating a GridOut does not immediately retrieve the file metadata
+from the server. Metadata is fetched when first needed.</p>
+</div>
+<dl class="py attribute">
+<dt id="gridfs.grid_file.GridOut._id"><a name="//apple_ref/cpp/Attribute/gridfs.grid_file.GridOut._id"></a>
+<code class="sig-name descname">_id</code><a class="headerlink" href="#gridfs.grid_file.GridOut._id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">'_id'</span></code> value for this file.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.__iter__"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.__iter__"></a>
+<code class="sig-name descname">__iter__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOut.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator over all of this file’s data.</p>
+<p>The iterator will return chunk-sized instances of
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> in python 3). This can be
+useful when serving files using a webserver that handles
+such an iterator efficiently.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is different from <a class="reference external" href="https://docs.python.org/3/library/io.html#io.IOBase" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.IOBase</span></code></a> which iterates over
+<em>lines</em> in the file. Use <a class="reference internal" href="#gridfs.grid_file.GridOut.readline" title="gridfs.grid_file.GridOut.readline"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GridOut.readline()</span></code></a> to read line by
+line instead of chunk by chunk.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.8: </span>The iterator now raises <code class="xref py py-class docutils literal notranslate"><span class="pre">CorruptGridFile</span></code> when encountering
+any truncated, missing, or extra chunk in a file. The previous
+behavior was to only raise <code class="xref py py-class docutils literal notranslate"><span class="pre">CorruptGridFile</span></code> on a missing
+chunk.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.aliases"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.aliases"></a>
+<em class="property">property </em><code class="sig-name descname">aliases</code><a class="headerlink" href="#gridfs.grid_file.GridOut.aliases" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of aliases for this file.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.chunk_size"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.chunk_size"></a>
+<em class="property">property </em><code class="sig-name descname">chunk_size</code><a class="headerlink" href="#gridfs.grid_file.GridOut.chunk_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chunk size for this file.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.close"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.close"></a>
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOut.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make GridOut more generically file-like.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.content_type"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.content_type"></a>
+<em class="property">property </em><code class="sig-name descname">content_type</code><a class="headerlink" href="#gridfs.grid_file.GridOut.content_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mime-type for this file.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.filename"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.filename"></a>
+<em class="property">property </em><code class="sig-name descname">filename</code><a class="headerlink" href="#gridfs.grid_file.GridOut.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of this file.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.length"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.length"></a>
+<em class="property">property </em><code class="sig-name descname">length</code><a class="headerlink" href="#gridfs.grid_file.GridOut.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length (in bytes) of this file.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.md5"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.md5"></a>
+<em class="property">property </em><code class="sig-name descname">md5</code><a class="headerlink" href="#gridfs.grid_file.GridOut.md5" title="Permalink to this definition">¶</a></dt>
+<dd><p>MD5 of the contents of this file if an md5 sum was created.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.metadata"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.metadata"></a>
+<em class="property">property </em><code class="sig-name descname">metadata</code><a class="headerlink" href="#gridfs.grid_file.GridOut.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Metadata attached to this file.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.name"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.name"></a>
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#gridfs.grid_file.GridOut.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <cite>filename</cite>.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.read"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.read"></a>
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOut.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read at most <cite>size</cite> bytes from the file (less if there
+isn’t enough data).</p>
+<p>The bytes are returned as an instance of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>
+in python 3). If <cite>size</cite> is negative or omitted all data is read.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>size</cite> (optional): the number of bytes to read</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.8: </span>This method now only checks for extra chunks after reading the
+entire file. Previously, this method would check for extra chunks
+on every call.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.readchunk"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.readchunk"></a>
+<code class="sig-name descname">readchunk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOut.readchunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a chunk at a time. If the current position is within a
+chunk the remainder of the chunk is returned.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.readline"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.readline"></a>
+<code class="sig-name descname">readline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOut.readline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read one line or up to <cite>size</cite> bytes from the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>size</cite> (optional): the maximum number of bytes to read</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.seek"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.seek"></a>
+<code class="sig-name descname">seek</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pos</span></em>, <em class="sig-param"><span class="n">whence</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOut.seek" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the current position of this file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>pos</cite>: the position (or offset if using relative
+positioning) to seek to</p></li>
+<li><p><cite>whence</cite> (optional): where to seek
+from. <code class="xref py py-attr docutils literal notranslate"><span class="pre">os.SEEK_SET</span></code> (<code class="docutils literal notranslate"><span class="pre">0</span></code>) for absolute file
+positioning, <code class="xref py py-attr docutils literal notranslate"><span class="pre">os.SEEK_CUR</span></code> (<code class="docutils literal notranslate"><span class="pre">1</span></code>) to seek relative
+to the current position, <code class="xref py py-attr docutils literal notranslate"><span class="pre">os.SEEK_END</span></code> (<code class="docutils literal notranslate"><span class="pre">2</span></code>) to
+seek relative to the file’s end.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.tell"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.tell"></a>
+<code class="sig-name descname">tell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOut.tell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current position of this file.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOut.upload_date"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOut.upload_date"></a>
+<em class="property">property </em><code class="sig-name descname">upload_date</code><a class="headerlink" href="#gridfs.grid_file.GridOut.upload_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Date that this file was first uploaded.</p>
+<p>This attribute is read-only.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="gridfs.grid_file.GridOutCursor"><a name="//apple_ref/cpp/Class/gridfs.grid_file.GridOutCursor"></a>
+<em class="property">class </em><code class="sig-prename descclassname">gridfs.grid_file.</code><code class="sig-name descname">GridOutCursor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span></em>, <em class="sig-param"><span class="n">filter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">skip</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">no_cursor_timeout</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sort</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOutCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new cursor, similar to the normal
+<a class="reference internal" href="../pymongo/cursor.html#pymongo.cursor.Cursor" title="pymongo.cursor.Cursor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cursor</span></code></a>.</p>
+<p>Should not be called directly by application developers - see
+the <a class="reference internal" href="index.html#gridfs.GridFS" title="gridfs.GridFS"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridFS</span></code></a> method <a class="reference internal" href="index.html#gridfs.GridFS.find" title="gridfs.GridFS.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a> instead.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/cursors" name="gridfs.grid_file.GridOutCursor"><em>cursors</em></a></p>
+</div>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOutCursor.add_option"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOutCursor.add_option"></a>
+<code class="sig-name descname">add_option</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOutCursor.add_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set arbitrary query flags using a bitmask.</p>
+<p>To set the tailable flag:
+cursor.add_option(2)</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOutCursor.next"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOutCursor.next"></a>
+<code class="sig-name descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOutCursor.next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get next GridOut object from cursor.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="gridfs.grid_file.GridOutCursor.remove_option"><a name="//apple_ref/cpp/Method/gridfs.grid_file.GridOutCursor.remove_option"></a>
+<code class="sig-name descname">remove_option</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gridfs.grid_file.GridOutCursor.remove_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unset arbitrary query flags using a bitmask.</p>
+<p>To unset the tailable flag:
+cursor.remove_option(2)</p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="errors.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> package</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="../../tools.html" title="next chapter">Tools</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/gridfs/grid_file.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="../../tools.html" title="Tools">next</a> |</li>
+<li class="right">
+<a href="errors.html" title="errors – Exceptions raised by the gridfs package">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> – Tools for working with GridFS</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">grid_file</span></code> – Tools for representing files stored in GridFS</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PyMongo and mod_wsgi &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Server Selector Example" href="server_selection.html" />
+    <link rel="prev" title="High Availability and PyMongo" href="high_availability.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="server_selection.html" title="Server Selector Example"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="high_availability.html" title="High Availability and PyMongo"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyMongo and mod_wsgi</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pymongo-and-mod-wsgi">
+<span id="id1"></span><h1>PyMongo and mod_wsgi<a class="headerlink" href="#pymongo-and-mod-wsgi" title="Permalink to this headline">¶</a></h1>
+<p>To run your application under <a class="reference external" href="http://code.google.com/p/modwsgi/">mod_wsgi</a>,
+follow these guidelines:</p>
+<ul class="simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> in daemon mode with the <code class="docutils literal notranslate"><span class="pre">WSGIDaemonProcess</span></code> directive.</p></li>
+<li><p>Assign each application to a separate daemon with <code class="docutils literal notranslate"><span class="pre">WSGIProcessGroup</span></code>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">WSGIApplicationGroup</span> <span class="pre">%{GLOBAL}</span></code> to ensure your application is running
+in the daemon’s main Python interpreter, not a sub interpreter.</p></li>
+</ul>
+<p>For example, this <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> configuration ensures an application runs in the
+main interpreter:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">VirtualHost</span> <span class="o">*&gt;</span>
+    <span class="n">WSGIDaemonProcess</span> <span class="n">my_process</span>
+    <span class="n">WSGIScriptAlias</span> <span class="o">/</span><span class="n">my_app</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">app</span><span class="o">.</span><span class="n">wsgi</span>
+    <span class="n">WSGIProcessGroup</span> <span class="n">my_process</span>
+    <span class="n">WSGIApplicationGroup</span> <span class="o">%</span><span class="p">{</span><span class="n">GLOBAL</span><span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">VirtualHost</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>If you have multiple applications that use PyMongo, put each in a separate
+daemon, still in the global application group:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">VirtualHost</span> <span class="o">*&gt;</span>
+    <span class="n">WSGIDaemonProcess</span> <span class="n">my_process</span>
+    <span class="n">WSGIScriptAlias</span> <span class="o">/</span><span class="n">my_app</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">app</span><span class="o">.</span><span class="n">wsgi</span>
+    <span class="o">&lt;</span><span class="n">Location</span> <span class="o">/</span><span class="n">my_app</span><span class="o">&gt;</span>
+        <span class="n">WSGIProcessGroup</span> <span class="n">my_process</span>
+    <span class="o">&lt;/</span><span class="n">Location</span><span class="o">&gt;</span>
+
+    <span class="n">WSGIDaemonProcess</span> <span class="n">my_other_process</span>
+    <span class="n">WSGIScriptAlias</span> <span class="o">/</span><span class="n">my_other_app</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">other_app</span><span class="o">.</span><span class="n">wsgi</span>
+    <span class="o">&lt;</span><span class="n">Location</span> <span class="o">/</span><span class="n">my_other_app</span><span class="o">&gt;</span>
+        <span class="n">WSGIProcessGroup</span> <span class="n">my_other_process</span>
+    <span class="o">&lt;/</span><span class="n">Location</span><span class="o">&gt;</span>
+
+    <span class="n">WSGIApplicationGroup</span> <span class="o">%</span><span class="p">{</span><span class="n">GLOBAL</span><span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">VirtualHost</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Background: <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> can run in “embedded” mode when only WSGIScriptAlias
+is set, or “daemon” mode with WSGIDaemonProcess. In daemon mode, <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code>
+can run your application in the Python main interpreter, or in sub interpreters.
+The correct way to run a PyMongo application is in daemon mode, using the main
+interpreter.</p>
+<p>Python C extensions in general have issues running in multiple
+Python sub interpreters. These difficulties are explained in the documentation for
+<a class="reference external" href="http://docs.python.org/2/c-api/init.html#Py_NewInterpreter">Py_NewInterpreter</a>
+and in the <a class="reference external" href="https://code.google.com/p/modwsgi/wiki/ApplicationIssues#Multiple_Python_Sub_Interpreters">Multiple Python Sub Interpreters</a>
+section of the <code class="docutils literal notranslate"><span class="pre">mod_wsgi</span></code> documentation.</p>
+<p>Beginning with PyMongo 2.7, the C extension for BSON detects when it is running
+in a sub interpreter and activates a workaround, which adds a small cost to
+BSON decoding. To avoid this cost, use <code class="docutils literal notranslate"><span class="pre">WSGIApplicationGroup</span> <span class="pre">%{GLOBAL}</span></code> to
+ensure your application runs in the main interpreter.</p>
+<p>Since your program runs in the main interpreter it should not share its
+process with any other applications, lest they interfere with each other’s
+state. Each application should have its own daemon process, as shown in the
+example above.</p>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="high_availability.html"
+                        title="previous chapter">High Availability and PyMongo</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="server_selection.html"
+                        title="next chapter">Server Selector Example</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/mod_wsgi.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="server_selection.html" title="Server Selector Example"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="high_availability.html" title="High Availability and PyMongo"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyMongo and mod_wsgi</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

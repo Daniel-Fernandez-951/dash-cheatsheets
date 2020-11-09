@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Geospatial Indexing Example &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Gevent" href="gevent.html" />
+    <link rel="prev" title="Datetimes and Timezones" href="datetimes.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gevent.html" title="Gevent"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="datetimes.html" title="Datetimes and Timezones"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Geospatial Indexing Example</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="geospatial-indexing-example">
+<h1>Geospatial Indexing Example<a class="headerlink" href="#geospatial-indexing-example" title="Permalink to this headline">¶</a></h1>
+<p>This example shows how to create and use a <a class="reference internal" href="../api/pymongo/collection.html#pymongo.GEO2D" title="pymongo.GEO2D"><code class="xref py py-data docutils literal notranslate"><span class="pre">GEO2D</span></code></a>
+index in PyMongo. To create a spherical (earth-like) geospatial index use <a class="reference internal" href="../api/pymongo/collection.html#pymongo.GEOSPHERE" title="pymongo.GEOSPHERE"><code class="xref py py-data docutils literal notranslate"><span class="pre">GEOSPHERE</span></code></a> instead.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/geo" name="geospatial-indexing-example"><em>geo</em></a></p>
+</div>
+<div class="section" id="creating-a-geospatial-index">
+<h2>Creating a Geospatial Index<a class="headerlink" href="#creating-a-geospatial-index" title="Permalink to this headline">¶</a></h2>
+<p>Creating a geospatial index in pymongo is easy:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span><span class="p">,</span> <span class="n">GEO2D</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">geo_example</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">places</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="n">GEO2D</span><span class="p">)])</span>
+<span class="go">u&#39;loc_2d&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="inserting-places">
+<h2>Inserting Places<a class="headerlink" href="#inserting-places" title="Permalink to this headline">¶</a></h2>
+<p>Locations in MongoDB are represented using either embedded documents
+or lists where the first two elements are coordinates. Here, we’ll
+insert a couple of example locations:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">places</span><span class="o">.</span><span class="n">insert_many</span><span class="p">([{</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]},</span>
+<span class="gp">... </span>                                <span class="p">{</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">5</span><span class="p">]},</span>
+<span class="gp">... </span>                                <span class="p">{</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]},</span>
+<span class="gp">... </span>                                <span class="p">{</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">]}])</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">inserted_ids</span>
+<span class="go">[ObjectId(&#39;...&#39;), ObjectId(&#39;...&#39;), ObjectId(&#39;...&#39;), ObjectId(&#39;...&#39;)]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If specifying latitude and longitude coordinates in <a class="reference internal" href="../api/pymongo/collection.html#pymongo.GEOSPHERE" title="pymongo.GEOSPHERE"><code class="xref py py-data docutils literal notranslate"><span class="pre">GEOSPHERE</span></code></a>, list the <strong>longitude</strong> first and then <strong>latitude</strong>.</p>
+</div>
+</div>
+<div class="section" id="querying">
+<h2>Querying<a class="headerlink" href="#querying" title="Permalink to this headline">¶</a></h2>
+<p>Using the geospatial index we can find documents near another point:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">places</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$near&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">]}})</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [2, 5]}</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [4, 4]}</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [1, 2]}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If using <a class="reference internal" href="../api/pymongo/collection.html#pymongo.GEOSPHERE" title="pymongo.GEOSPHERE"><code class="xref py py-data docutils literal notranslate"><span class="pre">pymongo.GEOSPHERE</span></code></a>, using $nearSphere is recommended.</p>
+</div>
+<p>The $maxDistance operator requires the use of <a class="reference internal" href="../api/bson/son.html#bson.son.SON" title="bson.son.SON"><code class="xref py py-class docutils literal notranslate"><span class="pre">SON</span></code></a>:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.son</span> <span class="kn">import</span> <span class="n">SON</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="n">SON</span><span class="p">([(</span><span class="s2">&quot;$near&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">]),</span> <span class="p">(</span><span class="s2">&quot;$maxDistance&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)])}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">places</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [2, 5]}</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [4, 4]}</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [1, 2]}</span>
+</pre></div>
+</div>
+<p>It’s also possible to query for all items within a given rectangle
+(specified by lower-left and upper-right coordinates):</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$within&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$box&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]}}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">places</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [2, 5]}</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [4, 4]}</span>
+</pre></div>
+</div>
+<p>Or circle (specified by center point and radius):</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$within&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$center&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">6</span><span class="p">]}}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">places</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [2, 5]}</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [1, 2]}</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;loc&#39;: [4, 4]}</span>
+</pre></div>
+</div>
+<p>geoNear queries are also supported using <a class="reference internal" href="../api/bson/son.html#bson.son.SON" title="bson.son.SON"><code class="xref py py-class docutils literal notranslate"><span class="pre">SON</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.son</span> <span class="kn">import</span> <span class="n">SON</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">SON</span><span class="p">([(</span><span class="s1">&#39;geoNear&#39;</span><span class="p">,</span> <span class="s1">&#39;places&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;near&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])]))</span>
+<span class="go">{u&#39;ok&#39;: 1.0, u&#39;stats&#39;: ...}</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Starting in MongoDB version 4.0, MongoDB deprecates the <strong>geoNear</strong> command. Use one of the following operations instead.</p>
+<ul class="simple">
+<li><p>$geoNear - aggregation stage.</p></li>
+<li><p>$near - query operator.</p></li>
+<li><p>$nearSphere - query operator.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Geospatial Indexing Example</a><ul>
+<li><a class="reference internal" href="#creating-a-geospatial-index">Creating a Geospatial Index</a></li>
+<li><a class="reference internal" href="#inserting-places">Inserting Places</a></li>
+<li><a class="reference internal" href="#querying">Querying</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="datetimes.html"
+                        title="previous chapter">Datetimes and Timezones</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gevent.html"
+                        title="next chapter">Gevent</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/geo.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gevent.html" title="Gevent"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="datetimes.html" title="Datetimes and Timezones"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Geospatial Indexing Example</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

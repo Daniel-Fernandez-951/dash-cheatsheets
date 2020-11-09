@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>json_util – Tools for using Python’s json module with BSON documents — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="max_key.html" rel="next" title="max_key – Representation for the MongoDB internal MaxKey type"/>
+<link href="int64.html" rel="prev" title="int64 – Tools for representing BSON int64"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="max_key.html" title="max_key – Representation for the MongoDB internal MaxKey type">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="int64.html" title="int64 – Tools for representing BSON int64">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">json_util</span></code> – Tools for using Python’s <code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code> module with BSON documents</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-bson.json_util">
+<span id="json-util-tools-for-using-python-s-json-module-with-bson-documents"></span><h1><a name="//apple_ref/cpp/Module/bson.json_util"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">json_util</span></code> – Tools for using Python’s <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a> module with BSON documents<a class="headerlink" href="#module-bson.json_util" title="Permalink to this headline">¶</a></h1>
+<p>Tools for using Python’s <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a> module with BSON documents.</p>
+<p>This module provides two helper methods <cite>dumps</cite> and <cite>loads</cite> that wrap the
+native <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code></a> methods and provide explicit BSON conversion to and from
+JSON. <a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a> provides a way to control how JSON
+is emitted and parsed, with the default being the legacy PyMongo format.
+<a class="reference internal" href="#module-bson.json_util" title="bson.json_util: Tools for using Python's json module with BSON documents"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json_util</span></code></a> can also generate Canonical or Relaxed <a class="reference external" href="https://github.com/mongodb/specifications/blob/master/source/extended-json.rst">Extended JSON</a>
+when <a class="reference internal" href="#bson.json_util.CANONICAL_JSON_OPTIONS" title="bson.json_util.CANONICAL_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">CANONICAL_JSON_OPTIONS</span></code></a> or <a class="reference internal" href="#bson.json_util.RELAXED_JSON_OPTIONS" title="bson.json_util.RELAXED_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">RELAXED_JSON_OPTIONS</span></code></a> is
+provided, respectively.</p>
+<p>Example usage (deserialization):</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.json_util</span> <span class="kn">import</span> <span class="n">loads</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loads</span><span class="p">(</span><span class="s1">'[{"foo": [1, 2]}, {"bar": {"hello": "world"}}, {"code": {"$scope": </span><span class="si">{}</span><span class="s1">, "$code": "function x() { return 1; }"}}, {"bin": {"$type": "80", "$binary": "AQIDBA=="}}]'</span><span class="p">)</span>
+<span class="go">[{u'foo': [1, 2]}, {u'bar': {u'hello': u'world'}}, {u'code': Code('function x() { return 1; }', {})}, {u'bin': Binary('...', 128)}]</span>
+</pre></div>
+</div>
+<p>Example usage (serialization):</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">Binary</span><span class="p">,</span> <span class="n">Code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.json_util</span> <span class="kn">import</span> <span class="n">dumps</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dumps</span><span class="p">([{</span><span class="s1">'foo'</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]},</span>
+<span class="gp">... </span>       <span class="p">{</span><span class="s1">'bar'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'hello'</span><span class="p">:</span> <span class="s1">'world'</span><span class="p">}},</span>
+<span class="gp">... </span>       <span class="p">{</span><span class="s1">'code'</span><span class="p">:</span> <span class="n">Code</span><span class="p">(</span><span class="s2">"function x() { return 1; }"</span><span class="p">,</span> <span class="p">{})},</span>
+<span class="gp">... </span>       <span class="p">{</span><span class="s1">'bin'</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="sa">b</span><span class="s2">""</span><span class="p">)}])</span>
+<span class="go">'[{"foo": [1, 2]}, {"bar": {"hello": "world"}}, {"code": {"$code": "function x() { return 1; }", "$scope": {}}}, {"bin": {"$binary": "AQIDBA==", "$type": "00"}}]'</span>
+</pre></div>
+</div>
+<p>Example usage (with <a class="reference internal" href="#bson.json_util.CANONICAL_JSON_OPTIONS" title="bson.json_util.CANONICAL_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">CANONICAL_JSON_OPTIONS</span></code></a>):</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">Binary</span><span class="p">,</span> <span class="n">Code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.json_util</span> <span class="kn">import</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">CANONICAL_JSON_OPTIONS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dumps</span><span class="p">([{</span><span class="s1">'foo'</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]},</span>
+<span class="gp">... </span>       <span class="p">{</span><span class="s1">'bar'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'hello'</span><span class="p">:</span> <span class="s1">'world'</span><span class="p">}},</span>
+<span class="gp">... </span>       <span class="p">{</span><span class="s1">'code'</span><span class="p">:</span> <span class="n">Code</span><span class="p">(</span><span class="s2">"function x() { return 1; }"</span><span class="p">)},</span>
+<span class="gp">... </span>       <span class="p">{</span><span class="s1">'bin'</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="sa">b</span><span class="s2">""</span><span class="p">)}],</span>
+<span class="gp">... </span>      <span class="n">json_options</span><span class="o">=</span><span class="n">CANONICAL_JSON_OPTIONS</span><span class="p">)</span>
+<span class="go">'[{"foo": [{"$numberInt": "1"}, {"$numberInt": "2"}]}, {"bar": {"hello": "world"}}, {"code": {"$code": "function x() { return 1; }"}}, {"bin": {"$binary": {"base64": "AQIDBA==", "subType": "00"}}}]'</span>
+</pre></div>
+</div>
+<p>Example usage (with <a class="reference internal" href="#bson.json_util.RELAXED_JSON_OPTIONS" title="bson.json_util.RELAXED_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">RELAXED_JSON_OPTIONS</span></code></a>):</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson</span> <span class="kn">import</span> <span class="n">Binary</span><span class="p">,</span> <span class="n">Code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.json_util</span> <span class="kn">import</span> <span class="n">dumps</span><span class="p">,</span> <span class="n">RELAXED_JSON_OPTIONS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dumps</span><span class="p">([{</span><span class="s1">'foo'</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]},</span>
+<span class="gp">... </span>       <span class="p">{</span><span class="s1">'bar'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'hello'</span><span class="p">:</span> <span class="s1">'world'</span><span class="p">}},</span>
+<span class="gp">... </span>       <span class="p">{</span><span class="s1">'code'</span><span class="p">:</span> <span class="n">Code</span><span class="p">(</span><span class="s2">"function x() { return 1; }"</span><span class="p">)},</span>
+<span class="gp">... </span>       <span class="p">{</span><span class="s1">'bin'</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="sa">b</span><span class="s2">""</span><span class="p">)}],</span>
+<span class="gp">... </span>      <span class="n">json_options</span><span class="o">=</span><span class="n">RELAXED_JSON_OPTIONS</span><span class="p">)</span>
+<span class="go">'[{"foo": [1, 2]}, {"bar": {"hello": "world"}}, {"code": {"$code": "function x() { return 1; }"}}, {"bin": {"$binary": {"base64": "AQIDBA==", "subType": "00"}}}]'</span>
+</pre></div>
+</div>
+<p>Alternatively, you can manually pass the <cite>default</cite> to <a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a>.
+It won’t handle <a class="reference internal" href="binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> and <a class="reference internal" href="code.html#bson.code.Code" title="bson.code.Code"><code class="xref py py-class docutils literal notranslate"><span class="pre">Code</span></code></a>
+instances (as they are extended strings you can’t provide custom defaults),
+but it will be faster as there is less recursion.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your application does not need the flexibility offered by
+<a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a> and spends a large amount of time in the <cite>json_util</cite>
+module, look to
+<a class="reference external" href="https://pypi.python.org/pypi/python-bsonjs">python-bsonjs</a> for a nice
+performance improvement. <cite>python-bsonjs</cite> is a fast BSON to MongoDB
+Extended JSON converter for Python built on top of
+<a class="reference external" href="https://github.com/mongodb/libbson">libbson</a>. <cite>python-bsonjs</cite> works best
+with PyMongo when using <a class="reference internal" href="raw_bson.html#bson.raw_bson.RawBSONDocument" title="bson.raw_bson.RawBSONDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawBSONDocument</span></code></a>.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.8: </span>The output format for <a class="reference internal" href="timestamp.html#bson.timestamp.Timestamp" title="bson.timestamp.Timestamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timestamp</span></code></a> has changed from
+‘{“t”: &lt;int&gt;, “i”: &lt;int&gt;}’ to ‘{“$timestamp”: {“t”: &lt;int&gt;, “i”: &lt;int&gt;}}’.
+This new format will be decoded to an instance of
+<a class="reference internal" href="timestamp.html#bson.timestamp.Timestamp" title="bson.timestamp.Timestamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timestamp</span></code></a>. The old format will continue to be
+decoded to a python dict as before. Encoding to the old format is no longer
+supported as it was never correct and loses type information.
+Added support for $numberLong and $undefined - new in MongoDB 2.6 - and
+parsing $date in ISO-8601 format.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.7: </span>Preserves order when rendering SON, Timestamp, Code, Binary, and DBRef
+instances.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.3: </span>Added dumps and loads helpers to automatically handle conversion to and
+from json and supports <a class="reference internal" href="binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> and
+<a class="reference internal" href="code.html#bson.code.Code" title="bson.code.Code"><code class="xref py py-class docutils literal notranslate"><span class="pre">Code</span></code></a></p>
+</div>
+<dl class="py class">
+<dt id="bson.json_util.DatetimeRepresentation"><a name="//apple_ref/cpp/Class/bson.json_util.DatetimeRepresentation"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">DatetimeRepresentation</code><a class="headerlink" href="#bson.json_util.DatetimeRepresentation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="bson.json_util.DatetimeRepresentation.LEGACY"><a name="//apple_ref/cpp/Attribute/bson.json_util.DatetimeRepresentation.LEGACY"></a>
+<code class="sig-name descname">LEGACY</code><em class="property"> = 0</em><a class="headerlink" href="#bson.json_util.DatetimeRepresentation.LEGACY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Legacy MongoDB Extended JSON datetime representation.</p>
+<p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a> instances will be encoded to JSON in the
+format <cite>{“$date”: &lt;dateAsMilliseconds&gt;}</cite>, where <cite>dateAsMilliseconds</cite> is
+a 64-bit signed integer giving the number of milliseconds since the Unix
+epoch UTC. This was the default encoding before PyMongo version 3.4.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+</dd></dl>
+<dl class="py attribute">
+<dt id="bson.json_util.DatetimeRepresentation.NUMBERLONG"><a name="//apple_ref/cpp/Attribute/bson.json_util.DatetimeRepresentation.NUMBERLONG"></a>
+<code class="sig-name descname">NUMBERLONG</code><em class="property"> = 1</em><a class="headerlink" href="#bson.json_util.DatetimeRepresentation.NUMBERLONG" title="Permalink to this definition">¶</a></dt>
+<dd><p>NumberLong datetime representation.</p>
+<p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a> instances will be encoded to JSON in the
+format <cite>{“$date”: {“$numberLong”: “&lt;dateAsMilliseconds&gt;”}}</cite>,
+where <cite>dateAsMilliseconds</cite> is the string representation of a 64-bit signed
+integer giving the number of milliseconds since the Unix epoch UTC.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+</dd></dl>
+<dl class="py attribute">
+<dt id="bson.json_util.DatetimeRepresentation.ISO8601"><a name="//apple_ref/cpp/Attribute/bson.json_util.DatetimeRepresentation.ISO8601"></a>
+<code class="sig-name descname">ISO8601</code><em class="property"> = 2</em><a class="headerlink" href="#bson.json_util.DatetimeRepresentation.ISO8601" title="Permalink to this definition">¶</a></dt>
+<dd><p>ISO-8601 datetime representation.</p>
+<p><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a> instances greater than or equal to the Unix
+epoch UTC will be encoded to JSON in the format <cite>{“$date”: “&lt;ISO-8601&gt;”}</cite>.
+<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a> instances before the Unix epoch UTC will be
+encoded as if the datetime representation is
+<a class="reference internal" href="#bson.json_util.DatetimeRepresentation.NUMBERLONG" title="bson.json_util.DatetimeRepresentation.NUMBERLONG"><code class="xref py py-const docutils literal notranslate"><span class="pre">NUMBERLONG</span></code></a>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="bson.json_util.JSONMode"><a name="//apple_ref/cpp/Class/bson.json_util.JSONMode"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">JSONMode</code><a class="headerlink" href="#bson.json_util.JSONMode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="bson.json_util.JSONMode.LEGACY"><a name="//apple_ref/cpp/Attribute/bson.json_util.JSONMode.LEGACY"></a>
+<code class="sig-name descname">LEGACY</code><em class="property"> = 0</em><a class="headerlink" href="#bson.json_util.JSONMode.LEGACY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Legacy Extended JSON representation.</p>
+<p>In this mode, <a class="reference internal" href="#bson.json_util.dumps" title="bson.json_util.dumps"><code class="xref py py-func docutils literal notranslate"><span class="pre">dumps()</span></code></a> produces PyMongo’s legacy
+non-standard JSON output. Consider using
+<a class="reference internal" href="#bson.json_util.JSONMode.RELAXED" title="bson.json_util.JSONMode.RELAXED"><code class="xref py py-const docutils literal notranslate"><span class="pre">RELAXED</span></code></a> or
+<a class="reference internal" href="#bson.json_util.JSONMode.CANONICAL" title="bson.json_util.JSONMode.CANONICAL"><code class="xref py py-const docutils literal notranslate"><span class="pre">CANONICAL</span></code></a> instead.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.5.</span></p>
+</div>
+</dd></dl>
+<dl class="py attribute">
+<dt id="bson.json_util.JSONMode.RELAXED"><a name="//apple_ref/cpp/Attribute/bson.json_util.JSONMode.RELAXED"></a>
+<code class="sig-name descname">RELAXED</code><em class="property"> = 1</em><a class="headerlink" href="#bson.json_util.JSONMode.RELAXED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relaxed Extended JSON representation.</p>
+<p>In this mode, <a class="reference internal" href="#bson.json_util.dumps" title="bson.json_util.dumps"><code class="xref py py-func docutils literal notranslate"><span class="pre">dumps()</span></code></a> produces Relaxed Extended JSON,
+a mostly JSON-like format. Consider using this for things like a web API,
+where one is sending a document (or a projection of a document) that only
+uses ordinary JSON type primitives. In particular, the <code class="docutils literal notranslate"><span class="pre">int</span></code>,
+<a class="reference internal" href="int64.html#bson.int64.Int64" title="bson.int64.Int64"><code class="xref py py-class docutils literal notranslate"><span class="pre">Int64</span></code></a>, and <code class="docutils literal notranslate"><span class="pre">float</span></code> numeric types are represented in
+the native JSON number format. This output is also the most human readable
+and is useful for debugging and documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The specification for Relaxed <a class="reference external" href="https://github.com/mongodb/specifications/blob/master/source/extended-json.rst">Extended JSON</a>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.5.</span></p>
+</div>
+</dd></dl>
+<dl class="py attribute">
+<dt id="bson.json_util.JSONMode.CANONICAL"><a name="//apple_ref/cpp/Attribute/bson.json_util.JSONMode.CANONICAL"></a>
+<code class="sig-name descname">CANONICAL</code><em class="property"> = 2</em><a class="headerlink" href="#bson.json_util.JSONMode.CANONICAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Canonical Extended JSON representation.</p>
+<p>In this mode, <a class="reference internal" href="#bson.json_util.dumps" title="bson.json_util.dumps"><code class="xref py py-func docutils literal notranslate"><span class="pre">dumps()</span></code></a> produces Canonical Extended
+JSON, a type preserving format. Consider using this for things like
+testing, where one has to precisely specify expected types in JSON. In
+particular, the <code class="docutils literal notranslate"><span class="pre">int</span></code>, <a class="reference internal" href="int64.html#bson.int64.Int64" title="bson.int64.Int64"><code class="xref py py-class docutils literal notranslate"><span class="pre">Int64</span></code></a>, and <code class="docutils literal notranslate"><span class="pre">float</span></code> numeric
+types are encoded with type wrappers.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The specification for Canonical <a class="reference external" href="https://github.com/mongodb/specifications/blob/master/source/extended-json.rst">Extended JSON</a>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.5.</span></p>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="bson.json_util.JSONOptions"><a name="//apple_ref/cpp/Class/bson.json_util.JSONOptions"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">JSONOptions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">strict_number_long</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">datetime_representation</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">strict_uuid</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">json_mode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.json_util.JSONOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new instance of CodecOptions(document_class, tz_aware, uuid_representation, unicode_decode_error_handler, tzinfo, type_registry)</p>
+</dd></dl>
+<dl class="py data">
+<dt id="bson.json_util.LEGACY_JSON_OPTIONS"><a name="//apple_ref/cpp/Value/bson.json_util.LEGACY_JSON_OPTIONS"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">LEGACY_JSON_OPTIONS</code><em class="property"> = JSONOptions(strict_number_long=False, datetime_representation=0, strict_uuid=False, json_mode=0, document_class=dict, tz_aware=True, uuid_representation=UuidRepresentation.PYTHON_LEGACY, unicode_decode_error_handler='strict', tzinfo=&lt;bson.tz_util.FixedOffset object&gt;, type_registry=TypeRegistry(type_codecs=[], fallback_encoder=None))</em><a class="headerlink" href="#bson.json_util.LEGACY_JSON_OPTIONS" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a> for encoding to PyMongo’s legacy JSON format.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The documentation for <a class="reference internal" href="#bson.json_util.JSONMode.LEGACY" title="bson.json_util.JSONMode.LEGACY"><code class="xref py py-const docutils literal notranslate"><span class="pre">bson.json_util.JSONMode.LEGACY</span></code></a>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.5.</span></p>
+</div>
+</dd></dl>
+<dl class="py data">
+<dt id="bson.json_util.DEFAULT_JSON_OPTIONS"><a name="//apple_ref/cpp/Value/bson.json_util.DEFAULT_JSON_OPTIONS"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">DEFAULT_JSON_OPTIONS</code><em class="property"> = JSONOptions(strict_number_long=False, datetime_representation=0, strict_uuid=False, json_mode=0, document_class=dict, tz_aware=True, uuid_representation=UuidRepresentation.PYTHON_LEGACY, unicode_decode_error_handler='strict', tzinfo=&lt;bson.tz_util.FixedOffset object&gt;, type_registry=TypeRegistry(type_codecs=[], fallback_encoder=None))</em><a class="headerlink" href="#bson.json_util.DEFAULT_JSON_OPTIONS" title="Permalink to this definition">¶</a></dt>
+<dd><p>The default <a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a> for JSON encoding/decoding.</p>
+<p>The same as <a class="reference internal" href="#bson.json_util.LEGACY_JSON_OPTIONS" title="bson.json_util.LEGACY_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">LEGACY_JSON_OPTIONS</span></code></a>. This will change to
+<a class="reference internal" href="#bson.json_util.RELAXED_JSON_OPTIONS" title="bson.json_util.RELAXED_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">RELAXED_JSON_OPTIONS</span></code></a> in a future release.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+</dd></dl>
+<dl class="py data">
+<dt id="bson.json_util.CANONICAL_JSON_OPTIONS"><a name="//apple_ref/cpp/Value/bson.json_util.CANONICAL_JSON_OPTIONS"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">CANONICAL_JSON_OPTIONS</code><em class="property"> = JSONOptions(strict_number_long=True, datetime_representation=1, strict_uuid=True, json_mode=2, document_class=dict, tz_aware=True, uuid_representation=UuidRepresentation.PYTHON_LEGACY, unicode_decode_error_handler='strict', tzinfo=&lt;bson.tz_util.FixedOffset object&gt;, type_registry=TypeRegistry(type_codecs=[], fallback_encoder=None))</em><a class="headerlink" href="#bson.json_util.CANONICAL_JSON_OPTIONS" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a> for Canonical Extended JSON.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The documentation for <a class="reference internal" href="#bson.json_util.JSONMode.CANONICAL" title="bson.json_util.JSONMode.CANONICAL"><code class="xref py py-const docutils literal notranslate"><span class="pre">bson.json_util.JSONMode.CANONICAL</span></code></a>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.5.</span></p>
+</div>
+</dd></dl>
+<dl class="py data">
+<dt id="bson.json_util.RELAXED_JSON_OPTIONS"><a name="//apple_ref/cpp/Value/bson.json_util.RELAXED_JSON_OPTIONS"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">RELAXED_JSON_OPTIONS</code><em class="property"> = JSONOptions(strict_number_long=False, datetime_representation=2, strict_uuid=True, json_mode=1, document_class=dict, tz_aware=True, uuid_representation=UuidRepresentation.PYTHON_LEGACY, unicode_decode_error_handler='strict', tzinfo=&lt;bson.tz_util.FixedOffset object&gt;, type_registry=TypeRegistry(type_codecs=[], fallback_encoder=None))</em><a class="headerlink" href="#bson.json_util.RELAXED_JSON_OPTIONS" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a> for Relaxed Extended JSON.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The documentation for <a class="reference internal" href="#bson.json_util.JSONMode.RELAXED" title="bson.json_util.JSONMode.RELAXED"><code class="xref py py-const docutils literal notranslate"><span class="pre">bson.json_util.JSONMode.RELAXED</span></code></a>.</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.5.</span></p>
+</div>
+</dd></dl>
+<dl class="py data">
+<dt id="bson.json_util.STRICT_JSON_OPTIONS"><a name="//apple_ref/cpp/Value/bson.json_util.STRICT_JSON_OPTIONS"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">STRICT_JSON_OPTIONS</code><em class="property"> = JSONOptions(strict_number_long=True, datetime_representation=2, strict_uuid=True, json_mode=0, document_class=dict, tz_aware=True, uuid_representation=UuidRepresentation.PYTHON_LEGACY, unicode_decode_error_handler='strict', tzinfo=&lt;bson.tz_util.FixedOffset object&gt;, type_registry=TypeRegistry(type_codecs=[], fallback_encoder=None))</em><a class="headerlink" href="#bson.json_util.STRICT_JSON_OPTIONS" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>DEPRECATED</strong> - <a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a> for MongoDB Extended JSON’s <em>Strict
+mode</em> encoding.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Deprecated. Use <a class="reference internal" href="#bson.json_util.RELAXED_JSON_OPTIONS" title="bson.json_util.RELAXED_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">RELAXED_JSON_OPTIONS</span></code></a> or
+<a class="reference internal" href="#bson.json_util.CANONICAL_JSON_OPTIONS" title="bson.json_util.CANONICAL_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">CANONICAL_JSON_OPTIONS</span></code></a> instead.</p>
+</div>
+</dd></dl>
+<dl class="py function">
+<dt id="bson.json_util.dumps"><a name="//apple_ref/cpp/Function/bson.json_util.dumps"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">dumps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.json_util.dumps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that wraps <a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a>.</p>
+<p>Recursive function that handles all BSON types including
+<a class="reference internal" href="binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> and <a class="reference internal" href="code.html#bson.code.Code" title="bson.code.Code"><code class="xref py py-class docutils literal notranslate"><span class="pre">Code</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>json_options</cite>: A <a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a> instance used to modify the
+encoding of MongoDB Extended JSON types. Defaults to
+<a class="reference internal" href="#bson.json_util.DEFAULT_JSON_OPTIONS" title="bson.json_util.DEFAULT_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_JSON_OPTIONS</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.4: </span>Accepts optional parameter <cite>json_options</cite>. See <a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a>.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.7: </span>Preserves order when rendering SON, Timestamp, Code, Binary, and DBRef
+instances.</p>
+</div>
+</dd></dl>
+<dl class="py function">
+<dt id="bson.json_util.loads"><a name="//apple_ref/cpp/Function/bson.json_util.loads"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">loads</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.json_util.loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function that wraps <a class="reference external" href="https://docs.python.org/3/library/json.html#json.loads" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.loads()</span></code></a>.</p>
+<p>Automatically passes the object_hook for BSON type conversion.</p>
+<p>Raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>, <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>, <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>, or
+<a class="reference internal" href="errors.html#bson.errors.InvalidId" title="bson.errors.InvalidId"><code class="xref py py-exc docutils literal notranslate"><span class="pre">InvalidId</span></code></a> on invalid MongoDB Extended JSON.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>json_options</cite>: A <a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a> instance used to modify the
+decoding of MongoDB Extended JSON types. Defaults to
+<a class="reference internal" href="#bson.json_util.DEFAULT_JSON_OPTIONS" title="bson.json_util.DEFAULT_JSON_OPTIONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_JSON_OPTIONS</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Parses Relaxed and Canonical Extended JSON as well as PyMongo’s legacy
+format. Now raises <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> or <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when parsing JSON
+type wrappers with values of the wrong type or any extra keys.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.4: </span>Accepts optional parameter <cite>json_options</cite>. See <a class="reference internal" href="#bson.json_util.JSONOptions" title="bson.json_util.JSONOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">JSONOptions</span></code></a>.</p>
+</div>
+</dd></dl>
+<dl class="py function">
+<dt id="bson.json_util.object_pairs_hook"><a name="//apple_ref/cpp/Function/bson.json_util.object_pairs_hook"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">object_pairs_hook</code><span class="sig-paren">(</span><em class="sig-param">pairs</em>, <em class="sig-param">json_options=JSONOptions(strict_number_long=False</em>, <em class="sig-param">datetime_representation=0</em>, <em class="sig-param">strict_uuid=False</em>, <em class="sig-param">json_mode=0</em>, <em class="sig-param">document_class=dict</em>, <em class="sig-param">tz_aware=True</em>, <em class="sig-param">uuid_representation=UuidRepresentation.PYTHON_LEGACY</em>, <em class="sig-param">unicode_decode_error_handler='strict'</em>, <em class="sig-param">tzinfo=&lt;bson.tz_util.FixedOffset object&gt;</em>, <em class="sig-param">type_registry=TypeRegistry(type_codecs=[]</em>, <em class="sig-param">fallback_encoder=None))</em><span class="sig-paren">)</span><a class="headerlink" href="#bson.json_util.object_pairs_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py function">
+<dt id="bson.json_util.object_hook"><a name="//apple_ref/cpp/Function/bson.json_util.object_hook"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">object_hook</code><span class="sig-paren">(</span><em class="sig-param">dct</em>, <em class="sig-param">json_options=JSONOptions(strict_number_long=False</em>, <em class="sig-param">datetime_representation=0</em>, <em class="sig-param">strict_uuid=False</em>, <em class="sig-param">json_mode=0</em>, <em class="sig-param">document_class=dict</em>, <em class="sig-param">tz_aware=True</em>, <em class="sig-param">uuid_representation=UuidRepresentation.PYTHON_LEGACY</em>, <em class="sig-param">unicode_decode_error_handler='strict'</em>, <em class="sig-param">tzinfo=&lt;bson.tz_util.FixedOffset object&gt;</em>, <em class="sig-param">type_registry=TypeRegistry(type_codecs=[]</em>, <em class="sig-param">fallback_encoder=None))</em><span class="sig-paren">)</span><a class="headerlink" href="#bson.json_util.object_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py function">
+<dt id="bson.json_util.default"><a name="//apple_ref/cpp/Function/bson.json_util.default"></a>
+<code class="sig-prename descclassname">bson.json_util.</code><code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">json_options=JSONOptions(strict_number_long=False</em>, <em class="sig-param">datetime_representation=0</em>, <em class="sig-param">strict_uuid=False</em>, <em class="sig-param">json_mode=0</em>, <em class="sig-param">document_class=dict</em>, <em class="sig-param">tz_aware=True</em>, <em class="sig-param">uuid_representation=UuidRepresentation.PYTHON_LEGACY</em>, <em class="sig-param">unicode_decode_error_handler='strict'</em>, <em class="sig-param">tzinfo=&lt;bson.tz_util.FixedOffset object&gt;</em>, <em class="sig-param">type_registry=TypeRegistry(type_codecs=[]</em>, <em class="sig-param">fallback_encoder=None))</em><span class="sig-paren">)</span><a class="headerlink" href="#bson.json_util.default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="int64.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">int64</span></code> – Tools for representing BSON int64</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="max_key.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">max_key</span></code> – Representation for the MongoDB internal MaxKey type</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/json_util.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="max_key.html" title="max_key – Representation for the MongoDB internal MaxKey type">next</a> |</li>
+<li class="right">
+<a href="int64.html" title="int64 – Tools for representing BSON int64">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">json_util</span></code> – Tools for using Python’s <code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code> module with BSON documents</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

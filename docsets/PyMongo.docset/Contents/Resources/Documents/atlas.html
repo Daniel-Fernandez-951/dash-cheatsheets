@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using PyMongo with MongoDB Atlas &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/delighted.js"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installing / Upgrading" href="installation.html" />
+    <link rel="prev" title="PyMongo 3.11.0 Documentation" href="index.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installing / Upgrading"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="PyMongo 3.11.0 Documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Using PyMongo with MongoDB Atlas</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-pymongo-with-mongodb-atlas">
+<h1>Using PyMongo with MongoDB Atlas<a class="headerlink" href="#using-pymongo-with-mongodb-atlas" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://www.mongodb.com/cloud">Atlas</a> is MongoDB, Inc.’s hosted MongoDB as a
+service offering. To connect to Atlas, pass the connection string provided by
+Atlas to <a class="reference internal" href="api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient" title="pymongo.mongo_client.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="o">&lt;</span><span class="n">Atlas</span> <span class="n">connection</span> <span class="n">string</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Connections to Atlas require TLS/SSL. For connections using TLS/SSL, PyMongo
+may require third party dependencies as determined by your version of Python.
+With PyMongo 3.3+, you can install PyMongo 3.3+ and any TLS/SSL-related
+dependencies using the following pip command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m pip install pymongo[tls]
+</pre></div>
+</div>
+<p>Starting with PyMongo 3.11 this installs <a class="reference external" href="https://pypi.org/project/pyOpenSSL/">PyOpenSSL</a>, <a class="reference external" href="https://pypi.python.org/pypi/requests">requests</a>
+and <a class="reference external" href="https://pypi.org/project/service_identity/">service_identity</a>
+for users of Python versions older than 2.7.9. PyOpenSSL supports SNI for these
+old Python versions, allowing applictions to connect to Altas free and shared
+tier instances.</p>
+<p>Earlier versions of PyMongo require you to manually install the dependencies.
+For a list of TLS/SSL-related dependencies, see <a class="reference internal" href="examples/tls.html"><span class="doc">TLS/SSL and PyMongo</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Connecting to Atlas “Free Tier” or “Shared Cluster” instances
+requires Server Name Indication (SNI) support. SNI support requires CPython
+2.7.9 / PyPy 2.5.1 or newer or PyMongo 3.11+ with PyOpenSSL.
+To check if your version of Python supports SNI run the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -c &quot;import ssl; print(getattr(ssl, &#39;HAS_SNI&#39;, False))&quot;
+</pre></div>
+</div>
+<p>You should see “True”.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Industry best practices recommend, and some regulations require,
+the use of TLS 1.1 or newer. Though no application changes are required for
+PyMongo to make use of the newest protocols, some operating systems or
+versions may not provide an OpenSSL version new enough to support them.</p>
+<p>Users of macOS older than 10.13 (High Sierra) will need to install Python
+from <a class="reference external" href="https://www.python.org/downloads/">python.org</a>, <a class="reference external" href="https://brew.sh/">homebrew</a>, <a class="reference external" href="https://www.macports.org/">macports</a>, or another similar source.</p>
+<p>Users of Linux or other non-macOS Unix can check their OpenSSL version like
+this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ openssl version
+</pre></div>
+</div>
+<p>If the version number is less than 1.0.1 support for TLS 1.1 or newer is not
+available. Contact your operating system vendor for a solution or upgrade to
+a newer distribution.</p>
+<p>You can check your Python interpreter by installing the <a class="reference external" href="https://pypi.python.org/pypi/requests">requests</a> module
+and executing the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;import requests; print(requests.get(&#39;https://www.howsmyssl.com/a/check&#39;, verify=False).json()[&#39;tls_version&#39;])&quot;</span>
+</pre></div>
+</div>
+<p>You should see “TLS 1.X” where X is &gt;= 1.</p>
+<p>You can read more about TLS versions and their security implications here:</p>
+<p><a class="reference external" href="https://www.owasp.org/index.php/Transport_Layer_Protection_Cheat_Sheet#Rule_-_Only_Support_Strong_Protocols">https://www.owasp.org/index.php/Transport_Layer_Protection_Cheat_Sheet#Rule_-_Only_Support_Strong_Protocols</a></p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">PyMongo 3.11.0 Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="next chapter">Installing / Upgrading</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/atlas.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installing / Upgrading"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="PyMongo 3.11.0 Documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Using PyMongo with MongoDB Atlas</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

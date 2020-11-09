@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>encryption_options – Automatic Client-Side Field Level Encryption — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="errors.html" rel="next" title="errors – Exceptions raised by the pymongo package"/>
+<link href="encryption.html" rel="prev" title="encryption – Client-Side Field Level Encryption"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="errors.html" title="errors – Exceptions raised by the pymongo package">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="encryption.html" title="encryption – Client-Side Field Level Encryption">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption_options</span></code> – Automatic Client-Side Field Level Encryption</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.encryption_options">
+<span id="encryption-options-automatic-client-side-field-level-encryption"></span><h1><a name="//apple_ref/cpp/Module/pymongo.encryption_options"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption_options</span></code> – Automatic Client-Side Field Level Encryption<a class="headerlink" href="#module-pymongo.encryption_options" title="Permalink to this headline">¶</a></h1>
+<p>Support for automatic client-side field level encryption.</p>
+<dl class="py class">
+<dt id="pymongo.encryption_options.AutoEncryptionOpts"><a name="//apple_ref/cpp/Class/pymongo.encryption_options.AutoEncryptionOpts"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.encryption_options.</code><code class="sig-name descname">AutoEncryptionOpts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kms_providers</span></em>, <em class="sig-param"><span class="n">key_vault_namespace</span></em>, <em class="sig-param"><span class="n">key_vault_client</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">schema_map</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bypass_auto_encryption</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mongocryptd_uri</span><span class="o">=</span><span class="default_value">'mongodb://localhost:27020'</span></em>, <em class="sig-param"><span class="n">mongocryptd_bypass_spawn</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mongocryptd_spawn_path</span><span class="o">=</span><span class="default_value">'mongocryptd'</span></em>, <em class="sig-param"><span class="n">mongocryptd_spawn_args</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.encryption_options.AutoEncryptionOpts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Options to configure automatic client-side field level encryption.</p>
+<p>Automatic client-side field level encryption requires MongoDB 4.2
+enterprise or a MongoDB 4.2 Atlas cluster. Automatic encryption is not
+supported for operations on a database or view and will result in
+error.</p>
+<p>Although automatic encryption requires MongoDB 4.2 enterprise or a
+MongoDB 4.2 Atlas cluster, automatic <em>decryption</em> is supported for all
+users. To configure automatic <em>decryption</em> without automatic
+<em>encryption</em> set <code class="docutils literal notranslate"><span class="pre">bypass_auto_encryption=True</span></code>. Explicit
+encryption and explicit decryption is also supported for all users
+with the <a class="reference internal" href="encryption.html#pymongo.encryption.ClientEncryption" title="pymongo.encryption.ClientEncryption"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientEncryption</span></code></a> class.</p>
+<p>See <a class="reference internal" href="../../examples/encryption.html#automatic-client-side-encryption"><span class="std std-ref">Automatic Client-Side Field Level Encryption</span></a> for an example.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><cite>kms_providers</cite>: Map of KMS provider options. Two KMS providers
+are supported: “aws” and “local”. The kmsProviders map values
+differ by provider:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>aws</cite>: Map with “accessKeyId” and “secretAccessKey” as strings.
+These are the AWS access key ID and AWS secret access key used
+to generate KMS messages.</p></li>
+<li><p><cite>local</cite>: Map with “key” as a 96-byte array or string. “key”
+is the master key used to encrypt/decrypt data keys. This key
+should be generated and stored as securely as possible.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><cite>key_vault_namespace</cite>: The namespace for the key vault collection.
+The key vault collection contains all data keys used for encryption
+and decryption. Data keys are stored as documents in this MongoDB
+collection. Data keys are protected with encryption by a KMS
+provider.</p></li>
+<li><p><cite>key_vault_client</cite> (optional): By default the key vault collection
+is assumed to reside in the same MongoDB cluster as the encrypted
+MongoClient. Use this option to route data key queries to a
+separate MongoDB cluster.</p></li>
+<li><p><cite>schema_map</cite> (optional): Map of collection namespace (“db.coll”) to
+JSON Schema.  By default, a collection’s JSONSchema is periodically
+polled with the listCollections command. But a JSONSchema may be
+specified locally with the schemaMap option.</p>
+<p><strong>Supplying a `schema_map` provides more security than relying on
+JSON Schemas obtained from the server. It protects against a
+malicious server advertising a false JSON Schema, which could trick
+the client into sending unencrypted data that should be
+encrypted.</strong></p>
+<p>Schemas supplied in the schemaMap only apply to configuring
+automatic encryption for client side encryption. Other validation
+rules in the JSON schema will not be enforced by the driver and
+will result in an error.</p>
+</li>
+<li><p><cite>bypass_auto_encryption</cite> (optional): If <code class="docutils literal notranslate"><span class="pre">True</span></code>, automatic
+encryption will be disabled but automatic decryption will still be
+enabled. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><cite>mongocryptd_uri</cite> (optional): The MongoDB URI used to connect
+to the <em>local</em> mongocryptd process. Defaults to
+<code class="docutils literal notranslate"><span class="pre">'mongodb://localhost:27020'</span></code>.</p></li>
+<li><p><cite>mongocryptd_bypass_spawn</cite> (optional): If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the encrypted
+MongoClient will not attempt to spawn the mongocryptd process.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><cite>mongocryptd_spawn_path</cite> (optional): Used for spawning the
+mongocryptd process. Defaults to <code class="docutils literal notranslate"><span class="pre">'mongocryptd'</span></code> and spawns
+mongocryptd from the system path.</p></li>
+<li><p><cite>mongocryptd_spawn_args</cite> (optional): A list of string arguments to
+use when spawning the mongocryptd process. Defaults to
+<code class="docutils literal notranslate"><span class="pre">['--idleShutdownTimeoutSecs=60']</span></code>. If the list does not include
+the <code class="docutils literal notranslate"><span class="pre">idleShutdownTimeoutSecs</span></code> option then
+<code class="docutils literal notranslate"><span class="pre">'--idleShutdownTimeoutSecs=60'</span></code> will be added.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="encryption.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption</span></code> – Client-Side Field Level Encryption</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="errors.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> package</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/encryption_options.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="errors.html" title="errors – Exceptions raised by the pymongo package">next</a> |</li>
+<li class="right">
+<a href="encryption.html" title="encryption – Client-Side Field Level Encryption">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption_options</span></code> – Automatic Client-Side Field Level Encryption</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

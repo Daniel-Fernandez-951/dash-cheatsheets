@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bulk Write Operations &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Datetimes and Timezones" href="datetimes.html" />
+    <link rel="prev" title="Custom Type Example" href="custom_type.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="datetimes.html" title="Datetimes and Timezones"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="custom_type.html" title="Custom Type Example"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Bulk Write Operations</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bulk-write-operations">
+<h1>Bulk Write Operations<a class="headerlink" href="#bulk-write-operations" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial explains how to take advantage of PyMongo’s bulk
+write operation features. Executing write operations in batches
+reduces the number of network round trips, increasing write
+throughput.</p>
+<div class="section" id="bulk-insert">
+<h2>Bulk Insert<a class="headerlink" href="#bulk-insert" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.6.</span></p>
+</div>
+<p>A batch of documents can be inserted by passing a list to the
+<a class="reference internal" href="../api/pymongo/collection.html#pymongo.collection.Collection.insert_many" title="pymongo.collection.Collection.insert_many"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert_many()</span></code></a> method. PyMongo
+will automatically split the batch into smaller sub-batches based on
+the maximum message size accepted by MongoDB, supporting very large
+bulk insert operations.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pymongo</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">()</span><span class="o">.</span><span class="n">bulk_example</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">insert_many</span><span class="p">([{</span><span class="s1">&#39;i&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">)])</span><span class="o">.</span><span class="n">inserted_ids</span>
+<span class="go">[...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({})</span>
+<span class="go">10000</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mixed-bulk-write-operations">
+<h2>Mixed Bulk Write Operations<a class="headerlink" href="#mixed-bulk-write-operations" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7.</span></p>
+</div>
+<p>PyMongo also supports executing mixed bulk write operations. A batch
+of insert, update, and remove operations can be executed together using
+the bulk write operations API.</p>
+<div class="section" id="ordered-bulk-write-operations">
+<span id="ordered-bulk"></span><h3>Ordered Bulk Write Operations<a class="headerlink" href="#ordered-bulk-write-operations" title="Permalink to this headline">¶</a></h3>
+<p>Ordered bulk write operations are batched and sent to the server in the
+order provided for serial execution. The return value is an instance of
+<a class="reference internal" href="../api/pymongo/results.html#pymongo.results.BulkWriteResult" title="pymongo.results.BulkWriteResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkWriteResult</span></code></a> describing the type and count
+of operations performed.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">InsertOne</span><span class="p">,</span> <span class="n">DeleteMany</span><span class="p">,</span> <span class="n">ReplaceOne</span><span class="p">,</span> <span class="n">UpdateOne</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="n">DeleteMany</span><span class="p">({}),</span>  <span class="c1"># Remove all documents from the previous example.</span>
+<span class="gp">... </span>    <span class="n">InsertOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">InsertOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">InsertOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">UpdateOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;foo&#39;</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">}}),</span>
+<span class="gp">... </span>    <span class="n">UpdateOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;$inc&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;j&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">ReplaceOne</span><span class="p">({</span><span class="s1">&#39;j&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;j&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">bulk_api_result</span><span class="p">)</span>
+<span class="go">{&#39;nInserted&#39;: 3,</span>
+<span class="go"> &#39;nMatched&#39;: 2,</span>
+<span class="go"> &#39;nModified&#39;: 2,</span>
+<span class="go"> &#39;nRemoved&#39;: 10000,</span>
+<span class="go"> &#39;nUpserted&#39;: 1,</span>
+<span class="go"> &#39;upserted&#39;: [{u&#39;_id&#39;: 4, u&#39;index&#39;: 5}],</span>
+<span class="go"> &#39;writeConcernErrors&#39;: [],</span>
+<span class="go"> &#39;writeErrors&#39;: []}</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">nModified</span></code> is only reported by MongoDB 2.6 and later. When
+connected to an earlier server version, or in certain mixed version sharding
+configurations, PyMongo omits this field from the results of a bulk
+write operation.</p>
+</div>
+<p>The first write failure that occurs (e.g. duplicate key error) aborts the
+remaining operations, and PyMongo raises
+<a class="reference internal" href="../api/pymongo/errors.html#pymongo.errors.BulkWriteError" title="pymongo.errors.BulkWriteError"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkWriteError</span></code></a>. The <code class="xref py py-attr docutils literal notranslate"><span class="pre">details</span></code> attibute of
+the exception instance provides the execution results up until the failure
+occurred and details about the failure - including the operation that caused
+the failure.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">InsertOne</span><span class="p">,</span> <span class="n">DeleteOne</span><span class="p">,</span> <span class="n">ReplaceOne</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo.errors</span> <span class="kn">import</span> <span class="n">BulkWriteError</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">requests</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">ReplaceOne</span><span class="p">({</span><span class="s1">&#39;j&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;i&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">InsertOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}),</span>  <span class="c1"># Violates the unique key constraint on _id.</span>
+<span class="gp">... </span>    <span class="n">DeleteOne</span><span class="p">({</span><span class="s1">&#39;i&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">db</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">BulkWriteError</span> <span class="k">as</span> <span class="n">bwe</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">pprint</span><span class="p">(</span><span class="n">bwe</span><span class="o">.</span><span class="n">details</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{&#39;nInserted&#39;: 0,</span>
+<span class="go"> &#39;nMatched&#39;: 1,</span>
+<span class="go"> &#39;nModified&#39;: 1,</span>
+<span class="go"> &#39;nRemoved&#39;: 0,</span>
+<span class="go"> &#39;nUpserted&#39;: 0,</span>
+<span class="go"> &#39;upserted&#39;: [],</span>
+<span class="go"> &#39;writeConcernErrors&#39;: [],</span>
+<span class="go"> &#39;writeErrors&#39;: [{u&#39;code&#39;: 11000,</span>
+<span class="go">                  u&#39;errmsg&#39;: u&#39;...E11000...duplicate key error...&#39;,</span>
+<span class="go">                  u&#39;index&#39;: 1,...</span>
+<span class="go">                  u&#39;op&#39;: {&#39;_id&#39;: 4}}]}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unordered-bulk-write-operations">
+<span id="unordered-bulk"></span><h3>Unordered Bulk Write Operations<a class="headerlink" href="#unordered-bulk-write-operations" title="Permalink to this headline">¶</a></h3>
+<p>Unordered bulk write operations are batched and sent to the server in
+<strong>arbitrary order</strong> where they may be executed in parallel. Any errors
+that occur are reported after all operations are attempted.</p>
+<p>In the next example the first and third operations fail due to the unique
+constraint on _id. Since we are doing unordered execution the second
+and fourth operations succeed.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">requests</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">InsertOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">DeleteOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">InsertOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span>
+<span class="gp">... </span>    <span class="n">ReplaceOne</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;i&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">db</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">BulkWriteError</span> <span class="k">as</span> <span class="n">bwe</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">pprint</span><span class="p">(</span><span class="n">bwe</span><span class="o">.</span><span class="n">details</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{&#39;nInserted&#39;: 0,</span>
+<span class="go"> &#39;nMatched&#39;: 1,</span>
+<span class="go"> &#39;nModified&#39;: 1,</span>
+<span class="go"> &#39;nRemoved&#39;: 1,</span>
+<span class="go"> &#39;nUpserted&#39;: 0,</span>
+<span class="go"> &#39;upserted&#39;: [],</span>
+<span class="go"> &#39;writeConcernErrors&#39;: [],</span>
+<span class="go"> &#39;writeErrors&#39;: [{u&#39;code&#39;: 11000,</span>
+<span class="go">                  u&#39;errmsg&#39;: u&#39;...E11000...duplicate key error...&#39;,</span>
+<span class="go">                  u&#39;index&#39;: 0,...</span>
+<span class="go">                  u&#39;op&#39;: {&#39;_id&#39;: 1}},</span>
+<span class="go">                 {u&#39;code&#39;: 11000,</span>
+<span class="go">                  u&#39;errmsg&#39;: u&#39;...E11000...duplicate key error...&#39;,</span>
+<span class="go">                  u&#39;index&#39;: 2,...</span>
+<span class="go">                  u&#39;op&#39;: {&#39;_id&#39;: 3}}]}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="write-concern">
+<h3>Write Concern<a class="headerlink" href="#write-concern" title="Permalink to this headline">¶</a></h3>
+<p>Bulk operations are executed with the
+<a class="reference internal" href="../api/pymongo/collection.html#pymongo.collection.Collection.write_concern" title="pymongo.collection.Collection.write_concern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code></a> of the collection they
+are executed against. Write concern errors (e.g. wtimeout) will be reported
+after all operations are attempted, regardless of execution order.</p>
+<dl>
+<dt>::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">WriteConcern</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coll</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">write_concern</span><span class="o">=</span><span class="n">WriteConcern</span><span class="p">(</span><span class="n">w</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">wtimeout</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">coll</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">([</span><span class="n">InsertOne</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">})</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">BulkWriteError</span> <span class="k">as</span> <span class="n">bwe</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">pprint</span><span class="p">(</span><span class="n">bwe</span><span class="o">.</span><span class="n">details</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{&#39;nInserted&#39;: 4,</span>
+<span class="go"> &#39;nMatched&#39;: 0,</span>
+<span class="go"> &#39;nModified&#39;: 0,</span>
+<span class="go"> &#39;nRemoved&#39;: 0,</span>
+<span class="go"> &#39;nUpserted&#39;: 0,</span>
+<span class="go"> &#39;upserted&#39;: [],</span>
+<span class="go"> &#39;writeConcernErrors&#39;: [{u&#39;code&#39;: 64...</span>
+<span class="go">                         u&#39;errInfo&#39;: {u&#39;wtimeout&#39;: True},</span>
+<span class="go">                         u&#39;errmsg&#39;: u&#39;waiting for replication timed out&#39;}],</span>
+<span class="go"> &#39;writeErrors&#39;: []}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Bulk Write Operations</a><ul>
+<li><a class="reference internal" href="#bulk-insert">Bulk Insert</a></li>
+<li><a class="reference internal" href="#mixed-bulk-write-operations">Mixed Bulk Write Operations</a><ul>
+<li><a class="reference internal" href="#ordered-bulk-write-operations">Ordered Bulk Write Operations</a></li>
+<li><a class="reference internal" href="#unordered-bulk-write-operations">Unordered Bulk Write Operations</a></li>
+<li><a class="reference internal" href="#write-concern">Write Concern</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="custom_type.html"
+                        title="previous chapter">Custom Type Example</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="datetimes.html"
+                        title="next chapter">Datetimes and Timezones</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/bulk.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="datetimes.html" title="Datetimes and Timezones"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="custom_type.html" title="Custom Type Example"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Bulk Write Operations</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

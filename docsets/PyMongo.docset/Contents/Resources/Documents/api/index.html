@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Documentation &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bson – BSON (Binary JSON) Encoding and Decoding" href="bson/index.html" />
+    <link rel="prev" title="Compatibility Policy" href="../compatibility-policy.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bson/index.html" title="bson – BSON (Binary JSON) Encoding and Decoding"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../compatibility-policy.html" title="Compatibility Policy"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API Documentation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The PyMongo distribution contains three top-level packages for
+interacting with MongoDB. <a class="reference internal" href="bson/index.html#module-bson" title="bson: BSON (Binary JSON) Encoding and Decoding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code></a> is an implementation of the
+<a class="reference external" href="http://bsonspec.org">BSON format</a>, <a class="reference internal" href="pymongo/index.html#module-pymongo" title="pymongo: Python driver for MongoDB"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code></a> is a
+full-featured driver for MongoDB, and <a class="reference internal" href="gridfs/index.html#module-gridfs" title="gridfs: Tools for working with GridFS"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code></a> is a set of tools
+for working with the <a class="reference external" href="http://www.mongodb.org/display/DOCS/GridFS+Specification">GridFS</a> storage
+specification.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bson/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bson/binary.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">binary</span></code> – Tools for representing binary data to be stored in MongoDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/code.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">code</span></code> – Tools for representing JavaScript code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/codec_options.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">codec_options</span></code> – Tools for specifying BSON codec options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/dbref.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dbref</span></code> – Tools for manipulating DBRefs (references to documents stored in MongoDB)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/decimal128.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">decimal128</span></code> – Support for BSON Decimal128</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/errors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/int64.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">int64</span></code> – Tools for representing BSON int64</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/json_util.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json_util</span></code> – Tools for using Python’s <code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code> module with BSON documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/max_key.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">max_key</span></code> – Representation for the MongoDB internal MaxKey type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/min_key.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">min_key</span></code> – Representation for the MongoDB internal MinKey type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/objectid.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">objectid</span></code> – Tools for working with MongoDB ObjectIds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/raw_bson.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">raw_bson</span></code> – Tools for representing raw BSON documents.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/regex.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">regex</span></code> – Tools for representing MongoDB regular expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/son.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">son</span></code> – Tools for working with SON, an ordered mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/timestamp.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">timestamp</span></code> – Tools for representing MongoDB internal Timestamps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/tz_util.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tz_util</span></code> – Utilities for dealing with timezones in Python</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pymongo/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/bulk.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bulk</span></code> – The bulk write operations interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/change_stream.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">change_stream</span></code> – Watch changes on a collection, database, or cluster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/client_session.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">client_session</span></code> – Logical sessions for sequential operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/collation.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">collation</span></code> – Tools for working with collations.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/collection.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">collection</span></code> – Collection level operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/command_cursor.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">command_cursor</span></code> – Tools for iterating over MongoDB command results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/cursor.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cursor</span></code> – Tools for iterating over MongoDB query results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/cursor_manager.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cursor_manager</span></code> – Managers to handle when cursors are killed after being closed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/database.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">database</span></code> – Database level operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/driver_info.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">driver_info</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/encryption.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption</span></code> – Client-Side Field Level Encryption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/encryption_options.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption_options</span></code> – Automatic Client-Side Field Level Encryption</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/errors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/message.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">message</span></code> – Tools for creating messages to be sent to MongoDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/mongo_client.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mongo_client</span></code> – Tools for connecting to MongoDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/mongo_replica_set_client.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mongo_replica_set_client</span></code> – Tools for connecting to a MongoDB replica set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/monitoring.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">monitoring</span></code> – Tools for monitoring driver events.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/operations.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">operations</span></code> – Operation class definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/pool.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pool</span></code> – Pool module for use with a MongoDB client.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/read_concern.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_concern</span></code> – Tools for working with read concern.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/read_preferences.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code> – Utilities for choosing which member of a replica set to read from.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/results.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">results</span></code> – Result class definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/son_manipulator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">son_manipulator</span></code> – Manipulators that can edit SON documents as they are saved or retrieved</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/uri_parser.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">uri_parser</span></code> – Tools to parse and validate a MongoDB URI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/write_concern.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">write_concern</span></code> – Tools for specifying write concern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pymongo/event_loggers.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">event_loggers</span></code> – Example loggers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gridfs/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> – Tools for working with GridFS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gridfs/errors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code> package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gridfs/grid_file.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">grid_file</span></code> – Tools for representing files stored in GridFS</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../compatibility-policy.html"
+                        title="previous chapter">Compatibility Policy</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="bson/index.html"
+                        title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bson/index.html" title="bson – BSON (Binary JSON) Encoding and Decoding"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../compatibility-policy.html" title="Compatibility Policy"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API Documentation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

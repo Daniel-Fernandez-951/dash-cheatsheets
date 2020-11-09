@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Selector Example &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tailable Cursors" href="tailable.html" />
+    <link rel="prev" title="PyMongo and mod_wsgi" href="mod_wsgi.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tailable.html" title="Tailable Cursors"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mod_wsgi.html" title="PyMongo and mod_wsgi"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Server Selector Example</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="server-selector-example">
+<h1>Server Selector Example<a class="headerlink" href="#server-selector-example" title="Permalink to this headline">¶</a></h1>
+<p>Users can exert fine-grained control over the <a class="reference external" href="https://docs.mongodb.com/manual/core/read-preference-mechanics/">server selection algorithm</a>
+by setting the <cite>server_selector</cite> option on the <a class="reference internal" href="../api/pymongo/index.html#pymongo.MongoClient" title="pymongo.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a>
+to an appropriate callable. This example shows how to use this functionality
+to prefer servers running on <code class="docutils literal notranslate"><span class="pre">localhost</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Use of custom server selector functions is a power user feature. Misusing
+custom server selectors can have unintended consequences such as degraded
+read/write performance.</p>
+</div>
+<div class="section" id="example-selecting-servers-running-on-localhost">
+<h2>Example: Selecting Servers Running on <code class="docutils literal notranslate"><span class="pre">localhost</span></code><a class="headerlink" href="#example-selecting-servers-running-on-localhost" title="Permalink to this headline">¶</a></h2>
+<p>To start, we need to write the server selector function that will be used.
+The server selector function should accept a list of
+<a class="reference internal" href="../api/pymongo/server_description.html#pymongo.server_description.ServerDescription" title="pymongo.server_description.ServerDescription"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerDescription</span></code></a> objects and return a
+list of server descriptions that are suitable for the read or write operation.
+A server selector must not create or modify
+<a class="reference internal" href="../api/pymongo/server_description.html#pymongo.server_description.ServerDescription" title="pymongo.server_description.ServerDescription"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerDescription</span></code></a> objects, and must return
+the selected instances unchanged.</p>
+<p>In this example, we write a server selector that prioritizes servers running on
+<code class="docutils literal notranslate"><span class="pre">localhost</span></code>. This can be desirable when using a sharded cluster with multiple
+<code class="docutils literal notranslate"><span class="pre">mongos</span></code>, as locally run queries are likely to see lower latency and higher
+throughput. Please note, however, that it is highly dependent on the
+application if preferring <code class="docutils literal notranslate"><span class="pre">localhost</span></code> is beneficial or not.</p>
+<p>In addition to comparing the hostname with <code class="docutils literal notranslate"><span class="pre">localhost</span></code>, our server selector
+function accounts for the edge case when no servers are running on
+<code class="docutils literal notranslate"><span class="pre">localhost</span></code>. In this case, we allow the default server selection logic to
+prevail by passing through the received server description list unchanged.
+Failure to do this would render the client unable to communicate with MongoDB
+in the event that no servers were running on <code class="docutils literal notranslate"><span class="pre">localhost</span></code>.</p>
+<p>The described server selection logic is implemented in the following server
+selector function:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">server_selector</span><span class="p">(</span><span class="n">server_descriptions</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">servers</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>        <span class="n">server</span> <span class="k">for</span> <span class="n">server</span> <span class="ow">in</span> <span class="n">server_descriptions</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">server</span><span class="o">.</span><span class="n">address</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;localhost&#39;</span>
+<span class="gp">... </span>    <span class="p">]</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">servers</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">server_descriptions</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">servers</span>
+</pre></div>
+</div>
+<p>Finally, we can create a <a class="reference internal" href="../api/pymongo/index.html#pymongo.MongoClient" title="pymongo.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a> instance with this
+server selector.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">server_selector</span><span class="o">=</span><span class="n">server_selector</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="server-selection-process">
+<h2>Server Selection Process<a class="headerlink" href="#server-selection-process" title="Permalink to this headline">¶</a></h2>
+<p>This section dives deeper into the server selection process for reads and
+writes. In the case of a write, the driver performs the following operations
+(in order) during the selection process:</p>
+<ol class="arabic simple">
+<li><p>Select all writeable servers from the list of known hosts. For a replica set
+this is the primary, while for a sharded cluster this is all the known mongoses.</p></li>
+<li><p>Apply the user-defined server selector function. Note that the custom server
+selector is <strong>not</strong> called if there are no servers left from the previous
+filtering stage.</p></li>
+<li><p>Apply the <code class="docutils literal notranslate"><span class="pre">localThresholdMS</span></code> setting to the list of remaining hosts. This
+whittles the host list down to only contain servers whose latency is at most
+<code class="docutils literal notranslate"><span class="pre">localThresholdMS</span></code> milliseconds higher than the lowest observed latency.</p></li>
+<li><p>Select a server at random from the remaining host list. The desired
+operation is then performed against the selected server.</p></li>
+</ol>
+<p>In the case of <strong>reads</strong> the process is identical except for the first step.
+Here, instead of selecting all writeable servers, we select all servers
+matching the user’s <a class="reference internal" href="../api/pymongo/read_preferences.html#pymongo.read_preferences.ReadPreference" title="pymongo.read_preferences.ReadPreference"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadPreference</span></code></a> from the
+list of known hosts. As an example, for a 3-member replica set with a
+<a class="reference internal" href="../api/pymongo/read_preferences.html#pymongo.read_preferences.Secondary" title="pymongo.read_preferences.Secondary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Secondary</span></code></a> read preference, we would select
+all available secondaries.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Server Selector Example</a><ul>
+<li><a class="reference internal" href="#example-selecting-servers-running-on-localhost">Example: Selecting Servers Running on <code class="docutils literal notranslate"><span class="pre">localhost</span></code></a></li>
+<li><a class="reference internal" href="#server-selection-process">Server Selection Process</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mod_wsgi.html"
+                        title="previous chapter">PyMongo and mod_wsgi</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tailable.html"
+                        title="next chapter">Tailable Cursors</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/server_selection.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tailable.html" title="Tailable Cursors"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mod_wsgi.html" title="PyMongo and mod_wsgi"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Server Selector Example</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

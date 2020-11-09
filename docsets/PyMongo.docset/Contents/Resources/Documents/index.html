@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PyMongo 3.11.0 Documentation &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/delighted.js"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Using PyMongo with MongoDB Atlas" href="atlas.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="atlas.html" title="Using PyMongo with MongoDB Atlas"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">PyMongo 3.11.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyMongo 3.11.0 Documentation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pymongo-release-documentation">
+<h1>PyMongo 3.11.0 Documentation<a class="headerlink" href="#pymongo-release-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><strong>PyMongo</strong> is a Python distribution containing tools for working with
+<a class="reference external" href="http://www.mongodb.org">MongoDB</a>, and is the recommended way to
+work with MongoDB from Python. This documentation attempts to explain
+everything you need to know to use <strong>PyMongo</strong>.</p>
+<dl class="simple">
+<dt><a class="reference internal" href="installation.html"><span class="doc">Installing / Upgrading</span></a></dt><dd><p>Instructions on how to get the distribution.</p>
+</dd>
+<dt><a class="reference internal" href="tutorial.html"><span class="doc">Tutorial</span></a></dt><dd><p>Start here for a quick overview.</p>
+</dd>
+<dt><a class="reference internal" href="examples/index.html"><span class="doc">Examples</span></a></dt><dd><p>Examples of how to perform specific tasks.</p>
+</dd>
+<dt><a class="reference internal" href="atlas.html"><span class="doc">Using PyMongo with MongoDB Atlas</span></a></dt><dd><p>Using PyMongo with MongoDB Atlas.</p>
+</dd>
+<dt><a class="reference internal" href="examples/tls.html"><span class="doc">TLS/SSL and PyMongo</span></a></dt><dd><p>Using PyMongo with TLS / SSL.</p>
+</dd>
+<dt><a class="reference internal" href="examples/encryption.html"><span class="doc">Client-Side Field Level Encryption</span></a></dt><dd><p>Using PyMongo with client side encryption.</p>
+</dd>
+<dt><a class="reference internal" href="faq.html"><span class="doc">Frequently Asked Questions</span></a></dt><dd><p>Some questions that come up often.</p>
+</dd>
+<dt><a class="reference internal" href="migrate-to-pymongo3.html"><span class="doc">PyMongo 3 Migration Guide</span></a></dt><dd><p>A PyMongo 2.x to 3.x migration guide.</p>
+</dd>
+<dt><a class="reference internal" href="python3.html"><span class="doc">Python 3 FAQ</span></a></dt><dd><p>Frequently asked questions about python 3 support.</p>
+</dd>
+<dt><a class="reference internal" href="compatibility-policy.html"><span class="doc">Compatibility Policy</span></a></dt><dd><p>Explanation of deprecations, and how to keep pace with changes in PyMongo’s
+API.</p>
+</dd>
+<dt><a class="reference internal" href="api/index.html"><span class="doc">API Documentation</span></a></dt><dd><p>The complete API documentation, organized by module.</p>
+</dd>
+<dt><a class="reference internal" href="tools.html"><span class="doc">Tools</span></a></dt><dd><p>A listing of Python tools and libraries that have been written for
+MongoDB.</p>
+</dd>
+<dt><a class="reference internal" href="developer/index.html"><span class="doc">Developer Guide</span></a></dt><dd><p>Developer guide for contributors to PyMongo.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Permalink to this headline">¶</a></h2>
+<p>If you’re having trouble or have questions about PyMongo, ask your question on
+our <a class="reference external" href="https://developer.mongodb.com/community/forums/tags/c/drivers-odms-connectors/7/python-driver">MongoDB Community Forum</a>.
+You may also want to consider a
+<a class="reference external" href="https://support.mongodb.com/welcome">commercial support subscription</a>.
+Once you get an answer, it’d be great if you could work it back into this
+documentation and contribute!</p>
+</div>
+<div class="section" id="issues">
+<h2>Issues<a class="headerlink" href="#issues" title="Permalink to this headline">¶</a></h2>
+<p>All issues should be reported (and can be tracked / voted for /
+commented on) at the main <a class="reference external" href="http://jira.mongodb.org/browse/PYTHON">MongoDB JIRA bug tracker</a>, in the “Python Driver”
+project.</p>
+</div>
+<div class="section" id="feature-requests-feedback">
+<h2>Feature Requests / Feedback<a class="headerlink" href="#feature-requests-feedback" title="Permalink to this headline">¶</a></h2>
+<p>Use our <a class="reference external" href="https://feedback.mongodb.com/forums/924286-drivers">feedback engine</a>
+to send us feature requests and general feedback about PyMongo.</p>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p><strong>PyMongo</strong> has a large <a class="reference internal" href="contributors.html"><span class="doc">community</span></a> and
+contributions are always encouraged. Contributions can be as simple as
+minor tweaks to this documentation. To contribute, fork the project on
+<a class="reference external" href="http://github.com/mongodb/mongo-python-driver/">GitHub</a> and send a
+pull request.</p>
+</div>
+<div class="section" id="changes">
+<h2>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h2>
+<p>See the <a class="reference internal" href="changelog.html"><span class="doc">Changelog</span></a> for a full list of changes to PyMongo.
+For older versions of the documentation please see the
+<a class="reference external" href="http://api.mongodb.org/python/">archive list</a>.</p>
+</div>
+<div class="section" id="about-this-documentation">
+<h2>About This Documentation<a class="headerlink" href="#about-this-documentation" title="Permalink to this headline">¶</a></h2>
+<p>This documentation is generated using the <a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a> documentation generator. The source files
+for the documentation are located in the <em>doc/</em> directory of the
+<strong>PyMongo</strong> distribution. To generate the docs locally run the
+following command from the root directory of the <strong>PyMongo</strong> source:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python setup.py doc
+</pre></div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyMongo 3.11.0 Documentation</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#getting-help">Getting Help</a></li>
+<li><a class="reference internal" href="#issues">Issues</a></li>
+<li><a class="reference internal" href="#feature-requests-feedback">Feature Requests / Feedback</a></li>
+<li><a class="reference internal" href="#contributing">Contributing</a></li>
+<li><a class="reference internal" href="#changes">Changes</a></li>
+<li><a class="reference internal" href="#about-this-documentation">About This Documentation</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="atlas.html"
+                        title="next chapter">Using PyMongo with MongoDB Atlas</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="atlas.html" title="Using PyMongo with MongoDB Atlas"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">PyMongo 3.11.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyMongo 3.11.0 Documentation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

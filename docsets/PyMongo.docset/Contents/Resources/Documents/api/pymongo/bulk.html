@@ -1,0 +1,295 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>bulk – The bulk write operations interface — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="change_stream.html" rel="next" title="change_stream – Watch changes on a collection, database, or cluster"/>
+<link href="index.html" rel="prev" title="pymongo – Python driver for MongoDB"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="change_stream.html" title="change_stream – Watch changes on a collection, database, or cluster">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="index.html" title="pymongo – Python driver for MongoDB">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">bulk</span></code> – The bulk write operations interface</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.bulk">
+<span id="bulk-the-bulk-write-operations-interface"></span><h1><a name="//apple_ref/cpp/Module/pymongo.bulk"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">bulk</span></code> – The bulk write operations interface<a class="headerlink" href="#module-pymongo.bulk" title="Permalink to this headline">¶</a></h1>
+<p>The bulk write operations interface.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7.</span></p>
+</div>
+<dl class="py class">
+<dt id="pymongo.bulk.BulkOperationBuilder"><a name="//apple_ref/cpp/Class/pymongo.bulk.BulkOperationBuilder"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.bulk.</code><code class="sig-name descname">BulkOperationBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span></em>, <em class="sig-param"><span class="n">ordered</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">bypass_document_validation</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkOperationBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>DEPRECATED</strong>: Initialize a new BulkOperationBuilder instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>collection</cite>: A <a class="reference internal" href="collection.html#pymongo.collection.Collection" title="pymongo.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a> instance.</p></li>
+<li><p><cite>ordered</cite> (optional): If <code class="docutils literal notranslate"><span class="pre">True</span></code> all operations will be executed
+serially, in the order provided, and the entire execution will
+abort on the first error. If <code class="docutils literal notranslate"><span class="pre">False</span></code> operations will be executed
+in arbitrary order (possibly in parallel on the server), reporting
+any errors that occurred after attempting all operations. Defaults
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><cite>bypass_document_validation</cite>: (optional) If <code class="docutils literal notranslate"><span class="pre">True</span></code>, allows the
+write to opt-out of document level validation. Default is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>bypass_document_validation</cite> requires server version
+<strong>&gt;= 3.2</strong></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Deprecated. Use <a class="reference internal" href="collection.html#pymongo.collection.Collection.bulk_write" title="pymongo.collection.Collection.bulk_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bulk_write()</span></code></a>
+instead.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.2: </span>Added bypass_document_validation support</p>
+</div>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkOperationBuilder.execute"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkOperationBuilder.execute"></a>
+<code class="sig-name descname">execute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">write_concern</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkOperationBuilder.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute all provided operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>write_concern (optional): the write concern for this bulk
+execution.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkOperationBuilder.find"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkOperationBuilder.find"></a>
+<code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">selector</span></em>, <em class="sig-param"><span class="n">collation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkOperationBuilder.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify selection criteria for bulk operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>selector</cite> (dict): the selection criteria for update
+and remove operations.</p></li>
+<li><p><cite>collation</cite> (optional): An instance of
+<a class="reference internal" href="collation.html#pymongo.collation.Collation" title="pymongo.collation.Collation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>. This option is only
+supported on MongoDB 3.4 and above.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><ul class="simple">
+<li><p>A <a class="reference internal" href="#pymongo.bulk.BulkWriteOperation" title="pymongo.bulk.BulkWriteOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkWriteOperation</span></code></a> instance, used to add
+update and remove operations to this bulk operation.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.4: </span>Added the <cite>collation</cite> option.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkOperationBuilder.insert"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkOperationBuilder.insert"></a>
+<code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">document</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkOperationBuilder.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a single document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>document</cite> (dict): the document to insert</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../faq.html#writes-and-ids"><span class="std std-ref">Why does PyMongo add an _id field to all of my documents?</span></a></p>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.bulk.BulkUpsertOperation"><a name="//apple_ref/cpp/Class/pymongo.bulk.BulkUpsertOperation"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.bulk.</code><code class="sig-name descname">BulkUpsertOperation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">selector</span></em>, <em class="sig-param"><span class="n">bulk</span></em>, <em class="sig-param"><span class="n">collation</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkUpsertOperation" title="Permalink to this definition">¶</a></dt>
+<dd><p>An interface for adding upsert operations.</p>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkUpsertOperation.replace_one"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkUpsertOperation.replace_one"></a>
+<code class="sig-name descname">replace_one</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">replacement</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkUpsertOperation.replace_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace one entire document matching the selector criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>replacement</cite> (dict): the replacement document</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkUpsertOperation.update"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkUpsertOperation.update"></a>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">update</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkUpsertOperation.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all documents matching the selector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>update</cite> (dict): the update operations to apply</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkUpsertOperation.update_one"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkUpsertOperation.update_one"></a>
+<code class="sig-name descname">update_one</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">update</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkUpsertOperation.update_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update one document matching the selector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>update</cite> (dict): the update operations to apply</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.bulk.BulkWriteOperation"><a name="//apple_ref/cpp/Class/pymongo.bulk.BulkWriteOperation"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.bulk.</code><code class="sig-name descname">BulkWriteOperation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">selector</span></em>, <em class="sig-param"><span class="n">bulk</span></em>, <em class="sig-param"><span class="n">collation</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkWriteOperation" title="Permalink to this definition">¶</a></dt>
+<dd><p>An interface for adding update or remove operations.</p>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkWriteOperation.remove"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkWriteOperation.remove"></a>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkWriteOperation.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all documents matching the selector criteria.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkWriteOperation.remove_one"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkWriteOperation.remove_one"></a>
+<code class="sig-name descname">remove_one</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkWriteOperation.remove_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a single document matching the selector criteria.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkWriteOperation.replace_one"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkWriteOperation.replace_one"></a>
+<code class="sig-name descname">replace_one</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">replacement</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkWriteOperation.replace_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace one entire document matching the selector criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>replacement</cite> (dict): the replacement document</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkWriteOperation.update"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkWriteOperation.update"></a>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">update</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkWriteOperation.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all documents matching the selector criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>update</cite> (dict): the update operations to apply</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkWriteOperation.update_one"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkWriteOperation.update_one"></a>
+<code class="sig-name descname">update_one</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">update</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkWriteOperation.update_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update one document matching the selector criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>update</cite> (dict): the update operations to apply</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.bulk.BulkWriteOperation.upsert"><a name="//apple_ref/cpp/Method/pymongo.bulk.BulkWriteOperation.upsert"></a>
+<code class="sig-name descname">upsert</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.bulk.BulkWriteOperation.upsert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specify that all chained update operations should be
+upserts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p>A <a class="reference internal" href="#pymongo.bulk.BulkUpsertOperation" title="pymongo.bulk.BulkUpsertOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BulkUpsertOperation</span></code></a> instance, used to add
+update operations to this bulk operation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="index.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="change_stream.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">change_stream</span></code> – Watch changes on a collection, database, or cluster</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/bulk.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="change_stream.html" title="change_stream – Watch changes on a collection, database, or cluster">next</a> |</li>
+<li class="right">
+<a href="index.html" title="pymongo – Python driver for MongoDB">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">bulk</span></code> – The bulk write operations interface</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

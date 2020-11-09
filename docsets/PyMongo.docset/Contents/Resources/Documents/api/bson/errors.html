@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>errors – Exceptions raised by the bson package — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="int64.html" rel="next" title="int64 – Tools for representing BSON int64"/>
+<link href="decimal128.html" rel="prev" title="decimal128 – Support for BSON Decimal128"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="int64.html" title="int64 – Tools for representing BSON int64">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="decimal128.html" title="decimal128 – Support for BSON Decimal128">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> package</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-bson.errors">
+<span id="errors-exceptions-raised-by-the-bson-package"></span><h1><a name="//apple_ref/cpp/Module/bson.errors"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <a class="reference internal" href="index.html#module-bson" title="bson: BSON (Binary JSON) Encoding and Decoding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code></a> package<a class="headerlink" href="#module-bson.errors" title="Permalink to this headline">¶</a></h1>
+<p>Exceptions raised by the BSON package.</p>
+<dl class="py exception">
+<dt id="bson.errors.BSONError"><a name="//apple_ref/cpp/Exception/bson.errors.BSONError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">bson.errors.</code><code class="sig-name descname">BSONError</code><a class="headerlink" href="#bson.errors.BSONError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all BSON exceptions.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="bson.errors.InvalidBSON"><a name="//apple_ref/cpp/Exception/bson.errors.InvalidBSON"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">bson.errors.</code><code class="sig-name descname">InvalidBSON</code><a class="headerlink" href="#bson.errors.InvalidBSON" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when trying to create a BSON object from invalid data.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="bson.errors.InvalidDocument"><a name="//apple_ref/cpp/Exception/bson.errors.InvalidDocument"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">bson.errors.</code><code class="sig-name descname">InvalidDocument</code><a class="headerlink" href="#bson.errors.InvalidDocument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when trying to create a BSON object from an invalid document.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="bson.errors.InvalidId"><a name="//apple_ref/cpp/Exception/bson.errors.InvalidId"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">bson.errors.</code><code class="sig-name descname">InvalidId</code><a class="headerlink" href="#bson.errors.InvalidId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when trying to create an ObjectId from invalid data.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="bson.errors.InvalidStringData"><a name="//apple_ref/cpp/Exception/bson.errors.InvalidStringData"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">bson.errors.</code><code class="sig-name descname">InvalidStringData</code><a class="headerlink" href="#bson.errors.InvalidStringData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when trying to encode a string containing non-UTF8 data.</p>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="decimal128.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">decimal128</span></code> – Support for BSON Decimal128</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="int64.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">int64</span></code> – Tools for representing BSON int64</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/errors.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="int64.html" title="int64 – Tools for representing BSON int64">next</a> |</li>
+<li class="right">
+<a href="decimal128.html" title="decimal128 – Support for BSON Decimal128">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> package</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

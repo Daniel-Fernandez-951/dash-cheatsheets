@@ -1,0 +1,654 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Handling UUID Data &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Frequently Asked Questions" href="../faq.html" />
+    <link rel="prev" title="Client-Side Field Level Encryption" href="encryption.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../faq.html" title="Frequently Asked Questions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="encryption.html" title="Client-Side Field Level Encryption"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Handling UUID Data</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="handling-uuid-data">
+<span id="handling-uuid-data-example"></span><h1>Handling UUID Data<a class="headerlink" href="#handling-uuid-data" title="Permalink to this headline">¶</a></h1>
+<p>PyMongo ships with built-in support for dealing with UUID types.
+It is straightforward to store native <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> objects
+to MongoDB and retrieve them as native <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> objects:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">UuidRepresentation</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
+
+<span class="c1"># use the &#39;standard&#39; representation for cross-language compatibility.</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">STANDARD</span><span class="p">)</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s1">&#39;uuid_db&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;uuid_coll&#39;</span><span class="p">)</span>
+
+<span class="c1"># remove all documents from collection</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">delete_many</span><span class="p">({})</span>
+
+<span class="c1"># create a native uuid object</span>
+<span class="n">uuid_obj</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+
+<span class="c1"># save the native uuid object to MongoDB</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">uuid_obj</span><span class="p">})</span>
+
+<span class="c1"># retrieve the stored uuid object from MongoDB</span>
+<span class="n">document</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({})</span>
+
+<span class="c1"># check that the retrieved UUID matches the inserted UUID</span>
+<span class="k">assert</span> <span class="n">document</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">uuid_obj</span>
+</pre></div>
+</div>
+<p>Native <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> objects can also be used as part of MongoDB
+queries:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">document</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">uuid_obj</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">document</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">uuid_obj</span>
+</pre></div>
+</div>
+<p>The above examples illustrate the simplest of use-cases - one where the
+UUID is generated by, and used in the same application. However,
+the situation can be significantly more complex when dealing with a MongoDB
+deployment that contains UUIDs created by other drivers as the Java and CSharp
+drivers have historically encoded UUIDs using a byte-order that is different
+from the one used by PyMongo. Applications that require interoperability across
+these drivers must specify the appropriate
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation" title="bson.binary.UuidRepresentation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UuidRepresentation</span></code></a>.</p>
+<p>In the following sections, we describe how drivers have historically differed
+in their encoding of UUIDs, and how applications can use the
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation" title="bson.binary.UuidRepresentation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UuidRepresentation</span></code></a> configuration option to maintain
+cross-language compatibility.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>New applications that do not share a MongoDB deployment with
+any other application and that have never stored UUIDs in MongoDB
+should use the <code class="docutils literal notranslate"><span class="pre">standard</span></code> UUID representation for cross-language
+compatibility. See <a class="reference internal" href="#configuring-uuid-representation"><span class="std std-ref">Configuring a UUID Representation</span></a> for details
+on how to configure the <a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation" title="bson.binary.UuidRepresentation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UuidRepresentation</span></code></a>.</p>
+</div>
+<div class="section" id="legacy-handling-of-uuid-data">
+<span id="example-legacy-uuid"></span><h2>Legacy Handling of UUID Data<a class="headerlink" href="#legacy-handling-of-uuid-data" title="Permalink to this headline">¶</a></h2>
+<p>Historically, MongoDB Drivers have used different byte-ordering
+while serializing UUID types to <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a>.
+Consider, for instance, a UUID with the following canonical textual
+representation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">00112233</span><span class="o">-</span><span class="mi">4455</span><span class="o">-</span><span class="mi">6677</span><span class="o">-</span><span class="mi">8899</span><span class="o">-</span><span class="n">aabbccddeeff</span>
+</pre></div>
+</div>
+<p>This UUID would historically be serialized by the Python driver as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">00112233</span><span class="o">-</span><span class="mi">4455</span><span class="o">-</span><span class="mi">6677</span><span class="o">-</span><span class="mi">8899</span><span class="o">-</span><span class="n">aabbccddeeff</span>
+</pre></div>
+</div>
+<p>The same UUID would historically be serialized by the C# driver as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">33221100</span><span class="o">-</span><span class="mi">5544</span><span class="o">-</span><span class="mi">7766</span><span class="o">-</span><span class="mi">8899</span><span class="o">-</span><span class="n">aabbccddeeff</span>
+</pre></div>
+</div>
+<p>Finally, the same UUID would historically be serialized by the Java driver as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">77665544</span><span class="o">-</span><span class="mi">3322</span><span class="o">-</span><span class="mi">1100</span><span class="o">-</span><span class="n">ffee</span><span class="o">-</span><span class="n">ddccbbaa9988</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For in-depth information about the the byte-order historically
+used by different drivers, see the <a class="reference external" href="https://github.com/mongodb/specifications/blob/master/source/uuid.rst">Handling of Native UUID Types
+Specification</a>.</p>
+</div>
+<p>This difference in the byte-order of UUIDs encoded by different drivers can
+result in highly unintuitive behavior in some scenarios. We detail two such
+scenarios in the next sections.</p>
+<div class="section" id="scenario-1-applications-share-a-mongodb-deployment">
+<h3>Scenario 1: Applications Share a MongoDB Deployment<a class="headerlink" href="#scenario-1-applications-share-a-mongodb-deployment" title="Permalink to this headline">¶</a></h3>
+<p>Consider the following situation:</p>
+<ul>
+<li><p>Application <code class="docutils literal notranslate"><span class="pre">C</span></code> written in C# generates a UUID and uses it as the <code class="docutils literal notranslate"><span class="pre">_id</span></code>
+of a document that it proceeds to insert into the <code class="docutils literal notranslate"><span class="pre">uuid_test</span></code> collection of
+the <code class="docutils literal notranslate"><span class="pre">example_db</span></code> database. Let’s assume that the canonical textual
+representation of the generated UUID is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">00112233</span><span class="o">-</span><span class="mi">4455</span><span class="o">-</span><span class="mi">6677</span><span class="o">-</span><span class="mi">8899</span><span class="o">-</span><span class="n">aabbccddeeff</span>
+</pre></div>
+</div>
+</li>
+<li><p>Application <code class="docutils literal notranslate"><span class="pre">P</span></code> written in Python attempts to <code class="docutils literal notranslate"><span class="pre">find</span></code> the document
+written by application <code class="docutils literal notranslate"><span class="pre">C</span></code> in the following manner:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">example_db</span><span class="o">.</span><span class="n">uuid_test</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;00112233-4455-6677-8899-aabbccddeeff&#39;</span><span class="p">)})</span>
+</pre></div>
+</div>
+<p>In this instance, <code class="docutils literal notranslate"><span class="pre">result</span></code> will never be the document that
+was inserted by application <code class="docutils literal notranslate"><span class="pre">C</span></code> in the previous step. This is because of
+the different byte-order used by the C# driver for representing UUIDs as
+BSON Binary. The following query, on the other hand, will successfully find
+this document:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;33221100-5544-7766-8899-aabbccddeeff&#39;</span><span class="p">)})</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>This example demonstrates how the differing byte-order used by different
+drivers can hamper interoperability. To workaround this problem, users should
+configure their <code class="docutils literal notranslate"><span class="pre">MongoClient</span></code> with the appropriate
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation" title="bson.binary.UuidRepresentation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UuidRepresentation</span></code></a> (in this case, <code class="docutils literal notranslate"><span class="pre">client</span></code> in application
+<code class="docutils literal notranslate"><span class="pre">P</span></code> can be configured to use the
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.CSHARP_LEGACY" title="bson.binary.UuidRepresentation.CSHARP_LEGACY"><code class="xref py py-data docutils literal notranslate"><span class="pre">CSHARP_LEGACY</span></code></a> representation to
+avoid the unintuitive behavior) as described in
+<a class="reference internal" href="#configuring-uuid-representation"><span class="std std-ref">Configuring a UUID Representation</span></a>.</p>
+</div>
+<div class="section" id="scenario-2-round-tripping-uuids">
+<h3>Scenario 2: Round-Tripping UUIDs<a class="headerlink" href="#scenario-2-round-tripping-uuids" title="Permalink to this headline">¶</a></h3>
+<p>In the following examples, we see how using a misconfigured
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation" title="bson.binary.UuidRepresentation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UuidRepresentation</span></code></a> can cause an application
+to inadvertently change the <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype, and in some
+cases, the bytes of the <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> field itself when
+round-tripping documents containing UUIDs.</p>
+<p>Consider the following situation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">CodecOptions</span><span class="p">,</span> <span class="n">DEFAULT_CODEC_OPTIONS</span>
+<span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">Binary</span><span class="p">,</span> <span class="n">UuidRepresentation</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
+
+<span class="c1"># Using UuidRepresentation.PYTHON_LEGACY stores a Binary subtype-3 UUID</span>
+<span class="n">python_opts</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">PYTHON_LEGACY</span><span class="p">)</span>
+<span class="n">input_uuid</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">testdb</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">python_opts</span><span class="p">)</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">input_uuid</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="n">input_uuid</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span> <span class="mi">3</span><span class="p">)})[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;foo&#39;</span>
+
+<span class="c1"># Retrieving this document using UuidRepresentation.STANDARD returns a native UUID</span>
+<span class="n">std_opts</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">STANDARD</span><span class="p">)</span>
+<span class="n">std_collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">testdb</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">std_opts</span><span class="p">)</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">std_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">input_uuid</span>
+
+<span class="c1"># Round-tripping the retrieved document silently changes the Binary subtype to 4</span>
+<span class="n">std_collection</span><span class="o">.</span><span class="n">replace_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">},</span> <span class="n">doc</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="n">input_uuid</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span> <span class="mi">3</span><span class="p">)})</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="n">round_tripped_doc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="n">input_uuid</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span> <span class="mi">4</span><span class="p">)})</span>
+<span class="k">assert</span> <span class="n">doc</span> <span class="o">==</span> <span class="n">round_tripped_doc</span>
+</pre></div>
+</div>
+<p>In this example, round-tripping the document using the incorrect
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation" title="bson.binary.UuidRepresentation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UuidRepresentation</span></code></a> (<code class="docutils literal notranslate"><span class="pre">STANDARD</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">PYTHON_LEGACY</span></code>) changes the <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype as a
+side-effect. <strong>Note that this can also happen when the situation is reversed -
+i.e. when the original document is written using ``STANDARD`` representation
+and then round-tripped using the ``PYTHON_LEGACY`` representation.</strong></p>
+<p>In the next example, we see the consequences of incorrectly using a
+representation that modifies byte-order (<code class="docutils literal notranslate"><span class="pre">CSHARP_LEGACY</span></code> or <code class="docutils literal notranslate"><span class="pre">JAVA_LEGACY</span></code>)
+when round-tripping documents:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">CodecOptions</span><span class="p">,</span> <span class="n">DEFAULT_CODEC_OPTIONS</span>
+<span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">Binary</span><span class="p">,</span> <span class="n">UuidRepresentation</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
+
+<span class="c1"># Using UuidRepresentation.STANDARD stores a Binary subtype-4 UUID</span>
+<span class="n">std_opts</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">STANDARD</span><span class="p">)</span>
+<span class="n">input_uuid</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">testdb</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">std_opts</span><span class="p">)</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;baz&#39;</span><span class="p">,</span> <span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">input_uuid</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="n">input_uuid</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span> <span class="mi">4</span><span class="p">)})[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;baz&#39;</span>
+
+<span class="c1"># Retrieving this document using UuidRepresentation.JAVA_LEGACY returns a native UUID</span>
+<span class="c1"># without modifying the UUID byte-order</span>
+<span class="n">java_opts</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">JAVA_LEGACY</span><span class="p">)</span>
+<span class="n">java_collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">testdb</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">java_opts</span><span class="p">)</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">java_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;baz&#39;</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">input_uuid</span>
+
+<span class="c1"># Round-tripping the retrieved document silently changes the Binary bytes and subtype</span>
+<span class="n">java_collection</span><span class="o">.</span><span class="n">replace_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;baz&#39;</span><span class="p">},</span> <span class="n">doc</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="n">input_uuid</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span> <span class="mi">3</span><span class="p">)})</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="k">assert</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="n">input_uuid</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span> <span class="mi">4</span><span class="p">)})</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="n">round_tripped_doc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;baz&#39;</span><span class="p">})</span>
+<span class="k">assert</span> <span class="n">round_tripped_doc</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">Binary</span><span class="p">(</span><span class="n">input_uuid</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">as_uuid</span><span class="p">(</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">JAVA_LEGACY</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, using the incorrect <a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation" title="bson.binary.UuidRepresentation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UuidRepresentation</span></code></a>
+(<code class="docutils literal notranslate"><span class="pre">JAVA_LEGACY</span></code> instead of <code class="docutils literal notranslate"><span class="pre">STANDARD</span></code>) changes the
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> bytes and subtype as a side-effect.
+<strong>Note that this happens when any representation that
+manipulates byte-order (``CSHARP_LEGACY`` or ``JAVA_LEGACY``) is incorrectly
+used to round-trip UUIDs written with ``STANDARD``. When the situation is
+reversed - i.e. when the original document is written using ``CSHARP_LEGACY``
+or ``JAVA_LEGACY`` and then round-tripped using ``STANDARD`` -
+only the :class:`~bson.binary.Binary` subtype is changed.</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Starting in PyMongo 4.0, these issue will be resolved as
+the <code class="docutils literal notranslate"><span class="pre">STANDARD</span></code> representation will decode Binary subtype 3 fields as
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> objects of subtype 3 (instead of
+<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a>), and each of the <code class="docutils literal notranslate"><span class="pre">LEGACY_*</span></code> representations will
+decode Binary subtype 4 fields to <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> objects of
+subtype 4 (instead of <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a>).</p>
+</div>
+</div>
+</div>
+<div class="section" id="configuring-a-uuid-representation">
+<span id="configuring-uuid-representation"></span><h2>Configuring a UUID Representation<a class="headerlink" href="#configuring-a-uuid-representation" title="Permalink to this headline">¶</a></h2>
+<p>Users can workaround the problems described above by configuring their
+applications with the appropriate <a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation" title="bson.binary.UuidRepresentation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UuidRepresentation</span></code></a>.
+Configuring the representation modifies PyMongo’s behavior while
+encoding <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> objects to BSON and decoding
+Binary subtype 3 and 4 fields from BSON.</p>
+<p>Applications can set the UUID representation in one of the following ways:</p>
+<ol class="arabic">
+<li><p>At the <code class="docutils literal notranslate"><span class="pre">MongoClient</span></code> level using the <code class="docutils literal notranslate"><span class="pre">uuidRepresentation</span></code> URI option,
+e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s2">&quot;mongodb://a:27107/?uuidRepresentation=javaLegacy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Valid values are:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>UUID Representation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pythonLegacy</span></code></p></td>
+<td><p><a class="reference internal" href="#python-legacy-representation-details"><span class="std std-ref">PYTHON_LEGACY</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">javaLegacy</span></code></p></td>
+<td><p><a class="reference internal" href="#java-legacy-representation-details"><span class="std std-ref">JAVA_LEGACY</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">csharpLegacy</span></code></p></td>
+<td><p><a class="reference internal" href="#csharp-legacy-representation-details"><span class="std std-ref">CSHARP_LEGACY</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">standard</span></code></p></td>
+<td><p><a class="reference internal" href="#standard-representation-details"><span class="std std-ref">STANDARD</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unspecified</span></code></p></td>
+<td><p><a class="reference internal" href="#unspecified-representation-details"><span class="std std-ref">UNSPECIFIED</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p>Using the <code class="docutils literal notranslate"><span class="pre">uuid_representation</span></code> kwarg option, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">UuidRepresentation</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">PYTHON_LEGACY</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>By supplying a suitable <a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.CodecOptions" title="bson.codec_options.CodecOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>
+instance, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">CodecOptions</span>
+<span class="n">csharp_opts</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">CSHARP_LEGACY</span><span class="p">)</span>
+<span class="n">csharp_database</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span><span class="s1">&#39;csharp_db&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">csharp_opts</span><span class="p">)</span>
+<span class="n">csharp_collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">testdb</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;csharp_coll&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">csharp_opts</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="supported-uuid-representations">
+<h2>Supported UUID Representations<a class="headerlink" href="#supported-uuid-representations" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>UUID Representation</p></th>
+<th class="head"><p>Default?</p></th>
+<th class="head"><p>Encode <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> to</p></th>
+<th class="head"><p>Decode <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 4 to</p></th>
+<th class="head"><p>Decode <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 3 to</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#python-legacy-representation-details"><span class="std std-ref">PYTHON_LEGACY</span></a></p></td>
+<td><p>Yes, in PyMongo&gt;=2.9,&lt;4</p></td>
+<td><p><a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 3 with standard byte-order</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> in PyMongo&lt;4; <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 4 in PyMongo&gt;=4</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#java-legacy-representation-details"><span class="std std-ref">JAVA_LEGACY</span></a></p></td>
+<td><p>No</p></td>
+<td><p><a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 3 with Java legacy byte-order</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> in PyMongo&lt;4; <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 4 in PyMongo&gt;=4</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#csharp-legacy-representation-details"><span class="std std-ref">CSHARP_LEGACY</span></a></p></td>
+<td><p>No</p></td>
+<td><p><a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 3 with C# legacy byte-order</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> in PyMongo&lt;4; <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 4 in PyMongo&gt;=4</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#standard-representation-details"><span class="std std-ref">STANDARD</span></a></p></td>
+<td><p>No</p></td>
+<td><p><a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 4</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> in PyMongo&lt;4; <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 3 in PyMongo&gt;=4</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#unspecified-representation-details"><span class="std std-ref">UNSPECIFIED</span></a></p></td>
+<td><p>Yes, in PyMongo&gt;=4</p></td>
+<td><p>Raise <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a></p></td>
+<td><p><a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 4</p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> in PyMongo&lt;4; <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 3 in PyMongo&gt;=4</p></td>
+</tr>
+</tbody>
+</table>
+<p>We now detail the behavior and use-case for each supported UUID
+representation.</p>
+<div class="section" id="python-legacy">
+<span id="python-legacy-representation-details"></span><h3><code class="docutils literal notranslate"><span class="pre">PYTHON_LEGACY</span></code><a class="headerlink" href="#python-legacy" title="Permalink to this headline">¶</a></h3>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This uuid representation should be used when reading UUIDs
+generated by existing applications that use the Python driver
+but <strong>don’t</strong> explicitly set a UUID representation.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p><a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.PYTHON_LEGACY" title="bson.binary.UuidRepresentation.PYTHON_LEGACY"><code class="xref py py-data docutils literal notranslate"><span class="pre">PYTHON_LEGACY</span></code></a>
+has been the default uuid representation since PyMongo 2.9.</p>
+</div>
+<p>The <a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.PYTHON_LEGACY" title="bson.binary.UuidRepresentation.PYTHON_LEGACY"><code class="xref py py-data docutils literal notranslate"><span class="pre">PYTHON_LEGACY</span></code></a> representation
+corresponds to the legacy representation of UUIDs used by PyMongo. This
+representation conforms with
+<a class="reference external" href="https://tools.ietf.org/html/rfc4122#section-4.1.2">RFC 4122 Section 4.1.2</a>.</p>
+<p>The following example illustrates the use of this representation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">CodecOptions</span><span class="p">,</span> <span class="n">DEFAULT_CODEC_OPTIONS</span>
+<span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">UuidRepresentation</span>
+
+<span class="c1"># No configured UUID representation</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">python_legacy</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">DEFAULT_CODEC_OPTIONS</span><span class="p">)</span>
+
+<span class="c1"># Using UuidRepresentation.PYTHON_LEGACY</span>
+<span class="n">pylegacy_opts</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">PYTHON_LEGACY</span><span class="p">)</span>
+<span class="n">pylegacy_collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">python_legacy</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">pylegacy_opts</span><span class="p">)</span>
+
+<span class="c1"># UUIDs written by PyMongo with no UuidRepresentation configured can be queried using PYTHON_LEGACY</span>
+<span class="n">uuid_1</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">uuid_1</span><span class="p">})</span>
+<span class="n">document</span> <span class="o">=</span> <span class="n">pylegacy_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">uuid_1</span><span class="p">})</span>
+
+<span class="c1"># UUIDs written using PYTHON_LEGACY can be read by PyMongo with no UuidRepresentation configured</span>
+<span class="n">uuid_2</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+<span class="n">pylegacy_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">uuid_2</span><span class="p">})</span>
+<span class="n">document</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">uuid_2</span><span class="p">})</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">PYTHON_LEGACY</span></code> encodes native <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> objects to
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 3 objects, preserving the same
+byte-order as <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID.bytes" title="(in Python v3.9)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bytes</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">Binary</span>
+
+<span class="n">document</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="n">uuid_2</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span> <span class="n">subtype</span><span class="o">=</span><span class="mi">3</span><span class="p">)})</span>
+<span class="k">assert</span> <span class="n">document</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">uuid_2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="java-legacy">
+<span id="java-legacy-representation-details"></span><h3><code class="docutils literal notranslate"><span class="pre">JAVA_LEGACY</span></code><a class="headerlink" href="#java-legacy" title="Permalink to this headline">¶</a></h3>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This UUID representation should be used when reading UUIDs
+written to MongoDB by the legacy applications (i.e. applications that don’t
+use the <code class="docutils literal notranslate"><span class="pre">STANDARD</span></code> representation) using the Java driver.</p>
+</div>
+<p>The <a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.JAVA_LEGACY" title="bson.binary.UuidRepresentation.JAVA_LEGACY"><code class="xref py py-data docutils literal notranslate"><span class="pre">JAVA_LEGACY</span></code></a> representation
+corresponds to the legacy representation of UUIDs used by the MongoDB Java
+Driver.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">JAVA_LEGACY</span></code> representation reverses the order of bytes 0-7,
+and bytes 8-15.</p>
+</div>
+<p>As an example, consider the same UUID described in <a class="reference internal" href="#example-legacy-uuid"><span class="std std-ref">Legacy Handling of UUID Data</span></a>.
+Let us assume that an application used the Java driver without an explicitly
+specified UUID representation to insert the example UUID
+<code class="docutils literal notranslate"><span class="pre">00112233-4455-6677-8899-aabbccddeeff</span></code> into MongoDB. If we try to read this
+value using PyMongo with no UUID representation specified, we end up with an
+entirely different UUID:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;77665544-3322-1100-ffee-ddccbbaa9988&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, if we explicitly set the representation to
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.JAVA_LEGACY" title="bson.binary.UuidRepresentation.JAVA_LEGACY"><code class="xref py py-data docutils literal notranslate"><span class="pre">JAVA_LEGACY</span></code></a>, we get the correct result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;00112233-4455-6677-8899-aabbccddeeff&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>PyMongo uses the specified UUID representation to reorder the BSON bytes and
+load them correctly. <code class="docutils literal notranslate"><span class="pre">JAVA_LEGACY</span></code> encodes native <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> objects
+to <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 3 objects, while performing the same
+byte-reordering as the legacy Java driver’s UUID to BSON encoder.</p>
+</div>
+<div class="section" id="csharp-legacy">
+<span id="csharp-legacy-representation-details"></span><h3><code class="docutils literal notranslate"><span class="pre">CSHARP_LEGACY</span></code><a class="headerlink" href="#csharp-legacy" title="Permalink to this headline">¶</a></h3>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This UUID representation should be used when reading UUIDs
+written to MongoDB by the legacy applications (i.e. applications that don’t
+use the <code class="docutils literal notranslate"><span class="pre">STANDARD</span></code> representation) using the C# driver.</p>
+</div>
+<p>The <a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.CSHARP_LEGACY" title="bson.binary.UuidRepresentation.CSHARP_LEGACY"><code class="xref py py-data docutils literal notranslate"><span class="pre">CSHARP_LEGACY</span></code></a> representation
+corresponds to the legacy representation of UUIDs used by the MongoDB Java
+Driver.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">CSHARP_LEGACY</span></code> representation reverses the order of bytes 0-3,
+bytes 4-5, and bytes 6-7.</p>
+</div>
+<p>As an example, consider the same UUID described in <a class="reference internal" href="#example-legacy-uuid"><span class="std std-ref">Legacy Handling of UUID Data</span></a>.
+Let us assume that an application used the C# driver without an explicitly
+specified UUID representation to insert the example UUID
+<code class="docutils literal notranslate"><span class="pre">00112233-4455-6677-8899-aabbccddeeff</span></code> into MongoDB. If we try to read this
+value using PyMongo with no UUID representation specified, we end up with an
+entirely different UUID:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;33221100-5544-7766-8899-aabbccddeeff&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, if we explicitly set the representation to
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.CSHARP_LEGACY" title="bson.binary.UuidRepresentation.CSHARP_LEGACY"><code class="xref py py-data docutils literal notranslate"><span class="pre">CSHARP_LEGACY</span></code></a>, we get the correct result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">UUID</span><span class="p">(</span><span class="s1">&#39;00112233-4455-6677-8899-aabbccddeeff&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>PyMongo uses the specified UUID representation to reorder the BSON bytes and
+load them correctly. <code class="docutils literal notranslate"><span class="pre">CSHARP_LEGACY</span></code> encodes native <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a>
+objects to <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 3 objects, while performing
+the same byte-reordering as the legacy C# driver’s UUID to BSON encoder.</p>
+</div>
+<div class="section" id="standard">
+<span id="standard-representation-details"></span><h3><code class="docutils literal notranslate"><span class="pre">STANDARD</span></code><a class="headerlink" href="#standard" title="Permalink to this headline">¶</a></h3>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This UUID representation should be used by new applications
+that have never stored UUIDs in MongoDB.</p>
+</div>
+<p>The <a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.STANDARD" title="bson.binary.UuidRepresentation.STANDARD"><code class="xref py py-data docutils literal notranslate"><span class="pre">STANDARD</span></code></a> representation
+enables cross-language compatibility by ensuring the same byte-ordering
+when encoding UUIDs from all drivers. UUIDs written by a driver with this
+representation configured will be handled correctly by every other provided
+it is also configured with the <code class="docutils literal notranslate"><span class="pre">STANDARD</span></code> representation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">STANDARD</span></code> encodes native <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> objects to
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> subtype 4 objects.</p>
+</div>
+<div class="section" id="unspecified">
+<span id="unspecified-representation-details"></span><h3><code class="docutils literal notranslate"><span class="pre">UNSPECIFIED</span></code><a class="headerlink" href="#unspecified" title="Permalink to this headline">¶</a></h3>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Starting in PyMongo 4.0,
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.UNSPECIFIED" title="bson.binary.UuidRepresentation.UNSPECIFIED"><code class="xref py py-data docutils literal notranslate"><span class="pre">UNSPECIFIED</span></code></a> will be the default
+UUID representation used by PyMongo.</p>
+</div>
+<p>The <a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.UNSPECIFIED" title="bson.binary.UuidRepresentation.UNSPECIFIED"><code class="xref py py-data docutils literal notranslate"><span class="pre">UNSPECIFIED</span></code></a> representation
+prevents the incorrect interpretation of UUID bytes by stopping short of
+automatically converting UUID fields in BSON to native UUID types. Loading
+a UUID when using this representation returns a <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a>
+object instead. If required, users can coerce the decoded
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> objects into native UUIDs using the
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary.as_uuid" title="bson.binary.Binary.as_uuid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_uuid()</span></code></a> method and specifying the appropriate
+representation format. The following example shows
+what this might look like for a UUID stored by the C# driver:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">CodecOptions</span><span class="p">,</span> <span class="n">DEFAULT_CODEC_OPTIONS</span>
+<span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">Binary</span><span class="p">,</span> <span class="n">UuidRepresentation</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
+
+<span class="c1"># Using UuidRepresentation.CSHARP_LEGACY</span>
+<span class="n">csharp_opts</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">CSHARP_LEGACY</span><span class="p">)</span>
+
+<span class="c1"># Store a legacy C#-formatted UUID</span>
+<span class="n">input_uuid</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">testdb</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">csharp_opts</span><span class="p">)</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">input_uuid</span><span class="p">})</span>
+
+<span class="c1"># Using UuidRepresentation.UNSPECIFIED</span>
+<span class="n">unspec_opts</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">uuid_representation</span><span class="o">=</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="p">)</span>
+<span class="n">unspec_collection</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">testdb</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">unspec_opts</span><span class="p">)</span>
+
+<span class="c1"># UUID fields are decoded as Binary when UuidRepresentation.UNSPECIFIED is configured</span>
+<span class="n">document</span> <span class="o">=</span> <span class="n">unspec_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">})</span>
+<span class="n">decoded_field</span> <span class="o">=</span> <span class="n">document</span><span class="p">[</span><span class="s1">&#39;uuid&#39;</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">decoded_field</span><span class="p">,</span> <span class="n">Binary</span><span class="p">)</span>
+
+<span class="c1"># Binary.as_uuid() can be used to coerce the decoded value to a native UUID</span>
+<span class="n">decoded_uuid</span> <span class="o">=</span> <span class="n">decoded_field</span><span class="o">.</span><span class="n">as_uuid</span><span class="p">(</span><span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">CSHARP_LEGACY</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">decoded_uuid</span> <span class="o">==</span> <span class="n">input_uuid</span>
+</pre></div>
+</div>
+<p>Native <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">uuid.UUID</span></code></a> objects cannot directly be encoded to
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> when the UUID representation is <code class="docutils literal notranslate"><span class="pre">UNSPECIFIED</span></code>
+and attempting to do so will result in an exception:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">unspec_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">uuid4</span><span class="p">()})</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+<span class="o">...</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">cannot</span> <span class="n">encode</span> <span class="n">native</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span> <span class="k">with</span> <span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">UNSPECIFIED</span><span class="o">.</span> <span class="n">UUIDs</span> <span class="n">can</span> <span class="n">be</span> <span class="n">manually</span> <span class="n">converted</span> <span class="n">to</span> <span class="n">bson</span><span class="o">.</span><span class="n">Binary</span> <span class="n">instances</span> <span class="n">using</span> <span class="n">bson</span><span class="o">.</span><span class="n">Binary</span><span class="o">.</span><span class="n">from_uuid</span><span class="p">()</span> <span class="ow">or</span> <span class="n">a</span> <span class="n">different</span> <span class="n">UuidRepresentation</span> <span class="n">can</span> <span class="n">be</span> <span class="n">configured</span><span class="o">.</span> <span class="n">See</span> <span class="n">the</span> <span class="n">documentation</span> <span class="k">for</span> <span class="n">UuidRepresentation</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Instead, applications using <a class="reference internal" href="../api/bson/binary.html#bson.binary.UuidRepresentation.UNSPECIFIED" title="bson.binary.UuidRepresentation.UNSPECIFIED"><code class="xref py py-data docutils literal notranslate"><span class="pre">UNSPECIFIED</span></code></a>
+must explicitly coerce a native UUID using the
+<a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary.from_uuid" title="bson.binary.Binary.from_uuid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_uuid()</span></code></a> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">explicit_binary</span> <span class="o">=</span> <span class="n">Binary</span><span class="o">.</span><span class="n">from_uuid</span><span class="p">(</span><span class="n">uuid4</span><span class="p">(),</span> <span class="n">UuidRepresentation</span><span class="o">.</span><span class="n">PYTHON_LEGACY</span><span class="p">)</span>
+<span class="n">unspec_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="n">explicit_binary</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Handling UUID Data</a><ul>
+<li><a class="reference internal" href="#legacy-handling-of-uuid-data">Legacy Handling of UUID Data</a><ul>
+<li><a class="reference internal" href="#scenario-1-applications-share-a-mongodb-deployment">Scenario 1: Applications Share a MongoDB Deployment</a></li>
+<li><a class="reference internal" href="#scenario-2-round-tripping-uuids">Scenario 2: Round-Tripping UUIDs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuring-a-uuid-representation">Configuring a UUID Representation</a></li>
+<li><a class="reference internal" href="#supported-uuid-representations">Supported UUID Representations</a><ul>
+<li><a class="reference internal" href="#python-legacy"><code class="docutils literal notranslate"><span class="pre">PYTHON_LEGACY</span></code></a></li>
+<li><a class="reference internal" href="#java-legacy"><code class="docutils literal notranslate"><span class="pre">JAVA_LEGACY</span></code></a></li>
+<li><a class="reference internal" href="#csharp-legacy"><code class="docutils literal notranslate"><span class="pre">CSHARP_LEGACY</span></code></a></li>
+<li><a class="reference internal" href="#standard"><code class="docutils literal notranslate"><span class="pre">STANDARD</span></code></a></li>
+<li><a class="reference internal" href="#unspecified"><code class="docutils literal notranslate"><span class="pre">UNSPECIFIED</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="encryption.html"
+                        title="previous chapter">Client-Side Field Level Encryption</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../faq.html"
+                        title="next chapter">Frequently Asked Questions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/uuid.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../faq.html" title="Frequently Asked Questions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="encryption.html" title="Client-Side Field Level Encryption"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Handling UUID Data</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

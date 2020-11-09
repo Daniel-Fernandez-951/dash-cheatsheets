@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>cursor_manager – Managers to handle when cursors are killed after being closed — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="database.html" rel="next" title="database – Database level operations"/>
+<link href="cursor.html" rel="prev" title="cursor – Tools for iterating over MongoDB query results"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="database.html" title="database – Database level operations">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="cursor.html" title="cursor – Tools for iterating over MongoDB query results">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">cursor_manager</span></code> – Managers to handle when cursors are killed after being closed</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.cursor_manager">
+<span id="cursor-manager-managers-to-handle-when-cursors-are-killed-after-being-closed"></span><h1><a name="//apple_ref/cpp/Module/pymongo.cursor_manager"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">cursor_manager</span></code> – Managers to handle when cursors are killed after being closed<a class="headerlink" href="#module-pymongo.cursor_manager" title="Permalink to this headline">¶</a></h1>
+<p>DEPRECATED - A manager to handle when cursors are killed after they are
+closed.</p>
+<p>New cursor managers should be defined as subclasses of CursorManager and can be
+installed on a client by calling
+<a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient.set_cursor_manager" title="pymongo.mongo_client.MongoClient.set_cursor_manager"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_cursor_manager()</span></code></a>.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.3: </span>Deprecated, for real this time.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>Undeprecated. <a class="reference internal" href="#pymongo.cursor_manager.CursorManager.close" title="pymongo.cursor_manager.CursorManager.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> now
+requires an <cite>address</cite> argument. The <code class="docutils literal notranslate"><span class="pre">BatchCursorManager</span></code> class is removed.</p>
+</div>
+<dl class="py class">
+<dt id="pymongo.cursor_manager.CursorManager"><a name="//apple_ref/cpp/Class/pymongo.cursor_manager.CursorManager"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.cursor_manager.</code><code class="sig-name descname">CursorManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.cursor_manager.CursorManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiate the manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>client</cite>: a MongoClient</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pymongo.cursor_manager.CursorManager.close"><a name="//apple_ref/cpp/Method/pymongo.cursor_manager.CursorManager.close"></a>
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cursor_id</span></em>, <em class="sig-param"><span class="n">address</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.cursor_manager.CursorManager.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kill a cursor.</p>
+<p>Raises TypeError if cursor_id is not an instance of (int, long).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>cursor_id</cite>: cursor id to close</p></li>
+<li><p><cite>address</cite>: the cursor’s server’s (host, port) pair</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>Now requires an <cite>address</cite> argument.</p>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="cursor.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cursor</span></code> – Tools for iterating over MongoDB query results</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="database.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">database</span></code> – Database level operations</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/cursor_manager.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="database.html" title="database – Database level operations">next</a> |</li>
+<li class="right">
+<a href="cursor.html" title="cursor – Tools for iterating over MongoDB query results">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">cursor_manager</span></code> – Managers to handle when cursors are killed after being closed</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

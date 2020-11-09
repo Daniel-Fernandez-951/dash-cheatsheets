@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Copying a Database &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Custom Type Example" href="custom_type.html" />
+    <link rel="prev" title="Collations" href="collations.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="custom_type.html" title="Custom Type Example"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="collations.html" title="Collations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Copying a Database</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="copying-a-database">
+<h1>Copying a Database<a class="headerlink" href="#copying-a-database" title="Permalink to this headline">¶</a></h1>
+<p>To copy a database within a single mongod process, or between mongod
+servers, simply connect to the target mongod and use the
+<a class="reference internal" href="../api/pymongo/database.html#pymongo.database.Database.command" title="pymongo.database.Database.command"><code class="xref py py-meth docutils literal notranslate"><span class="pre">command()</span></code></a> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">&#39;target.example.com&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;copydb&#39;</span><span class="p">,</span>
+<span class="go">                         fromdb=&#39;source_db_name&#39;,</span>
+<span class="go">                         todb=&#39;target_db_name&#39;)</span>
+</pre></div>
+</div>
+<p>To copy from a different mongod server that is not password-protected:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;copydb&#39;</span><span class="p">,</span>
+<span class="go">                         fromdb=&#39;source_db_name&#39;,</span>
+<span class="go">                         todb=&#39;target_db_name&#39;,</span>
+<span class="go">                         fromhost=&#39;source.example.com&#39;)</span>
+</pre></div>
+</div>
+<p>If the target server is password-protected, authenticate to the “admin”
+database:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">&#39;target.example.com&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                     <span class="n">username</span><span class="o">=</span><span class="s1">&#39;administrator&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                     <span class="n">password</span><span class="o">=</span><span class="s1">&#39;pwd&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;copydb&#39;</span><span class="p">,</span>
+<span class="go">                         fromdb=&#39;source_db_name&#39;,</span>
+<span class="go">                         todb=&#39;target_db_name&#39;,</span>
+<span class="go">                         fromhost=&#39;source.example.com&#39;)</span>
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="authentication.html"><span class="doc">authentication examples</span></a>.</p>
+<p>If the <strong>source</strong> server is password-protected, use the <a class="reference external" href="http://docs.mongodb.org/manual/reference/method/db.copyDatabase/">copyDatabase
+function in the mongo shell</a>.</p>
+<p>Versions of PyMongo before 3.0 included a <code class="docutils literal notranslate"><span class="pre">copy_database</span></code> helper method,
+but it has been removed.</p>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="collations.html"
+                        title="previous chapter">Collations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="custom_type.html"
+                        title="next chapter">Custom Type Example</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/copydb.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="custom_type.html" title="Custom Type Example"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="collations.html" title="Collations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Copying a Database</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

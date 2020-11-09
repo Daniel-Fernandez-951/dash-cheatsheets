@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>int64 – Tools for representing BSON int64 — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="json_util.html" rel="next" title="json_util – Tools for using Python’s json module with BSON documents"/>
+<link href="errors.html" rel="prev" title="errors – Exceptions raised by the bson package"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="json_util.html" title="json_util – Tools for using Python’s json module with BSON documents">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="errors.html" title="errors – Exceptions raised by the bson package">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">int64</span></code> – Tools for representing BSON int64</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="int64-tools-for-representing-bson-int64"><a name="//apple_ref/cpp/Module/bson.int64"></a>
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">int64</span></code> – Tools for representing BSON int64<a class="headerlink" href="#int64-tools-for-representing-bson-int64" title="Permalink to this headline">¶</a></h1>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.0.</span></p>
+</div>
+<span class="target" id="module-bson.int64"></span><p>A BSON wrapper for long (int in python3)</p>
+<dl class="py class">
+<dt id="bson.int64.Int64"><a name="//apple_ref/cpp/Class/bson.int64.Int64"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.int64.</code><code class="sig-name descname">Int64</code><a class="headerlink" href="#bson.int64.Int64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of the BSON int64 type.</p>
+<p>This is necessary because every integral number is an <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> in
+Python 3. Small integral numbers are encoded to BSON int32 by default,
+but Int64 numbers will always be encoded to BSON int64.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>value</cite>: the numeric value to represent</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="errors.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> package</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="json_util.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">json_util</span></code> – Tools for using Python’s <code class="xref py py-mod docutils literal notranslate"><span class="pre">json</span></code> module with BSON documents</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/int64.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="json_util.html" title="json_util – Tools for using Python’s json module with BSON documents">next</a> |</li>
+<li class="right">
+<a href="errors.html" title="errors – Exceptions raised by the bson package">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">int64</span></code> – Tools for representing BSON int64</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

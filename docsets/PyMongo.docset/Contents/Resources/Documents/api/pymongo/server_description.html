@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>server_description – An object representation of a server the driver is connected to. — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">server_description</span></code> – An object representation of a server the driver is connected to.</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.server_description">
+<span id="server-description-an-object-representation-of-a-server-the-driver-is-connected-to"></span><h1><a name="//apple_ref/cpp/Module/pymongo.server_description"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">server_description</span></code> – An object representation of a server the driver is connected to.<a class="headerlink" href="#module-pymongo.server_description" title="Permalink to this headline">¶</a></h1>
+<p>Represent one server the driver is connected to.</p>
+<dl class="py class">
+<dt id="pymongo.server_description.ServerDescription"><a name="//apple_ref/cpp/Class/pymongo.server_description.ServerDescription"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.server_description.</code><code class="sig-name descname">ServerDescription</code><a class="headerlink" href="#pymongo.server_description.ServerDescription" title="Permalink to this definition">¶</a></dt>
+<dd><p>Immutable representation of one server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>address</cite>: A (host, port) pair</p></li>
+<li><p><cite>ismaster</cite>: Optional IsMaster instance</p></li>
+<li><p><cite>round_trip_time</cite>: Optional float</p></li>
+<li><p><cite>error</cite>: Optional, the last error attempting to connect to the server</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="pymongo.server_description.ServerDescription.address"><a name="//apple_ref/cpp/Attribute/pymongo.server_description.ServerDescription.address"></a>
+<code class="sig-name descname">address</code><a class="headerlink" href="#pymongo.server_description.ServerDescription.address" title="Permalink to this definition">¶</a></dt>
+<dd><p>The address (host, port) of this server.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.server_description.ServerDescription.all_hosts"><a name="//apple_ref/cpp/Attribute/pymongo.server_description.ServerDescription.all_hosts"></a>
+<code class="sig-name descname">all_hosts</code><a class="headerlink" href="#pymongo.server_description.ServerDescription.all_hosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of hosts, passives, and arbiters known to this server.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.server_description.ServerDescription.server_type"><a name="//apple_ref/cpp/Attribute/pymongo.server_description.ServerDescription.server_type"></a>
+<code class="sig-name descname">server_type</code><a class="headerlink" href="#pymongo.server_description.ServerDescription.server_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of this server.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.server_description.ServerDescription.server_type_name"><a name="//apple_ref/cpp/Attribute/pymongo.server_description.ServerDescription.server_type_name"></a>
+<code class="sig-name descname">server_type_name</code><a class="headerlink" href="#pymongo.server_description.ServerDescription.server_type_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The server type as a human readable string.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/server_description.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">server_description</span></code> – An object representation of a server the driver is connected to.</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

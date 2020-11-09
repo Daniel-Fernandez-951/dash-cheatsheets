@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>encryption – Client-Side Field Level Encryption — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="encryption_options.html" rel="next" title="encryption_options – Automatic Client-Side Field Level Encryption"/>
+<link href="driver_info.html" rel="prev" title="driver_info"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="encryption_options.html" title="encryption_options – Automatic Client-Side Field Level Encryption">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="driver_info.html" title="driver_info">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption</span></code> – Client-Side Field Level Encryption</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.encryption">
+<span id="encryption-client-side-field-level-encryption"></span><h1><a name="//apple_ref/cpp/Module/pymongo.encryption"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption</span></code> – Client-Side Field Level Encryption<a class="headerlink" href="#module-pymongo.encryption" title="Permalink to this headline">¶</a></h1>
+<p>Support for explicit client-side field level encryption.</p>
+<dl class="py class">
+<dt id="pymongo.encryption.Algorithm"><a name="//apple_ref/cpp/Class/pymongo.encryption.Algorithm"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.encryption.</code><code class="sig-name descname">Algorithm</code><a class="headerlink" href="#pymongo.encryption.Algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enum that defines the supported encryption algorithms.</p>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.encryption.ClientEncryption"><a name="//apple_ref/cpp/Class/pymongo.encryption.ClientEncryption"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.encryption.</code><code class="sig-name descname">ClientEncryption</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kms_providers</span></em>, <em class="sig-param"><span class="n">key_vault_namespace</span></em>, <em class="sig-param"><span class="n">key_vault_client</span></em>, <em class="sig-param"><span class="n">codec_options</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.encryption.ClientEncryption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Explicit client-side field level encryption.</p>
+<p>The ClientEncryption class encapsulates explicit operations on a key
+vault collection that cannot be done directly on a MongoClient. Similar
+to configuring auto encryption on a MongoClient, it is constructed with
+a MongoClient (to a MongoDB cluster containing the key vault
+collection), KMS provider configuration, and keyVaultNamespace. It
+provides an API for explicitly encrypting and decrypting values, and
+creating data keys. It does not provide an API to query keys from the
+key vault collection, as this can be done directly on the MongoClient.</p>
+<p>See <a class="reference internal" href="../../examples/encryption.html#explicit-client-side-encryption"><span class="std std-ref">Explicit Encryption</span></a> for an example.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><cite>kms_providers</cite>: Map of KMS provider options. Two KMS providers
+are supported: “aws” and “local”. The kmsProviders map values
+differ by provider:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>aws</cite>: Map with “accessKeyId” and “secretAccessKey” as strings.
+These are the AWS access key ID and AWS secret access key used
+to generate KMS messages.</p></li>
+<li><p><cite>local</cite>: Map with “key” as a 96-byte array or string. “key”
+is the master key used to encrypt/decrypt data keys. This key
+should be generated and stored as securely as possible.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><cite>key_vault_namespace</cite>: The namespace for the key vault collection.
+The key vault collection contains all data keys used for encryption
+and decryption. Data keys are stored as documents in this MongoDB
+collection. Data keys are protected with encryption by a KMS
+provider.</p></li>
+<li><p><cite>key_vault_client</cite>: A MongoClient connected to a MongoDB cluster
+containing the <cite>key_vault_namespace</cite> collection.</p></li>
+<li><p><cite>codec_options</cite>: An instance of
+<a class="reference internal" href="../bson/codec_options.html#bson.codec_options.CodecOptions" title="bson.codec_options.CodecOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a> to use when encoding a
+value for encryption and decoding the decrypted BSON value. This
+should be the same CodecOptions instance configured on the
+MongoClient, Database, or Collection used to access application
+data.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.encryption.ClientEncryption.close"><a name="//apple_ref/cpp/Method/pymongo.encryption.ClientEncryption.close"></a>
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.encryption.ClientEncryption.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Release resources.</p>
+<p>Note that using this class in a with-statement will automatically call
+<a class="reference internal" href="#pymongo.encryption.ClientEncryption.close" title="pymongo.encryption.ClientEncryption.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">ClientEncryption</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="k">as</span> <span class="n">client_encryption</span><span class="p">:</span>
+    <span class="n">encrypted</span> <span class="o">=</span> <span class="n">client_encryption</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+    <span class="n">decrypted</span> <span class="o">=</span> <span class="n">client_encryption</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.encryption.ClientEncryption.create_data_key"><a name="//apple_ref/cpp/Method/pymongo.encryption.ClientEncryption.create_data_key"></a>
+<code class="sig-name descname">create_data_key</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kms_provider</span></em>, <em class="sig-param"><span class="n">master_key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key_alt_names</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.encryption.ClientEncryption.create_data_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and insert a new data key into the key vault collection.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><cite>kms_provider</cite>: The KMS provider to use. Supported values are
+“aws” and “local”.</p></li>
+<li><p><cite>master_key</cite>: Identifies a KMS-specific key used to encrypt the
+new data key. If the kmsProvider is “local” the <cite>master_key</cite> is
+not applicable and may be omitted. If the <cite>kms_provider</cite> is “aws”
+it is required and has the following fields:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>- `region` (string): Required. The AWS region, e.g. "us-east-1".
+- `key` (string): Required. The Amazon Resource Name (ARN) to
+   the AWS customer.
+- `endpoint` (string): Optional. An alternate host to send KMS
+  requests to. May include port number, e.g.
+  "kms.us-east-1.amazonaws.com:443".
+</pre></div>
+</div>
+</li>
+<li><p><cite>key_alt_names</cite> (optional): An optional list of string alternate
+names used to reference a key. If a key is created with alternate
+names, then encryption may refer to the key by the unique alternate
+name instead of by <code class="docutils literal notranslate"><span class="pre">key_id</span></code>. The following example shows creating
+and referring to a data key by alternate name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client_encryption</span><span class="o">.</span><span class="n">create_data_key</span><span class="p">(</span><span class="s2">"local"</span><span class="p">,</span> <span class="n">keyAltNames</span><span class="o">=</span><span class="p">[</span><span class="s2">"name1"</span><span class="p">])</span>
+<span class="c1"># reference the key with the alternate name</span>
+<span class="n">client_encryption</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="s2">"457-55-5462"</span><span class="p">,</span> <span class="n">keyAltName</span><span class="o">=</span><span class="s2">"name1"</span><span class="p">,</span>
+                          <span class="n">algorithm</span><span class="o">=</span><span class="n">Algorithm</span><span class="o">.</span><span class="n">Random</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The <code class="docutils literal notranslate"><span class="pre">_id</span></code> of the created data key document as a
+<a class="reference internal" href="../bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> with subtype
+<a class="reference internal" href="../bson/binary.html#bson.binary.UUID_SUBTYPE" title="bson.binary.UUID_SUBTYPE"><code class="xref py py-data docutils literal notranslate"><span class="pre">UUID_SUBTYPE</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.encryption.ClientEncryption.decrypt"><a name="//apple_ref/cpp/Method/pymongo.encryption.ClientEncryption.decrypt"></a>
+<code class="sig-name descname">decrypt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.encryption.ClientEncryption.decrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypt an encrypted value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>value</cite> (Binary): The encrypted value, a
+<a class="reference internal" href="../bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> with subtype 6.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The decrypted BSON value.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.encryption.ClientEncryption.encrypt"><a name="//apple_ref/cpp/Method/pymongo.encryption.ClientEncryption.encrypt"></a>
+<code class="sig-name descname">encrypt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">algorithm</span></em>, <em class="sig-param"><span class="n">key_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key_alt_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.encryption.ClientEncryption.encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt a BSON value with a given key and algorithm.</p>
+<p>Note that exactly one of <code class="docutils literal notranslate"><span class="pre">key_id</span></code> or  <code class="docutils literal notranslate"><span class="pre">key_alt_name</span></code> must be
+provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>value</cite>: The BSON value to encrypt.</p></li>
+<li><p><cite>algorithm</cite> (string): The encryption algorithm to use. See
+<a class="reference internal" href="#pymongo.encryption.Algorithm" title="pymongo.encryption.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a> for some valid options.</p></li>
+<li><p><cite>key_id</cite>: Identifies a data key by <code class="docutils literal notranslate"><span class="pre">_id</span></code> which must be a
+<a class="reference internal" href="../bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> with subtype 4 (
+<a class="reference internal" href="../bson/binary.html#bson.binary.UUID_SUBTYPE" title="bson.binary.UUID_SUBTYPE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">UUID_SUBTYPE</span></code></a>).</p></li>
+<li><p><cite>key_alt_name</cite>: Identifies a key vault document by ‘keyAltName’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The encrypted value, a <a class="reference internal" href="../bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> with subtype 6.</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="driver_info.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">driver_info</span></code></a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="encryption_options.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption_options</span></code> – Automatic Client-Side Field Level Encryption</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/encryption.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="encryption_options.html" title="encryption_options – Automatic Client-Side Field Level Encryption">next</a> |</li>
+<li class="right">
+<a href="driver_info.html" title="driver_info">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption</span></code> – Client-Side Field Level Encryption</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

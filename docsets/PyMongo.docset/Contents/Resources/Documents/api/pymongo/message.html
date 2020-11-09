@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>message – Tools for creating messages to be sent to MongoDB — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="mongo_client.html" rel="next" title="mongo_client – Tools for connecting to MongoDB"/>
+<link href="errors.html" rel="prev" title="errors – Exceptions raised by the pymongo package"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="mongo_client.html" title="mongo_client – Tools for connecting to MongoDB">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="errors.html" title="errors – Exceptions raised by the pymongo package">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">message</span></code> – Tools for creating messages to be sent to MongoDB</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.message">
+<span id="message-tools-for-creating-messages-to-be-sent-to-mongodb"></span><h1><a name="//apple_ref/cpp/Module/pymongo.message"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">message</span></code> – Tools for creating messages to be sent to MongoDB<a class="headerlink" href="#module-pymongo.message" title="Permalink to this headline">¶</a></h1>
+<p>Tools for creating <a class="reference external" href="http://www.mongodb.org/display/DOCS/Mongo+Wire+Protocol">messages</a> to be sent to
+MongoDB.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This module is for internal use and is generally not needed by
+application developers.</p>
+</div>
+<dl class="py function">
+<dt id="pymongo.message.delete"><a name="//apple_ref/cpp/Function/pymongo.message.delete"></a>
+<code class="sig-prename descclassname">pymongo.message.</code><code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection_name</span></em>, <em class="sig-param"><span class="n">spec</span></em>, <em class="sig-param"><span class="n">safe</span></em>, <em class="sig-param"><span class="n">last_error_args</span></em>, <em class="sig-param"><span class="n">opts</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">ctx</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.message.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <strong>delete</strong> message.</p>
+<p><cite>opts</cite> is a CodecOptions. <cite>flags</cite> is a bit vector that may contain
+the SingleRemove flag or not:</p>
+<p><a class="reference external" href="http://docs.mongodb.org/meta-driver/latest/legacy/mongodb-wire-protocol/#op-delete">http://docs.mongodb.org/meta-driver/latest/legacy/mongodb-wire-protocol/#op-delete</a></p>
+</dd></dl>
+<dl class="py function">
+<dt id="pymongo.message.get_more"><a name="//apple_ref/cpp/Function/pymongo.message.get_more"></a>
+<code class="sig-prename descclassname">pymongo.message.</code><code class="sig-name descname">get_more</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection_name</span></em>, <em class="sig-param"><span class="n">num_to_return</span></em>, <em class="sig-param"><span class="n">cursor_id</span></em>, <em class="sig-param"><span class="n">ctx</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.message.get_more" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <strong>getMore</strong> message.</p>
+</dd></dl>
+<dl class="py function">
+<dt id="pymongo.message.insert"><a name="//apple_ref/cpp/Function/pymongo.message.insert"></a>
+<code class="sig-prename descclassname">pymongo.message.</code><code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection_name</span></em>, <em class="sig-param"><span class="n">docs</span></em>, <em class="sig-param"><span class="n">check_keys</span></em>, <em class="sig-param"><span class="n">safe</span></em>, <em class="sig-param"><span class="n">last_error_args</span></em>, <em class="sig-param"><span class="n">continue_on_error</span></em>, <em class="sig-param"><span class="n">opts</span></em>, <em class="sig-param"><span class="n">ctx</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.message.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an <strong>insert</strong> message.</p>
+</dd></dl>
+<dl class="py function">
+<dt id="pymongo.message.kill_cursors"><a name="//apple_ref/cpp/Function/pymongo.message.kill_cursors"></a>
+<code class="sig-prename descclassname">pymongo.message.</code><code class="sig-name descname">kill_cursors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cursor_ids</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.message.kill_cursors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <strong>killCursors</strong> message.</p>
+</dd></dl>
+<dl class="py function">
+<dt id="pymongo.message.query"><a name="//apple_ref/cpp/Function/pymongo.message.query"></a>
+<code class="sig-prename descclassname">pymongo.message.</code><code class="sig-name descname">query</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">options</span></em>, <em class="sig-param"><span class="n">collection_name</span></em>, <em class="sig-param"><span class="n">num_to_skip</span></em>, <em class="sig-param"><span class="n">num_to_return</span></em>, <em class="sig-param"><span class="n">query</span></em>, <em class="sig-param"><span class="n">field_selector</span></em>, <em class="sig-param"><span class="n">opts</span></em>, <em class="sig-param"><span class="n">check_keys</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ctx</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.message.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <strong>query</strong> message.</p>
+</dd></dl>
+<dl class="py function">
+<dt id="pymongo.message.update"><a name="//apple_ref/cpp/Function/pymongo.message.update"></a>
+<code class="sig-prename descclassname">pymongo.message.</code><code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection_name</span></em>, <em class="sig-param"><span class="n">upsert</span></em>, <em class="sig-param"><span class="n">multi</span></em>, <em class="sig-param"><span class="n">spec</span></em>, <em class="sig-param"><span class="n">doc</span></em>, <em class="sig-param"><span class="n">safe</span></em>, <em class="sig-param"><span class="n">last_error_args</span></em>, <em class="sig-param"><span class="n">check_keys</span></em>, <em class="sig-param"><span class="n">opts</span></em>, <em class="sig-param"><span class="n">ctx</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.message.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an <strong>update</strong> message.</p>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="errors.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> package</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="mongo_client.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mongo_client</span></code> – Tools for connecting to MongoDB</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/message.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="mongo_client.html" title="mongo_client – Tools for connecting to MongoDB">next</a> |</li>
+<li class="right">
+<a href="errors.html" title="errors – Exceptions raised by the pymongo package">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">message</span></code> – Tools for creating messages to be sent to MongoDB</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

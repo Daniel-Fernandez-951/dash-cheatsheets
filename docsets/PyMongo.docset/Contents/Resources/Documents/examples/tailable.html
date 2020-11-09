@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tailable Cursors &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="TLS/SSL and PyMongo" href="tls.html" />
+    <link rel="prev" title="Server Selector Example" href="server_selection.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tls.html" title="TLS/SSL and PyMongo"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="server_selection.html" title="Server Selector Example"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tailable Cursors</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tailable-cursors">
+<h1>Tailable Cursors<a class="headerlink" href="#tailable-cursors" title="Permalink to this headline">¶</a></h1>
+<p>By default, MongoDB will automatically close a cursor when the client has
+exhausted all results in the cursor. However, for <a class="reference external" href="https://docs.mongodb.org/manual/core/capped-collections/">capped collections</a> you may
+use a <a class="reference external" href="https://docs.mongodb.org/manual/reference/glossary/#term-tailable-cursor">tailable cursor</a>
+that remains open after the client exhausts the results in the initial cursor.</p>
+<p>The following is a basic example of using a tailable cursor to tail the oplog
+of a replica set member:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">pymongo</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">()</span>
+<span class="n">oplog</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">oplog</span><span class="o">.</span><span class="n">rs</span>
+<span class="n">first</span> <span class="o">=</span> <span class="n">oplog</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;$natural&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">first</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">]</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="c1"># For a regular capped collection CursorType.TAILABLE_AWAIT is the</span>
+    <span class="c1"># only option required to create a tailable cursor. When querying the</span>
+    <span class="c1"># oplog, the oplog_replay option enables an optimization to quickly</span>
+    <span class="c1"># find the &#39;ts&#39; value we&#39;re looking for. The oplog_replay option</span>
+    <span class="c1"># can only be used when querying the oplog. Starting in MongoDB 4.4</span>
+    <span class="c1"># this option is ignored by the server as queries against the oplog</span>
+    <span class="c1"># are optimized automatically by the MongoDB query engine.</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">oplog</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;ts&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gt&#39;</span><span class="p">:</span> <span class="n">ts</span><span class="p">}},</span>
+                        <span class="n">cursor_type</span><span class="o">=</span><span class="n">pymongo</span><span class="o">.</span><span class="n">CursorType</span><span class="o">.</span><span class="n">TAILABLE_AWAIT</span><span class="p">,</span>
+                        <span class="n">oplog_replay</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">cursor</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="c1"># We end up here if the find() returned no documents or if the</span>
+        <span class="c1"># tailable cursor timed out (no new documents were added to the</span>
+        <span class="c1"># collection for more than 1 second).</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="server_selection.html"
+                        title="previous chapter">Server Selector Example</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tls.html"
+                        title="next chapter">TLS/SSL and PyMongo</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/tailable.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tls.html" title="TLS/SSL and PyMongo"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="server_selection.html" title="Server Selector Example"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tailable Cursors</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>regex – Tools for representing MongoDB regular expressions — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="son.html" rel="next" title="son – Tools for working with SON, an ordered mapping"/>
+<link href="raw_bson.html" rel="prev" title="raw_bson – Tools for representing raw BSON documents."/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="son.html" title="son – Tools for working with SON, an ordered mapping">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="raw_bson.html" title="raw_bson – Tools for representing raw BSON documents.">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">regex</span></code> – Tools for representing MongoDB regular expressions</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="regex-tools-for-representing-mongodb-regular-expressions"><a name="//apple_ref/cpp/Module/bson.regex"></a>
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">regex</span></code> – Tools for representing MongoDB regular expressions<a class="headerlink" href="#regex-tools-for-representing-mongodb-regular-expressions" title="Permalink to this headline">¶</a></h1>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7.</span></p>
+</div>
+<span class="target" id="module-bson.regex"></span><p>Tools for representing MongoDB regular expressions.</p>
+<dl class="py class">
+<dt id="bson.regex.Regex"><a name="//apple_ref/cpp/Class/bson.regex.Regex"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.regex.</code><code class="sig-name descname">Regex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pattern</span></em>, <em class="sig-param"><span class="n">flags</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.regex.Regex" title="Permalink to this definition">¶</a></dt>
+<dd><p>BSON regular expression data.</p>
+<p>This class is useful to store and retrieve regular expressions that are
+incompatible with Python’s regular expression dialect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>pattern</cite>: string</p></li>
+<li><p><cite>flags</cite>: (optional) an integer bitmask, or a string of flag
+characters like “im” for IGNORECASE and MULTILINE</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="bson.regex.Regex.from_native"><a name="//apple_ref/cpp/Method/bson.regex.Regex.from_native"></a>
+<em class="property">classmethod </em><code class="sig-name descname">from_native</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">regex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.regex.Regex.from_native" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a Python regular expression into a <code class="docutils literal notranslate"><span class="pre">Regex</span></code> instance.</p>
+<p>Note that in Python 3, a regular expression compiled from a
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> has the <code class="docutils literal notranslate"><span class="pre">re.UNICODE</span></code> flag set. If it is undesirable
+to store this flag in a BSON regular expression, unset it first:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">'.*'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span> <span class="o">=</span> <span class="n">Regex</span><span class="o">.</span><span class="n">from_native</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">regex</span><span class="o">.</span><span class="n">flags</span> <span class="o">^=</span> <span class="n">re</span><span class="o">.</span><span class="n">UNICODE</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">insert</span><span class="p">({</span><span class="s1">'pattern'</span><span class="p">:</span> <span class="n">regex</span><span class="p">})</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>regex</cite>: A regular expression object from <code class="docutils literal notranslate"><span class="pre">re.compile()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Python regular expressions use a different syntax and different
+set of flags than MongoDB, which uses <a class="reference external" href="http://www.pcre.org/">PCRE</a>. A regular
+expression retrieved from the server may not compile in
+Python, or may match a different set of strings in Python than
+when used in a MongoDB query.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.regex.Regex.try_compile"><a name="//apple_ref/cpp/Method/bson.regex.Regex.try_compile"></a>
+<code class="sig-name descname">try_compile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bson.regex.Regex.try_compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile this <a class="reference internal" href="#bson.regex.Regex" title="bson.regex.Regex"><code class="xref py py-class docutils literal notranslate"><span class="pre">Regex</span></code></a> as a Python regular expression.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Python regular expressions use a different syntax and different
+set of flags than MongoDB, which uses <a class="reference external" href="http://www.pcre.org/">PCRE</a>. A regular
+expression retrieved from the server may not compile in
+Python, or may match a different set of strings in Python than
+when used in a MongoDB query. <a class="reference internal" href="#bson.regex.Regex.try_compile" title="bson.regex.Regex.try_compile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">try_compile()</span></code></a> may raise
+<a class="reference external" href="https://docs.python.org/3/library/re.html#re.error" title="(in Python v3.9)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">re.error</span></code></a>.</p>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="raw_bson.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">raw_bson</span></code> – Tools for representing raw BSON documents.</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="son.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">son</span></code> – Tools for working with SON, an ordered mapping</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/regex.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="son.html" title="son – Tools for working with SON, an ordered mapping">next</a> |</li>
+<li class="right">
+<a href="raw_bson.html" title="raw_bson – Tools for representing raw BSON documents.">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">regex</span></code> – Tools for representing MongoDB regular expressions</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

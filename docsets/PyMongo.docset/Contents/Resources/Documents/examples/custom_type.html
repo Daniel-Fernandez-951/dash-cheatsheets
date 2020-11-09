@@ -1,0 +1,481 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Type Example &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Bulk Write Operations" href="bulk.html" />
+    <link rel="prev" title="Copying a Database" href="copydb.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bulk.html" title="Bulk Write Operations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="copydb.html" title="Copying a Database"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Custom Type Example</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="custom-type-example">
+<h1>Custom Type Example<a class="headerlink" href="#custom-type-example" title="Permalink to this headline">¶</a></h1>
+<p>This is an example of using a custom type with PyMongo. The example here shows
+how to subclass <a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.TypeCodec" title="bson.codec_options.TypeCodec"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeCodec</span></code></a> to write a type
+codec, which is used to populate a <a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.TypeRegistry" title="bson.codec_options.TypeRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeRegistry</span></code></a>.
+The type registry can then be used to create a custom-type-aware
+<a class="reference internal" href="../api/pymongo/collection.html#pymongo.collection.Collection" title="pymongo.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a>. Read and write operations
+issued against the resulting collection object transparently manipulate
+documents as they are saved to or retrieved from MongoDB.</p>
+<div class="section" id="setting-up">
+<h2>Setting Up<a class="headerlink" href="#setting-up" title="Permalink to this headline">¶</a></h2>
+<p>We’ll start by getting a clean database to use for the example:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">drop_database</span><span class="p">(</span><span class="s1">&#39;custom_type_example&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">custom_type_example</span>
+</pre></div>
+</div>
+<p>Since the purpose of the example is to demonstrate working with custom types,
+we’ll need a custom data type to use. For this example, we will be working with
+the <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code></a> type from Python’s standard library. Since the
+BSON library’s <a class="reference internal" href="../api/bson/decimal128.html#bson.decimal128.Decimal128" title="bson.decimal128.Decimal128"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal128</span></code></a> type (that implements
+the IEEE 754 decimal128 decimal-based floating-point numbering format) is
+distinct from Python’s built-in <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code></a> type, attempting
+to save an instance of <code class="docutils literal notranslate"><span class="pre">Decimal</span></code> with PyMongo, results in an
+<a class="reference internal" href="../api/bson/errors.html#bson.errors.InvalidDocument" title="bson.errors.InvalidDocument"><code class="xref py py-exc docutils literal notranslate"><span class="pre">InvalidDocument</span></code></a> exception.</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">num</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;45.321&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;num&#39;</span><span class="p">:</span> <span class="n">num</span><span class="p">})</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">bson.errors.InvalidDocument</span>: <span class="n">cannot encode object: Decimal(&#39;45.321&#39;), of type: &lt;class &#39;decimal.Decimal&#39;&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="the-typecodec-class">
+<span id="custom-type-type-codec"></span><h3>The <a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.TypeCodec" title="bson.codec_options.TypeCodec"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeCodec</span></code></a> Class<a class="headerlink" href="#the-typecodec-class" title="Permalink to this headline">¶</a></h3>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.8.</span></p>
+</div>
+<p>In order to encode a custom type, we must first define a <strong>type codec</strong> for
+that type. A type codec describes how an instance of a custom type can be
+<em>transformed</em> to and/or from one of the types <a class="reference internal" href="../api/bson/index.html#module-bson" title="bson: BSON (Binary JSON) Encoding and Decoding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code></a> already understands.
+Depending on the desired functionality, users must choose from the following
+base classes when defining type codecs:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.TypeEncoder" title="bson.codec_options.TypeEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeEncoder</span></code></a>: subclass this to define a codec that
+encodes a custom Python type to a known BSON type. Users must implement the
+<code class="docutils literal notranslate"><span class="pre">python_type</span></code> property/attribute and the <code class="docutils literal notranslate"><span class="pre">transform_python</span></code> method.</p></li>
+<li><p><a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.TypeDecoder" title="bson.codec_options.TypeDecoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeDecoder</span></code></a>: subclass this to define a codec that
+decodes a specified BSON type into a custom Python type. Users must implement
+the <code class="docutils literal notranslate"><span class="pre">bson_type</span></code> property/attribute and the <code class="docutils literal notranslate"><span class="pre">transform_bson</span></code> method.</p></li>
+<li><p><a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.TypeCodec" title="bson.codec_options.TypeCodec"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeCodec</span></code></a>: subclass this to define a codec that
+can both encode and decode a custom type. Users must implement the
+<code class="docutils literal notranslate"><span class="pre">python_type</span></code> and <code class="docutils literal notranslate"><span class="pre">bson_type</span></code> properties/attributes, as well as the
+<code class="docutils literal notranslate"><span class="pre">transform_python</span></code> and <code class="docutils literal notranslate"><span class="pre">transform_bson</span></code> methods.</p></li>
+</ul>
+<p>The type codec for our custom type simply needs to define how a
+<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code></a> instance can be converted into a
+<a class="reference internal" href="../api/bson/decimal128.html#bson.decimal128.Decimal128" title="bson.decimal128.Decimal128"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal128</span></code></a> instance and vice-versa. Since we are
+interested in both encoding and decoding our custom type, we use the
+<code class="docutils literal notranslate"><span class="pre">TypeCodec</span></code> base class to define our codec:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.decimal128</span> <span class="kn">import</span> <span class="n">Decimal128</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">TypeCodec</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">DecimalCodec</span><span class="p">(</span><span class="n">TypeCodec</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">python_type</span> <span class="o">=</span> <span class="n">Decimal</span>    <span class="c1"># the Python type acted upon by this type codec</span>
+<span class="gp">... </span>    <span class="n">bson_type</span> <span class="o">=</span> <span class="n">Decimal128</span>   <span class="c1"># the BSON type acted upon by this type codec</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">transform_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;Function that transforms a custom type value into a type</span>
+<span class="gp">... </span><span class="sd">        that BSON can encode.&quot;&quot;&quot;</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">Decimal128</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">transform_bson</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;Function that transforms a vanilla BSON type value into our</span>
+<span class="gp">... </span><span class="sd">        custom type.&quot;&quot;&quot;</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">to_decimal</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">decimal_codec</span> <span class="o">=</span> <span class="n">DecimalCodec</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-typeregistry-class">
+<span id="custom-type-type-registry"></span><h3>The <a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.TypeRegistry" title="bson.codec_options.TypeRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeRegistry</span></code></a> Class<a class="headerlink" href="#the-typeregistry-class" title="Permalink to this headline">¶</a></h3>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.8.</span></p>
+</div>
+<p>Before we can begin encoding and decoding our custom type objects, we must
+first inform PyMongo about the corresponding codec. This is done by creating
+a <a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.TypeRegistry" title="bson.codec_options.TypeRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeRegistry</span></code></a> instance:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">TypeRegistry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">type_registry</span> <span class="o">=</span> <span class="n">TypeRegistry</span><span class="p">([</span><span class="n">decimal_codec</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Note that type registries can be instantiated with any number of type codecs.
+Once instantiated, registries are immutable and the only way to add codecs
+to a registry is to create a new one.</p>
+</div>
+</div>
+<div class="section" id="putting-it-together">
+<h2>Putting It Together<a class="headerlink" href="#putting-it-together" title="Permalink to this headline">¶</a></h2>
+<p>Finally, we can define a <a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.CodecOptions" title="bson.codec_options.CodecOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a> instance
+with our <code class="docutils literal notranslate"><span class="pre">type_registry</span></code> and use it to get a
+<a class="reference internal" href="../api/pymongo/collection.html#pymongo.collection.Collection" title="pymongo.collection.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a> object that understands the
+<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code></a> data type:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">CodecOptions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">codec_options</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">type_registry</span><span class="o">=</span><span class="n">type_registry</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">codec_options</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we can seamlessly encode and decode instances of
+<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code></a>:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;num&#39;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;45.321&quot;</span><span class="p">)})</span>
+<span class="go">&lt;pymongo.results.InsertOneResult object at ...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mydoc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">mydoc</span><span class="p">)</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;num&#39;: Decimal(&#39;45.321&#39;)}</span>
+</pre></div>
+</div>
+<p>We can see what’s actually being saved to the database by creating a fresh
+collection object without the customized codec options and using that to query
+MongoDB:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vanilla_collection</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">vanilla_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">())</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;num&#39;: Decimal128(&#39;45.321&#39;)}</span>
+</pre></div>
+</div>
+<div class="section" id="encoding-subtypes">
+<h3>Encoding Subtypes<a class="headerlink" href="#encoding-subtypes" title="Permalink to this headline">¶</a></h3>
+<p>Consider the situation where, in addition to encoding
+<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code></a>, we also need to encode a type that subclasses
+<code class="docutils literal notranslate"><span class="pre">Decimal</span></code>. PyMongo does this automatically for types that inherit from
+Python types that are BSON-encodable by default, but the type codec system
+described above does not offer the same flexibility.</p>
+<p>Consider this subtype of <code class="docutils literal notranslate"><span class="pre">Decimal</span></code> that has a method to return its value as
+an integer:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">DecimalInt</span><span class="p">(</span><span class="n">Decimal</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;Method implementing some custom logic.&quot;&quot;&quot;</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we try to save an instance of this type without first registering a type
+codec for it, we get an error:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;num&#39;</span><span class="p">:</span> <span class="n">DecimalInt</span><span class="p">(</span><span class="s2">&quot;45.321&quot;</span><span class="p">)})</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">bson.errors.InvalidDocument</span>: <span class="n">cannot encode object: Decimal(&#39;45.321&#39;), of type: &lt;class &#39;decimal.Decimal&#39;&gt;</span>
+</pre></div>
+</div>
+<p>In order to proceed further, we must define a type codec for <code class="docutils literal notranslate"><span class="pre">DecimalInt</span></code>.
+This is trivial to do since the same transformation as the one used for
+<code class="docutils literal notranslate"><span class="pre">Decimal</span></code> is adequate for encoding <code class="docutils literal notranslate"><span class="pre">DecimalInt</span></code> as well:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">DecimalIntCodec</span><span class="p">(</span><span class="n">DecimalCodec</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nd">@property</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">python_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="sd">&quot;&quot;&quot;The Python type acted upon by this type codec.&quot;&quot;&quot;</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">DecimalInt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">decimalint_codec</span> <span class="o">=</span> <span class="n">DecimalIntCodec</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>No attempt is made to modify decoding behavior because without additional
+information, it is impossible to discern which incoming
+<a class="reference internal" href="../api/bson/decimal128.html#bson.decimal128.Decimal128" title="bson.decimal128.Decimal128"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal128</span></code></a> value needs to be decoded as <code class="docutils literal notranslate"><span class="pre">Decimal</span></code>
+and which needs to be decoded as <code class="docutils literal notranslate"><span class="pre">DecimalInt</span></code>. This example only considers
+the situation where a user wants to <em>encode</em> documents containing either
+of these types.</p>
+</div>
+<p>After creating a new codec options object and using it to get a collection
+object, we can seamlessly encode instances of <code class="docutils literal notranslate"><span class="pre">DecimalInt</span></code>:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">type_registry</span> <span class="o">=</span> <span class="n">TypeRegistry</span><span class="p">([</span><span class="n">decimal_codec</span><span class="p">,</span> <span class="n">decimalint_codec</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">codec_options</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">type_registry</span><span class="o">=</span><span class="n">type_registry</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">codec_options</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;num&#39;</span><span class="p">:</span> <span class="n">DecimalInt</span><span class="p">(</span><span class="s2">&quot;45.321&quot;</span><span class="p">)})</span>
+<span class="go">&lt;pymongo.results.InsertOneResult object at ...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mydoc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">mydoc</span><span class="p">)</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;num&#39;: Decimal(&#39;45.321&#39;)}</span>
+</pre></div>
+</div>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">transform_bson</span></code> method of the base codec class results in
+these values being decoded as <code class="docutils literal notranslate"><span class="pre">Decimal</span></code> (and not <code class="docutils literal notranslate"><span class="pre">DecimalInt</span></code>).</p>
+</div>
+<div class="section" id="decoding-binary-types">
+<span id="id1"></span><h3>Decoding <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> Types<a class="headerlink" href="#decoding-binary-types" title="Permalink to this headline">¶</a></h3>
+<p>The decoding treatment of <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> types having
+<code class="docutils literal notranslate"><span class="pre">subtype</span> <span class="pre">=</span> <span class="pre">0</span></code> by the <a class="reference internal" href="../api/bson/index.html#module-bson" title="bson: BSON (Binary JSON) Encoding and Decoding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code></a> module varies slightly depending on the
+version of the Python runtime in use. This must be taken into account while
+writing a <code class="docutils literal notranslate"><span class="pre">TypeDecoder</span></code> that modifies how this datatype is decoded.</p>
+<p>On Python 3.x, <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> data (<code class="docutils literal notranslate"><span class="pre">subtype</span> <span class="pre">=</span> <span class="pre">0</span></code>) is decoded
+as a <code class="docutils literal notranslate"><span class="pre">bytes</span></code> instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># On Python 3.x.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">Binary</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newcoll</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;new&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newcoll</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">Binary</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="n">subtype</span><span class="o">=</span><span class="mi">0</span><span class="p">)})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">newcoll</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+<span class="go">bytes</span>
+</pre></div>
+</div>
+<p>On Python 2.7.x, the same data is decoded as a <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a>
+instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># On Python 2.7.x</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newcoll</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;new&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">newcoll</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+<span class="go">bson.binary.Binary</span>
+</pre></div>
+</div>
+<p>As a consequence of this disparity, users must set the <code class="docutils literal notranslate"><span class="pre">bson_type</span></code> attribute
+on their <a class="reference internal" href="../api/bson/codec_options.html#bson.codec_options.TypeDecoder" title="bson.codec_options.TypeDecoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeDecoder</span></code></a> classes differently,
+depending on the python version in use.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For codebases requiring compatibility with both Python 2 and 3, type
+decoders will have to be registered for both possible <code class="docutils literal notranslate"><span class="pre">bson_type</span></code> values.</p>
+</div>
+</div>
+</div>
+<div class="section" id="the-fallback-encoder-callable">
+<span id="fallback-encoder-callable"></span><h2>The <code class="docutils literal notranslate"><span class="pre">fallback_encoder</span></code> Callable<a class="headerlink" href="#the-fallback-encoder-callable" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.8.</span></p>
+</div>
+<p>In addition to type codecs, users can also register a callable to encode types
+that BSON doesn’t recognize and for which no type codec has been registered.
+This callable is the <strong>fallback encoder</strong> and like the <code class="docutils literal notranslate"><span class="pre">transform_python</span></code>
+method, it accepts an unencodable value as a parameter and returns a
+BSON-encodable value. The following fallback encoder encodes python’s
+<a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code></a> type to a <a class="reference internal" href="../api/bson/decimal128.html#bson.decimal128.Decimal128" title="bson.decimal128.Decimal128"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal128</span></code></a>:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">fallback_encoder</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">Decimal128</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+</div>
+<p>After declaring the callback, we must create a type registry and codec options
+with this fallback encoder before it can be used for initializing a collection:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">type_registry</span> <span class="o">=</span> <span class="n">TypeRegistry</span><span class="p">(</span><span class="n">fallback_encoder</span><span class="o">=</span><span class="n">fallback_encoder</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">codec_options</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">type_registry</span><span class="o">=</span><span class="n">type_registry</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">codec_options</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span><span class="o">.</span><span class="n">drop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can now seamlessly encode instances of <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal</span></code></a>:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;num&#39;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">(</span><span class="s2">&quot;45.321&quot;</span><span class="p">)})</span>
+<span class="go">&lt;pymongo.results.InsertOneResult object at ...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mydoc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">mydoc</span><span class="p">)</span>
+<span class="go">{u&#39;_id&#39;: ObjectId(&#39;...&#39;), u&#39;num&#39;: Decimal128(&#39;45.321&#39;)}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Fallback encoders are invoked <em>after</em> attempts to encode the given value
+with standard BSON encoders and any configured type encoders have failed.
+Therefore, in a type registry configured with a type encoder and fallback
+encoder that both target the same custom type, the behavior specified in
+the type encoder will prevail.</p>
+</div>
+<p>Because fallback encoders don’t need to declare the types that they encode
+beforehand, they can be used to support interesting use-cases that cannot be
+serviced by <code class="docutils literal notranslate"><span class="pre">TypeEncoder</span></code>. One such use-case is described in the next
+section.</p>
+<div class="section" id="encoding-unknown-types">
+<h3>Encoding Unknown Types<a class="headerlink" href="#encoding-unknown-types" title="Permalink to this headline">¶</a></h3>
+<p>In this example, we demonstrate how a fallback encoder can be used to save
+arbitrary objects to the database. We will use the the standard library’s
+<a class="reference external" href="https://docs.python.org/3/library/pickle.html#module-pickle" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pickle</span></code></a> module to serialize the unknown types and so naturally, this
+approach only works for types that are picklable.</p>
+<p>We start by defining some arbitrary custom types:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyStringType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__value</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;MyStringType(&#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__value</span><span class="p">,)</span>
+
+<span class="k">class</span> <span class="nc">MyNumberType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__value</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;MyNumberType(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__value</span><span class="p">,)</span>
+</pre></div>
+</div>
+<p>We also define a fallback encoder that pickles whatever objects it receives
+and returns them as <a class="reference internal" href="../api/bson/binary.html#bson.binary.Binary" title="bson.binary.Binary"><code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code></a> instances with a custom
+subtype. The custom subtype, in turn, allows us to write a TypeDecoder that
+identifies pickled artifacts upon retrieval and transparently decodes them
+back into Python objects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">from</span> <span class="nn">bson.binary</span> <span class="kn">import</span> <span class="n">Binary</span><span class="p">,</span> <span class="n">USER_DEFINED_SUBTYPE</span>
+<span class="k">def</span> <span class="nf">fallback_pickle_encoder</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Binary</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">USER_DEFINED_SUBTYPE</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">PickledBinaryDecoder</span><span class="p">(</span><span class="n">TypeDecoder</span><span class="p">):</span>
+    <span class="n">bson_type</span> <span class="o">=</span> <span class="n">Binary</span>
+    <span class="k">def</span> <span class="nf">transform_bson</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">subtype</span> <span class="o">==</span> <span class="n">USER_DEFINED_SUBTYPE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The above example is written assuming the use of Python 3. If you are using
+Python 2, <code class="docutils literal notranslate"><span class="pre">bson_type</span></code> must be set to <code class="docutils literal notranslate"><span class="pre">Binary</span></code>. See the
+<a class="reference internal" href="#decoding-binary-types"><span class="std std-ref">Decoding Binary Types</span></a> section for a detailed explanation.</p>
+</div>
+<p>Finally, we create a <code class="docutils literal notranslate"><span class="pre">CodecOptions</span></code> instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">codec_options</span> <span class="o">=</span> <span class="n">CodecOptions</span><span class="p">(</span><span class="n">type_registry</span><span class="o">=</span><span class="n">TypeRegistry</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">PickledBinaryDecoder</span><span class="p">()],</span> <span class="n">fallback_encoder</span><span class="o">=</span><span class="n">fallback_pickle_encoder</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We can now round trip our custom objects to MongoDB:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">collection</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_collection</span><span class="p">(</span><span class="s1">&#39;test_fe&#39;</span><span class="p">,</span> <span class="n">codec_options</span><span class="o">=</span><span class="n">codec_options</span><span class="p">)</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;str&#39;</span><span class="p">:</span> <span class="n">MyStringType</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">),</span>
+                       <span class="s1">&#39;num&#39;</span><span class="p">:</span> <span class="n">MyNumberType</span><span class="p">(</span><span class="mi">2</span><span class="p">)})</span>
+<span class="n">mydoc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mydoc</span><span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">],</span> <span class="n">MyStringType</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mydoc</span><span class="p">[</span><span class="s1">&#39;num&#39;</span><span class="p">],</span> <span class="n">MyNumberType</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<p>PyMongo’s type codec and fallback encoder features have the following
+limitations:</p>
+<ol class="arabic simple">
+<li><p>Users cannot customize the encoding behavior of Python types that PyMongo
+already understands like <code class="docutils literal notranslate"><span class="pre">int</span></code> and <code class="docutils literal notranslate"><span class="pre">str</span></code> (the ‘built-in types’).
+Attempting to instantiate a type registry with one or more codecs that act
+upon a built-in type results in a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>. This limitation extends
+to all subtypes of the standard types.</p></li>
+<li><p>Chaining type encoders is not supported. A custom type value, once
+transformed by a codec’s <code class="docutils literal notranslate"><span class="pre">transform_python</span></code> method, <em>must</em> result in a
+type that is either BSON-encodable by default, or can be
+transformed by the fallback encoder into something BSON-encodable–it
+<em>cannot</em> be transformed a second time by a different type codec.</p></li>
+<li><p>The <a class="reference internal" href="../api/pymongo/database.html#pymongo.database.Database.command" title="pymongo.database.Database.command"><code class="xref py py-meth docutils literal notranslate"><span class="pre">command()</span></code></a> method does not apply the
+user’s TypeDecoders while decoding the command response document.</p></li>
+<li><p><a class="reference internal" href="../api/gridfs/index.html#module-gridfs" title="gridfs: Tools for working with GridFS"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridfs</span></code></a> does not apply custom type encoding or decoding to any
+documents received from or to returned to the user.</p></li>
+</ol>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Custom Type Example</a><ul>
+<li><a class="reference internal" href="#setting-up">Setting Up</a><ul>
+<li><a class="reference internal" href="#the-typecodec-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeCodec</span></code> Class</a></li>
+<li><a class="reference internal" href="#the-typeregistry-class">The <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeRegistry</span></code> Class</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#putting-it-together">Putting It Together</a><ul>
+<li><a class="reference internal" href="#encoding-subtypes">Encoding Subtypes</a></li>
+<li><a class="reference internal" href="#decoding-binary-types">Decoding <code class="xref py py-class docutils literal notranslate"><span class="pre">Binary</span></code> Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-fallback-encoder-callable">The <code class="docutils literal notranslate"><span class="pre">fallback_encoder</span></code> Callable</a><ul>
+<li><a class="reference internal" href="#encoding-unknown-types">Encoding Unknown Types</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="copydb.html"
+                        title="previous chapter">Copying a Database</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="bulk.html"
+                        title="next chapter">Bulk Write Operations</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/custom_type.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bulk.html" title="Bulk Write Operations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="copydb.html" title="Copying a Database"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Custom Type Example</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

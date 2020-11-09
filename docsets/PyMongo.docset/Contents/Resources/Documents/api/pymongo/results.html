@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>results – Result class definitions — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="son_manipulator.html" rel="next" title="son_manipulator – Manipulators that can edit SON documents as they are saved or retrieved"/>
+<link href="read_preferences.html" rel="prev" title="read_preferences – Utilities for choosing which member of a replica set to read from."/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="son_manipulator.html" title="son_manipulator – Manipulators that can edit SON documents as they are saved or retrieved">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="read_preferences.html" title="read_preferences – Utilities for choosing which member of a replica set to read from.">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">results</span></code> – Result class definitions</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.results">
+<span id="results-result-class-definitions"></span><h1><a name="//apple_ref/cpp/Module/pymongo.results"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">results</span></code> – Result class definitions<a class="headerlink" href="#module-pymongo.results" title="Permalink to this headline">¶</a></h1>
+<p>Result class definitions.</p>
+<dl class="py class">
+<dt id="pymongo.results.BulkWriteResult"><a name="//apple_ref/cpp/Class/pymongo.results.BulkWriteResult"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.results.</code><code class="sig-name descname">BulkWriteResult</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bulk_api_result</span></em>, <em class="sig-param"><span class="n">acknowledged</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.results.BulkWriteResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a BulkWriteResult instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>bulk_api_result</cite>: A result dict from the bulk API</p></li>
+<li><p><cite>acknowledged</cite>: Was this write result acknowledged? If <code class="docutils literal notranslate"><span class="pre">False</span></code>
+then all properties of this object will raise
+<a class="reference internal" href="errors.html#pymongo.errors.InvalidOperation" title="pymongo.errors.InvalidOperation"><code class="xref py py-exc docutils literal notranslate"><span class="pre">InvalidOperation</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pymongo.results.BulkWriteResult.acknowledged"><a name="//apple_ref/cpp/Method/pymongo.results.BulkWriteResult.acknowledged"></a>
+<em class="property">property </em><code class="sig-name descname">acknowledged</code><a class="headerlink" href="#pymongo.results.BulkWriteResult.acknowledged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this the result of an acknowledged write operation?</p>
+<p>The <a class="reference internal" href="#pymongo.results.BulkWriteResult.acknowledged" title="pymongo.results.BulkWriteResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute will be <code class="docutils literal notranslate"><span class="pre">False</span></code> when using
+<code class="docutils literal notranslate"><span class="pre">WriteConcern(w=0)</span></code>, otherwise <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <a class="reference internal" href="#pymongo.results.BulkWriteResult.acknowledged" title="pymongo.results.BulkWriteResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute is <code class="docutils literal notranslate"><span class="pre">False</span></code> all other
+attibutes of this class will raise
+<a class="reference internal" href="errors.html#pymongo.errors.InvalidOperation" title="pymongo.errors.InvalidOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvalidOperation</span></code></a> when accessed. Values for
+other attributes cannot be determined if the write operation was
+unacknowledged.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="write_concern.html#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.BulkWriteResult.bulk_api_result"><a name="//apple_ref/cpp/Method/pymongo.results.BulkWriteResult.bulk_api_result"></a>
+<em class="property">property </em><code class="sig-name descname">bulk_api_result</code><a class="headerlink" href="#pymongo.results.BulkWriteResult.bulk_api_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>The raw bulk API result.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.BulkWriteResult.deleted_count"><a name="//apple_ref/cpp/Method/pymongo.results.BulkWriteResult.deleted_count"></a>
+<em class="property">property </em><code class="sig-name descname">deleted_count</code><a class="headerlink" href="#pymongo.results.BulkWriteResult.deleted_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of documents deleted.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.BulkWriteResult.inserted_count"><a name="//apple_ref/cpp/Method/pymongo.results.BulkWriteResult.inserted_count"></a>
+<em class="property">property </em><code class="sig-name descname">inserted_count</code><a class="headerlink" href="#pymongo.results.BulkWriteResult.inserted_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of documents inserted.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.BulkWriteResult.matched_count"><a name="//apple_ref/cpp/Method/pymongo.results.BulkWriteResult.matched_count"></a>
+<em class="property">property </em><code class="sig-name descname">matched_count</code><a class="headerlink" href="#pymongo.results.BulkWriteResult.matched_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of documents matched for an update.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.BulkWriteResult.modified_count"><a name="//apple_ref/cpp/Method/pymongo.results.BulkWriteResult.modified_count"></a>
+<em class="property">property </em><code class="sig-name descname">modified_count</code><a class="headerlink" href="#pymongo.results.BulkWriteResult.modified_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of documents modified.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>modified_count is only reported by MongoDB 2.6 and later.
+When connected to an earlier server version, or in certain mixed
+version sharding configurations, this attribute will be set to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.BulkWriteResult.upserted_count"><a name="//apple_ref/cpp/Method/pymongo.results.BulkWriteResult.upserted_count"></a>
+<em class="property">property </em><code class="sig-name descname">upserted_count</code><a class="headerlink" href="#pymongo.results.BulkWriteResult.upserted_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of documents upserted.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.BulkWriteResult.upserted_ids"><a name="//apple_ref/cpp/Method/pymongo.results.BulkWriteResult.upserted_ids"></a>
+<em class="property">property </em><code class="sig-name descname">upserted_ids</code><a class="headerlink" href="#pymongo.results.BulkWriteResult.upserted_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>A map of operation index to the _id of the upserted document.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.results.DeleteResult"><a name="//apple_ref/cpp/Class/pymongo.results.DeleteResult"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.results.</code><code class="sig-name descname">DeleteResult</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_result</span></em>, <em class="sig-param"><span class="n">acknowledged</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.results.DeleteResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>The return type for <a class="reference internal" href="collection.html#pymongo.collection.Collection.delete_one" title="pymongo.collection.Collection.delete_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_one()</span></code></a>
+and <a class="reference internal" href="collection.html#pymongo.collection.Collection.delete_many" title="pymongo.collection.Collection.delete_many"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_many()</span></code></a></p>
+<dl class="py method">
+<dt id="pymongo.results.DeleteResult.acknowledged"><a name="//apple_ref/cpp/Method/pymongo.results.DeleteResult.acknowledged"></a>
+<em class="property">property </em><code class="sig-name descname">acknowledged</code><a class="headerlink" href="#pymongo.results.DeleteResult.acknowledged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this the result of an acknowledged write operation?</p>
+<p>The <a class="reference internal" href="#pymongo.results.DeleteResult.acknowledged" title="pymongo.results.DeleteResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute will be <code class="docutils literal notranslate"><span class="pre">False</span></code> when using
+<code class="docutils literal notranslate"><span class="pre">WriteConcern(w=0)</span></code>, otherwise <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <a class="reference internal" href="#pymongo.results.DeleteResult.acknowledged" title="pymongo.results.DeleteResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute is <code class="docutils literal notranslate"><span class="pre">False</span></code> all other
+attibutes of this class will raise
+<a class="reference internal" href="errors.html#pymongo.errors.InvalidOperation" title="pymongo.errors.InvalidOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvalidOperation</span></code></a> when accessed. Values for
+other attributes cannot be determined if the write operation was
+unacknowledged.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="write_concern.html#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.DeleteResult.deleted_count"><a name="//apple_ref/cpp/Method/pymongo.results.DeleteResult.deleted_count"></a>
+<em class="property">property </em><code class="sig-name descname">deleted_count</code><a class="headerlink" href="#pymongo.results.DeleteResult.deleted_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of documents deleted.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.DeleteResult.raw_result"><a name="//apple_ref/cpp/Method/pymongo.results.DeleteResult.raw_result"></a>
+<em class="property">property </em><code class="sig-name descname">raw_result</code><a class="headerlink" href="#pymongo.results.DeleteResult.raw_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>The raw result document returned by the server.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.results.InsertManyResult"><a name="//apple_ref/cpp/Class/pymongo.results.InsertManyResult"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.results.</code><code class="sig-name descname">InsertManyResult</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inserted_ids</span></em>, <em class="sig-param"><span class="n">acknowledged</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.results.InsertManyResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>The return type for <a class="reference internal" href="collection.html#pymongo.collection.Collection.insert_many" title="pymongo.collection.Collection.insert_many"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert_many()</span></code></a>.</p>
+<dl class="py method">
+<dt id="pymongo.results.InsertManyResult.acknowledged"><a name="//apple_ref/cpp/Method/pymongo.results.InsertManyResult.acknowledged"></a>
+<em class="property">property </em><code class="sig-name descname">acknowledged</code><a class="headerlink" href="#pymongo.results.InsertManyResult.acknowledged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this the result of an acknowledged write operation?</p>
+<p>The <a class="reference internal" href="#pymongo.results.InsertManyResult.acknowledged" title="pymongo.results.InsertManyResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute will be <code class="docutils literal notranslate"><span class="pre">False</span></code> when using
+<code class="docutils literal notranslate"><span class="pre">WriteConcern(w=0)</span></code>, otherwise <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <a class="reference internal" href="#pymongo.results.InsertManyResult.acknowledged" title="pymongo.results.InsertManyResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute is <code class="docutils literal notranslate"><span class="pre">False</span></code> all other
+attibutes of this class will raise
+<a class="reference internal" href="errors.html#pymongo.errors.InvalidOperation" title="pymongo.errors.InvalidOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvalidOperation</span></code></a> when accessed. Values for
+other attributes cannot be determined if the write operation was
+unacknowledged.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="write_concern.html#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.InsertManyResult.inserted_ids"><a name="//apple_ref/cpp/Method/pymongo.results.InsertManyResult.inserted_ids"></a>
+<em class="property">property </em><code class="sig-name descname">inserted_ids</code><a class="headerlink" href="#pymongo.results.InsertManyResult.inserted_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of _ids of the inserted documents, in the order provided.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> is passed for the <cite>ordered</cite> parameter to
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.insert_many" title="pymongo.collection.Collection.insert_many"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert_many()</span></code></a> the server
+may have inserted the documents in a different order than what
+is presented here.</p>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.results.InsertOneResult"><a name="//apple_ref/cpp/Class/pymongo.results.InsertOneResult"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.results.</code><code class="sig-name descname">InsertOneResult</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inserted_id</span></em>, <em class="sig-param"><span class="n">acknowledged</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.results.InsertOneResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>The return type for <a class="reference internal" href="collection.html#pymongo.collection.Collection.insert_one" title="pymongo.collection.Collection.insert_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert_one()</span></code></a>.</p>
+<dl class="py method">
+<dt id="pymongo.results.InsertOneResult.acknowledged"><a name="//apple_ref/cpp/Method/pymongo.results.InsertOneResult.acknowledged"></a>
+<em class="property">property </em><code class="sig-name descname">acknowledged</code><a class="headerlink" href="#pymongo.results.InsertOneResult.acknowledged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this the result of an acknowledged write operation?</p>
+<p>The <a class="reference internal" href="#pymongo.results.InsertOneResult.acknowledged" title="pymongo.results.InsertOneResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute will be <code class="docutils literal notranslate"><span class="pre">False</span></code> when using
+<code class="docutils literal notranslate"><span class="pre">WriteConcern(w=0)</span></code>, otherwise <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <a class="reference internal" href="#pymongo.results.InsertOneResult.acknowledged" title="pymongo.results.InsertOneResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute is <code class="docutils literal notranslate"><span class="pre">False</span></code> all other
+attibutes of this class will raise
+<a class="reference internal" href="errors.html#pymongo.errors.InvalidOperation" title="pymongo.errors.InvalidOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvalidOperation</span></code></a> when accessed. Values for
+other attributes cannot be determined if the write operation was
+unacknowledged.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="write_concern.html#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.InsertOneResult.inserted_id"><a name="//apple_ref/cpp/Method/pymongo.results.InsertOneResult.inserted_id"></a>
+<em class="property">property </em><code class="sig-name descname">inserted_id</code><a class="headerlink" href="#pymongo.results.InsertOneResult.inserted_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The inserted document’s _id.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.results.UpdateResult"><a name="//apple_ref/cpp/Class/pymongo.results.UpdateResult"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.results.</code><code class="sig-name descname">UpdateResult</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw_result</span></em>, <em class="sig-param"><span class="n">acknowledged</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.results.UpdateResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>The return type for <a class="reference internal" href="collection.html#pymongo.collection.Collection.update_one" title="pymongo.collection.Collection.update_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_one()</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.update_many" title="pymongo.collection.Collection.update_many"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_many()</span></code></a>, and
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.replace_one" title="pymongo.collection.Collection.replace_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">replace_one()</span></code></a>.</p>
+<dl class="py method">
+<dt id="pymongo.results.UpdateResult.acknowledged"><a name="//apple_ref/cpp/Method/pymongo.results.UpdateResult.acknowledged"></a>
+<em class="property">property </em><code class="sig-name descname">acknowledged</code><a class="headerlink" href="#pymongo.results.UpdateResult.acknowledged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this the result of an acknowledged write operation?</p>
+<p>The <a class="reference internal" href="#pymongo.results.UpdateResult.acknowledged" title="pymongo.results.UpdateResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute will be <code class="docutils literal notranslate"><span class="pre">False</span></code> when using
+<code class="docutils literal notranslate"><span class="pre">WriteConcern(w=0)</span></code>, otherwise <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <a class="reference internal" href="#pymongo.results.UpdateResult.acknowledged" title="pymongo.results.UpdateResult.acknowledged"><code class="xref py py-attr docutils literal notranslate"><span class="pre">acknowledged</span></code></a> attribute is <code class="docutils literal notranslate"><span class="pre">False</span></code> all other
+attibutes of this class will raise
+<a class="reference internal" href="errors.html#pymongo.errors.InvalidOperation" title="pymongo.errors.InvalidOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvalidOperation</span></code></a> when accessed. Values for
+other attributes cannot be determined if the write operation was
+unacknowledged.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="write_concern.html#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a></p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.UpdateResult.matched_count"><a name="//apple_ref/cpp/Method/pymongo.results.UpdateResult.matched_count"></a>
+<em class="property">property </em><code class="sig-name descname">matched_count</code><a class="headerlink" href="#pymongo.results.UpdateResult.matched_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of documents matched for this update.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.UpdateResult.modified_count"><a name="//apple_ref/cpp/Method/pymongo.results.UpdateResult.modified_count"></a>
+<em class="property">property </em><code class="sig-name descname">modified_count</code><a class="headerlink" href="#pymongo.results.UpdateResult.modified_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of documents modified.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>modified_count is only reported by MongoDB 2.6 and later.
+When connected to an earlier server version, or in certain mixed
+version sharding configurations, this attribute will be set to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.UpdateResult.raw_result"><a name="//apple_ref/cpp/Method/pymongo.results.UpdateResult.raw_result"></a>
+<em class="property">property </em><code class="sig-name descname">raw_result</code><a class="headerlink" href="#pymongo.results.UpdateResult.raw_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>The raw result document returned by the server.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.results.UpdateResult.upserted_id"><a name="//apple_ref/cpp/Method/pymongo.results.UpdateResult.upserted_id"></a>
+<em class="property">property </em><code class="sig-name descname">upserted_id</code><a class="headerlink" href="#pymongo.results.UpdateResult.upserted_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The _id of the inserted document if an upsert took place. Otherwise
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="read_preferences.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code> – Utilities for choosing which member of a replica set to read from.</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="son_manipulator.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">son_manipulator</span></code> – Manipulators that can edit SON documents as they are saved or retrieved</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/results.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="son_manipulator.html" title="son_manipulator – Manipulators that can edit SON documents as they are saved or retrieved">next</a> |</li>
+<li class="right">
+<a href="read_preferences.html" title="read_preferences – Utilities for choosing which member of a replica set to read from.">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">results</span></code> – Result class definitions</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

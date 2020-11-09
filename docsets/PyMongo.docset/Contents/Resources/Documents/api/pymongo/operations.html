@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>operations – Operation class definitions — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="pool.html" rel="next" title="pool – Pool module for use with a MongoDB client."/>
+<link href="monitoring.html" rel="prev" title="monitoring – Tools for monitoring driver events."/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="pool.html" title="pool – Pool module for use with a MongoDB client.">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="monitoring.html" title="monitoring – Tools for monitoring driver events.">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">operations</span></code> – Operation class definitions</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.operations">
+<span id="operations-operation-class-definitions"></span><h1><a name="//apple_ref/cpp/Module/pymongo.operations"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">operations</span></code> – Operation class definitions<a class="headerlink" href="#module-pymongo.operations" title="Permalink to this headline">¶</a></h1>
+<p>Operation class definitions.</p>
+<dl class="py class">
+<dt id="pymongo.operations.DeleteMany"><a name="//apple_ref/cpp/Class/pymongo.operations.DeleteMany"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.operations.</code><code class="sig-name descname">DeleteMany</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filter</span></em>, <em class="sig-param"><span class="n">collation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hint</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.operations.DeleteMany" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a DeleteMany instance.</p>
+<p>For use with <a class="reference internal" href="collection.html#pymongo.collection.Collection.bulk_write" title="pymongo.collection.Collection.bulk_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bulk_write()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filter</cite>: A query that matches the documents to delete.</p></li>
+<li><p><cite>collation</cite> (optional): An instance of
+<a class="reference internal" href="collation.html#pymongo.collation.Collation" title="pymongo.collation.Collation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>. This option is only
+supported on MongoDB 3.4 and above.</p></li>
+<li><p><cite>hint</cite> (optional): An index to use to support the query
+predicate specified either by its string name, or in the same
+format as passed to
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.create_index" title="pymongo.collection.Collection.create_index"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_index()</span></code></a> (e.g.
+<code class="docutils literal notranslate"><span class="pre">[('field',</span> <span class="pre">ASCENDING)]</span></code>). This option is only supported on
+MongoDB 4.4 and above.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.11: </span>Added the <code class="docutils literal notranslate"><span class="pre">hint</span></code> option.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Added the <cite>collation</cite> option.</p>
+</div>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.operations.DeleteOne"><a name="//apple_ref/cpp/Class/pymongo.operations.DeleteOne"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.operations.</code><code class="sig-name descname">DeleteOne</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filter</span></em>, <em class="sig-param"><span class="n">collation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hint</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.operations.DeleteOne" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a DeleteOne instance.</p>
+<p>For use with <a class="reference internal" href="collection.html#pymongo.collection.Collection.bulk_write" title="pymongo.collection.Collection.bulk_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bulk_write()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filter</cite>: A query that matches the document to delete.</p></li>
+<li><p><cite>collation</cite> (optional): An instance of
+<a class="reference internal" href="collation.html#pymongo.collation.Collation" title="pymongo.collation.Collation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>. This option is only
+supported on MongoDB 3.4 and above.</p></li>
+<li><p><cite>hint</cite> (optional): An index to use to support the query
+predicate specified either by its string name, or in the same
+format as passed to
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.create_index" title="pymongo.collection.Collection.create_index"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_index()</span></code></a> (e.g.
+<code class="docutils literal notranslate"><span class="pre">[('field',</span> <span class="pre">ASCENDING)]</span></code>). This option is only supported on
+MongoDB 4.4 and above.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.11: </span>Added the <code class="docutils literal notranslate"><span class="pre">hint</span></code> option.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Added the <cite>collation</cite> option.</p>
+</div>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.operations.IndexModel"><a name="//apple_ref/cpp/Class/pymongo.operations.IndexModel"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.operations.</code><code class="sig-name descname">IndexModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">keys</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.operations.IndexModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an Index instance.</p>
+<p>For use with <a class="reference internal" href="collection.html#pymongo.collection.Collection.create_indexes" title="pymongo.collection.Collection.create_indexes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_indexes()</span></code></a>.</p>
+<p>Takes either a single key or a list of (key, direction) pairs.
+The key(s) must be an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">basestring</span></code>
+(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> in python 3), and the direction(s) must be one of
+(<a class="reference internal" href="collection.html#pymongo.ASCENDING" title="pymongo.ASCENDING"><code class="xref py py-data docutils literal notranslate"><span class="pre">ASCENDING</span></code></a>, <a class="reference internal" href="collection.html#pymongo.DESCENDING" title="pymongo.DESCENDING"><code class="xref py py-data docutils literal notranslate"><span class="pre">DESCENDING</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.GEO2D" title="pymongo.GEO2D"><code class="xref py py-data docutils literal notranslate"><span class="pre">GEO2D</span></code></a>, <a class="reference internal" href="collection.html#pymongo.GEOHAYSTACK" title="pymongo.GEOHAYSTACK"><code class="xref py py-data docutils literal notranslate"><span class="pre">GEOHAYSTACK</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.GEOSPHERE" title="pymongo.GEOSPHERE"><code class="xref py py-data docutils literal notranslate"><span class="pre">GEOSPHERE</span></code></a>, <a class="reference internal" href="collection.html#pymongo.HASHED" title="pymongo.HASHED"><code class="xref py py-data docutils literal notranslate"><span class="pre">HASHED</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.TEXT" title="pymongo.TEXT"><code class="xref py py-data docutils literal notranslate"><span class="pre">TEXT</span></code></a>).</p>
+<p>Valid options include, but are not limited to:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>name</cite>: custom name to use for this index - if none is
+given, a name will be generated.</p></li>
+<li><p><cite>unique</cite>: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, creates a uniqueness constraint on the index.</p></li>
+<li><p><cite>background</cite>: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, this index should be created in the
+background.</p></li>
+<li><p><cite>sparse</cite>: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, omit from the index any documents that lack
+the indexed field.</p></li>
+<li><p><cite>bucketSize</cite>: for use with geoHaystack indexes.
+Number of documents to group together within a certain proximity
+to a given longitude and latitude.</p></li>
+<li><p><cite>min</cite>: minimum value for keys in a <a class="reference internal" href="collection.html#pymongo.GEO2D" title="pymongo.GEO2D"><code class="xref py py-data docutils literal notranslate"><span class="pre">GEO2D</span></code></a>
+index.</p></li>
+<li><p><cite>max</cite>: maximum value for keys in a <a class="reference internal" href="collection.html#pymongo.GEO2D" title="pymongo.GEO2D"><code class="xref py py-data docutils literal notranslate"><span class="pre">GEO2D</span></code></a>
+index.</p></li>
+<li><p><cite>expireAfterSeconds</cite>: &lt;int&gt; Used to create an expiring (TTL)
+collection. MongoDB will automatically delete documents from
+this collection after &lt;int&gt; seconds. The indexed field must
+be a UTC datetime or the data will not expire.</p></li>
+<li><p><cite>partialFilterExpression</cite>: A document that specifies a filter for
+a partial index. Requires MongoDB &gt;= 3.2.</p></li>
+<li><p><cite>collation</cite>: An instance of <a class="reference internal" href="collation.html#pymongo.collation.Collation" title="pymongo.collation.Collation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>
+that specifies the collation to use in MongoDB &gt;= 3.4.</p></li>
+<li><p><cite>wildcardProjection</cite>: Allows users to include or exclude specific
+field paths from a <a class="reference external" href="https://docs.mongodb.com/master/core/index-wildcard/#wildcard-index-core">wildcard index</a> using the { “$**” : 1} key
+pattern. Requires MongoDB &gt;= 4.2.</p></li>
+<li><p><cite>hidden</cite>: if <code class="docutils literal notranslate"><span class="pre">True</span></code>, this index will be hidden from the query
+planner and will not be evaluated as part of query plan
+selection. Requires MongoDB &gt;= 4.4.</p></li>
+</ul>
+</div></blockquote>
+<p>See the MongoDB documentation for a full list of supported options by
+server version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>keys</cite>: a single key or a list of (key, direction)
+pairs specifying the index to create</p></li>
+<li><p><cite>**kwargs</cite> (optional): any additional index creation
+options (see the above list) should be passed as keyword
+arguments</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.11: </span>Added the <code class="docutils literal notranslate"><span class="pre">hidden</span></code> option.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.2: </span>Added the <code class="docutils literal notranslate"><span class="pre">partialFilterExpression</span></code> option to support partial
+indexes.</p>
+</div>
+<dl class="py method">
+<dt id="pymongo.operations.IndexModel.document"><a name="//apple_ref/cpp/Method/pymongo.operations.IndexModel.document"></a>
+<em class="property">property </em><code class="sig-name descname">document</code><a class="headerlink" href="#pymongo.operations.IndexModel.document" title="Permalink to this definition">¶</a></dt>
+<dd><p>An index document suitable for passing to the createIndexes
+command.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.operations.InsertOne"><a name="//apple_ref/cpp/Class/pymongo.operations.InsertOne"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.operations.</code><code class="sig-name descname">InsertOne</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">document</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.operations.InsertOne" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an InsertOne instance.</p>
+<p>For use with <a class="reference internal" href="collection.html#pymongo.collection.Collection.bulk_write" title="pymongo.collection.Collection.bulk_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bulk_write()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>document</cite>: The document to insert. If the document is missing an
+_id field one will be added.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.operations.ReplaceOne"><a name="//apple_ref/cpp/Class/pymongo.operations.ReplaceOne"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.operations.</code><code class="sig-name descname">ReplaceOne</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filter</span></em>, <em class="sig-param"><span class="n">replacement</span></em>, <em class="sig-param"><span class="n">upsert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">collation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hint</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.operations.ReplaceOne" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a ReplaceOne instance.</p>
+<p>For use with <a class="reference internal" href="collection.html#pymongo.collection.Collection.bulk_write" title="pymongo.collection.Collection.bulk_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bulk_write()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filter</cite>: A query that matches the document to replace.</p></li>
+<li><p><cite>replacement</cite>: The new document.</p></li>
+<li><p><cite>upsert</cite> (optional): If <code class="docutils literal notranslate"><span class="pre">True</span></code>, perform an insert if no documents
+match the filter.</p></li>
+<li><p><cite>collation</cite> (optional): An instance of
+<a class="reference internal" href="collation.html#pymongo.collation.Collation" title="pymongo.collation.Collation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>. This option is only
+supported on MongoDB 3.4 and above.</p></li>
+<li><p><cite>hint</cite> (optional): An index to use to support the query
+predicate specified either by its string name, or in the same
+format as passed to
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.create_index" title="pymongo.collection.Collection.create_index"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_index()</span></code></a> (e.g.
+<code class="docutils literal notranslate"><span class="pre">[('field',</span> <span class="pre">ASCENDING)]</span></code>). This option is only supported on
+MongoDB 4.2 and above.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.11: </span>Added the <code class="docutils literal notranslate"><span class="pre">hint</span></code> option.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Added the <code class="docutils literal notranslate"><span class="pre">collation</span></code> option.</p>
+</div>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.operations.UpdateMany"><a name="//apple_ref/cpp/Class/pymongo.operations.UpdateMany"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.operations.</code><code class="sig-name descname">UpdateMany</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filter</span></em>, <em class="sig-param"><span class="n">update</span></em>, <em class="sig-param"><span class="n">upsert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">collation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">array_filters</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hint</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.operations.UpdateMany" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an UpdateMany instance.</p>
+<p>For use with <a class="reference internal" href="collection.html#pymongo.collection.Collection.bulk_write" title="pymongo.collection.Collection.bulk_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bulk_write()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filter</cite>: A query that matches the documents to update.</p></li>
+<li><p><cite>update</cite>: The modifications to apply.</p></li>
+<li><p><cite>upsert</cite> (optional): If <code class="docutils literal notranslate"><span class="pre">True</span></code>, perform an insert if no documents
+match the filter.</p></li>
+<li><p><cite>collation</cite> (optional): An instance of
+<a class="reference internal" href="collation.html#pymongo.collation.Collation" title="pymongo.collation.Collation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>. This option is only
+supported on MongoDB 3.4 and above.</p></li>
+<li><p><cite>array_filters</cite> (optional): A list of filters specifying which
+array elements an update should apply. Requires MongoDB 3.6+.</p></li>
+<li><p><cite>hint</cite> (optional): An index to use to support the query
+predicate specified either by its string name, or in the same
+format as passed to
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.create_index" title="pymongo.collection.Collection.create_index"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_index()</span></code></a> (e.g.
+<code class="docutils literal notranslate"><span class="pre">[('field',</span> <span class="pre">ASCENDING)]</span></code>). This option is only supported on
+MongoDB 4.2 and above.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.11: </span>Added the <cite>hint</cite> option.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.9: </span>Added the ability to accept a pipeline as the <cite>update</cite>.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added the <cite>array_filters</cite> option.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Added the <cite>collation</cite> option.</p>
+</div>
+</dd></dl>
+<dl class="py class">
+<dt id="pymongo.operations.UpdateOne"><a name="//apple_ref/cpp/Class/pymongo.operations.UpdateOne"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.operations.</code><code class="sig-name descname">UpdateOne</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filter</span></em>, <em class="sig-param"><span class="n">update</span></em>, <em class="sig-param"><span class="n">upsert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">collation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">array_filters</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">hint</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.operations.UpdateOne" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents an update_one operation.</p>
+<p>For use with <a class="reference internal" href="collection.html#pymongo.collection.Collection.bulk_write" title="pymongo.collection.Collection.bulk_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bulk_write()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>filter</cite>: A query that matches the document to update.</p></li>
+<li><p><cite>update</cite>: The modifications to apply.</p></li>
+<li><p><cite>upsert</cite> (optional): If <code class="docutils literal notranslate"><span class="pre">True</span></code>, perform an insert if no documents
+match the filter.</p></li>
+<li><p><cite>collation</cite> (optional): An instance of
+<a class="reference internal" href="collation.html#pymongo.collation.Collation" title="pymongo.collation.Collation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collation</span></code></a>. This option is only
+supported on MongoDB 3.4 and above.</p></li>
+<li><p><cite>array_filters</cite> (optional): A list of filters specifying which
+array elements an update should apply. Requires MongoDB 3.6+.</p></li>
+<li><p><cite>hint</cite> (optional): An index to use to support the query
+predicate specified either by its string name, or in the same
+format as passed to
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.create_index" title="pymongo.collection.Collection.create_index"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_index()</span></code></a> (e.g.
+<code class="docutils literal notranslate"><span class="pre">[('field',</span> <span class="pre">ASCENDING)]</span></code>). This option is only supported on
+MongoDB 4.2 and above.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.11: </span>Added the <cite>hint</cite> option.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.9: </span>Added the ability to accept a pipeline as the <cite>update</cite>.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added the <cite>array_filters</cite> option.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Added the <cite>collation</cite> option.</p>
+</div>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="monitoring.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">monitoring</span></code> – Tools for monitoring driver events.</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="pool.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pool</span></code> – Pool module for use with a MongoDB client.</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/operations.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="pool.html" title="pool – Pool module for use with a MongoDB client.">next</a> |</li>
+<li class="right">
+<a href="monitoring.html" title="monitoring – Tools for monitoring driver events.">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">operations</span></code> – Operation class definitions</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

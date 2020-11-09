@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>errors – Exceptions raised by the pymongo package — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="message.html" rel="next" title="message – Tools for creating messages to be sent to MongoDB"/>
+<link href="encryption_options.html" rel="prev" title="encryption_options – Automatic Client-Side Field Level Encryption"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="message.html" title="message – Tools for creating messages to be sent to MongoDB">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="encryption_options.html" title="encryption_options – Automatic Client-Side Field Level Encryption">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> package</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.errors">
+<span id="errors-exceptions-raised-by-the-pymongo-package"></span><h1><a name="//apple_ref/cpp/Module/pymongo.errors"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <a class="reference internal" href="index.html#module-pymongo" title="pymongo: Python driver for MongoDB"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code></a> package<a class="headerlink" href="#module-pymongo.errors" title="Permalink to this headline">¶</a></h1>
+<p>Exceptions raised by PyMongo.</p>
+<dl class="py exception">
+<dt id="pymongo.errors.AutoReconnect"><a name="//apple_ref/cpp/Exception/pymongo.errors.AutoReconnect"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">AutoReconnect</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.AutoReconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a connection to the database is lost and an attempt to
+auto-reconnect will be made.</p>
+<p>In order to auto-reconnect you must handle this exception, recognizing that
+the operation which caused it has not necessarily succeeded. Future
+operations will attempt to open a new connection to the database (and
+will continue to raise this exception until the first successful
+connection is made).</p>
+<p>Subclass of <a class="reference internal" href="#pymongo.errors.ConnectionFailure" title="pymongo.errors.ConnectionFailure"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ConnectionFailure</span></code></a>.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.BulkWriteError"><a name="//apple_ref/cpp/Exception/pymongo.errors.BulkWriteError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">BulkWriteError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.BulkWriteError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception class for bulk write errors.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7.</span></p>
+</div>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.CollectionInvalid"><a name="//apple_ref/cpp/Exception/pymongo.errors.CollectionInvalid"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">CollectionInvalid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">error_labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.CollectionInvalid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when collection validation fails.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.ConfigurationError"><a name="//apple_ref/cpp/Exception/pymongo.errors.ConfigurationError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">ConfigurationError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">error_labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.ConfigurationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when something is incorrectly configured.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.ConnectionFailure"><a name="//apple_ref/cpp/Exception/pymongo.errors.ConnectionFailure"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">ConnectionFailure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">error_labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.ConnectionFailure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a connection to the database cannot be made or is lost.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.CursorNotFound"><a name="//apple_ref/cpp/Exception/pymongo.errors.CursorNotFound"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">CursorNotFound</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_wire_version</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.CursorNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised while iterating query results if the cursor is
+invalidated on the server.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7.</span></p>
+</div>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.DocumentTooLarge"><a name="//apple_ref/cpp/Exception/pymongo.errors.DocumentTooLarge"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">DocumentTooLarge</code><a class="headerlink" href="#pymongo.errors.DocumentTooLarge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when an encoded document is too large for the connected server.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.DuplicateKeyError"><a name="//apple_ref/cpp/Exception/pymongo.errors.DuplicateKeyError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">DuplicateKeyError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_wire_version</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.DuplicateKeyError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when an insert or update fails due to a duplicate key error.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.EncryptionError"><a name="//apple_ref/cpp/Exception/pymongo.errors.EncryptionError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">EncryptionError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cause</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.EncryptionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when encryption or decryption fails.</p>
+<p>This error always wraps another exception which can be retrieved via the
+<a class="reference internal" href="#pymongo.errors.EncryptionError.cause" title="pymongo.errors.EncryptionError.cause"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cause</span></code></a> property.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.9.</span></p>
+</div>
+<dl class="py method">
+<dt id="pymongo.errors.EncryptionError.cause"><a name="//apple_ref/cpp/Method/pymongo.errors.EncryptionError.cause"></a>
+<em class="property">property </em><code class="sig-name descname">cause</code><a class="headerlink" href="#pymongo.errors.EncryptionError.cause" title="Permalink to this definition">¶</a></dt>
+<dd><p>The exception that caused this encryption or decryption error.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.ExceededMaxWaiters"><a name="//apple_ref/cpp/Exception/pymongo.errors.ExceededMaxWaiters"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">ExceededMaxWaiters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">error_labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.ExceededMaxWaiters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a thread tries to get a connection from a pool and
+<code class="docutils literal notranslate"><span class="pre">maxPoolSize</span> <span class="pre">*</span> <span class="pre">waitQueueMultiple</span></code> threads are already waiting.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.6.</span></p>
+</div>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.ExecutionTimeout"><a name="//apple_ref/cpp/Exception/pymongo.errors.ExecutionTimeout"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">ExecutionTimeout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_wire_version</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.ExecutionTimeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a database operation times out, exceeding the $maxTimeMS
+set in the query or command option.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Requires server version <strong>&gt;= 2.6.0</strong></p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7.</span></p>
+</div>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.InvalidName"><a name="//apple_ref/cpp/Exception/pymongo.errors.InvalidName"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">InvalidName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">error_labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.InvalidName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when an invalid name is used.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.InvalidOperation"><a name="//apple_ref/cpp/Exception/pymongo.errors.InvalidOperation"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">InvalidOperation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">error_labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.InvalidOperation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a client attempts to perform an invalid operation.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.InvalidURI"><a name="//apple_ref/cpp/Exception/pymongo.errors.InvalidURI"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">InvalidURI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">error_labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.InvalidURI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when trying to parse an invalid mongodb URI.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.NetworkTimeout"><a name="//apple_ref/cpp/Exception/pymongo.errors.NetworkTimeout"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">NetworkTimeout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.NetworkTimeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>An operation on an open connection exceeded socketTimeoutMS.</p>
+<p>The remaining connections in the pool stay open. In the case of a write
+operation, you cannot know whether it succeeded or failed.</p>
+<p>Subclass of <a class="reference internal" href="#pymongo.errors.AutoReconnect" title="pymongo.errors.AutoReconnect"><code class="xref py py-exc docutils literal notranslate"><span class="pre">AutoReconnect</span></code></a>.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.NotMasterError"><a name="//apple_ref/cpp/Exception/pymongo.errors.NotMasterError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">NotMasterError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.NotMasterError" title="Permalink to this definition">¶</a></dt>
+<dd><p>The server responded “not master” or “node is recovering”.</p>
+<p>These errors result from a query, write, or command. The operation failed
+because the client thought it was using the primary but the primary has
+stepped down, or the client thought it was using a healthy secondary but
+the secondary is stale and trying to recover.</p>
+<p>The client launches a refresh operation on a background thread, to update
+its view of the server as soon as possible after throwing this exception.</p>
+<p>Subclass of <a class="reference internal" href="#pymongo.errors.AutoReconnect" title="pymongo.errors.AutoReconnect"><code class="xref py py-exc docutils literal notranslate"><span class="pre">AutoReconnect</span></code></a>.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.OperationFailure"><a name="//apple_ref/cpp/Exception/pymongo.errors.OperationFailure"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">OperationFailure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_wire_version</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.OperationFailure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a database operation fails.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7: </span>The <a class="reference internal" href="#pymongo.errors.OperationFailure.details" title="pymongo.errors.OperationFailure.details"><code class="xref py py-attr docutils literal notranslate"><span class="pre">details</span></code></a> attribute.</p>
+</div>
+<dl class="py method">
+<dt id="pymongo.errors.OperationFailure.code"><a name="//apple_ref/cpp/Method/pymongo.errors.OperationFailure.code"></a>
+<em class="property">property </em><code class="sig-name descname">code</code><a class="headerlink" href="#pymongo.errors.OperationFailure.code" title="Permalink to this definition">¶</a></dt>
+<dd><p>The error code returned by the server, if any.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.errors.OperationFailure.details"><a name="//apple_ref/cpp/Method/pymongo.errors.OperationFailure.details"></a>
+<em class="property">property </em><code class="sig-name descname">details</code><a class="headerlink" href="#pymongo.errors.OperationFailure.details" title="Permalink to this definition">¶</a></dt>
+<dd><p>The complete error document returned by the server.</p>
+<p>Depending on the error that occurred, the error document
+may include useful information beyond just the error
+message. When connected to a mongos the error document
+may contain one or more subdocuments if errors occurred
+on multiple shards.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.ProtocolError"><a name="//apple_ref/cpp/Exception/pymongo.errors.ProtocolError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">ProtocolError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">error_labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.ProtocolError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised for failures related to the wire protocol.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.PyMongoError"><a name="//apple_ref/cpp/Exception/pymongo.errors.PyMongoError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">PyMongoError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">error_labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.PyMongoError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all PyMongo exceptions.</p>
+<dl class="py method">
+<dt id="pymongo.errors.PyMongoError.has_error_label"><a name="//apple_ref/cpp/Method/pymongo.errors.PyMongoError.has_error_label"></a>
+<code class="sig-name descname">has_error_label</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.PyMongoError.has_error_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this error contains the given label.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.7.</span></p>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.ServerSelectionTimeoutError"><a name="//apple_ref/cpp/Exception/pymongo.errors.ServerSelectionTimeoutError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">ServerSelectionTimeoutError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">errors</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.ServerSelectionTimeoutError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Thrown when no MongoDB server is available for an operation</p>
+<p>If there is no suitable server for an operation PyMongo tries for
+<code class="docutils literal notranslate"><span class="pre">serverSelectionTimeoutMS</span></code> (default 30 seconds) to find one, then
+throws this exception. For example, it is thrown after attempting an
+operation when PyMongo cannot connect to any server, or if you attempt
+an insert into a replica set that has no primary and does not elect one
+within the timeout window, or if you attempt to query with a Read
+Preference that the replica set cannot satisfy.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.WTimeoutError"><a name="//apple_ref/cpp/Exception/pymongo.errors.WTimeoutError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">WTimeoutError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_wire_version</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.WTimeoutError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when a database operation times out (i.e. wtimeout expires)
+before replication completes.</p>
+<p>With newer versions of MongoDB the <cite>details</cite> attribute may include
+write concern fields like ‘n’, ‘updatedExisting’, or ‘writtenTo’.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7.</span></p>
+</div>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.WriteConcernError"><a name="//apple_ref/cpp/Exception/pymongo.errors.WriteConcernError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">WriteConcernError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_wire_version</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.WriteConcernError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base exception type for errors raised due to write concern.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.0.</span></p>
+</div>
+</dd></dl>
+<dl class="py exception">
+<dt id="pymongo.errors.WriteError"><a name="//apple_ref/cpp/Exception/pymongo.errors.WriteError"></a>
+<em class="property">exception </em><code class="sig-prename descclassname">pymongo.errors.</code><code class="sig-name descname">WriteError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_wire_version</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.errors.WriteError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base exception type for errors raised during write operations.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.0.</span></p>
+</div>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="encryption_options.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">encryption_options</span></code> – Automatic Client-Side Field Level Encryption</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="message.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">message</span></code> – Tools for creating messages to be sent to MongoDB</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/errors.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="message.html" title="message – Tools for creating messages to be sent to MongoDB">next</a> |</li>
+<li class="right">
+<a href="encryption_options.html" title="encryption_options – Automatic Client-Side Field Level Encryption">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> package</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

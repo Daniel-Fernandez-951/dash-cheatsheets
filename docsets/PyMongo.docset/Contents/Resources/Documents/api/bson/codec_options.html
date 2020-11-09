@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>codec_options – Tools for specifying BSON codec options — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="dbref.html" rel="next" title="dbref – Tools for manipulating DBRefs (references to documents stored in MongoDB)"/>
+<link href="code.html" rel="prev" title="code – Tools for representing JavaScript code"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="dbref.html" title="dbref – Tools for manipulating DBRefs (references to documents stored in MongoDB)">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="code.html" title="code – Tools for representing JavaScript code">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">codec_options</span></code> – Tools for specifying BSON codec options</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-bson.codec_options">
+<span id="codec-options-tools-for-specifying-bson-codec-options"></span><h1><a name="//apple_ref/cpp/Module/bson.codec_options"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">codec_options</span></code> – Tools for specifying BSON codec options<a class="headerlink" href="#module-bson.codec_options" title="Permalink to this headline">¶</a></h1>
+<p>Tools for specifying BSON codec options.</p>
+<dl class="py class">
+<dt id="bson.codec_options.CodecOptions"><a name="//apple_ref/cpp/Class/bson.codec_options.CodecOptions"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.codec_options.</code><code class="sig-name descname">CodecOptions</code><span class="sig-paren">(</span><em class="sig-param">document_class=&lt;class 'dict'&gt;</em>, <em class="sig-param">tz_aware=False</em>, <em class="sig-param">uuid_representation=None</em>, <em class="sig-param">unicode_decode_error_handler='strict'</em>, <em class="sig-param">tzinfo=None</em>, <em class="sig-param">type_registry=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bson.codec_options.CodecOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new instance of CodecOptions(document_class, tz_aware, uuid_representation, unicode_decode_error_handler, tzinfo, type_registry)</p>
+<dl class="py method">
+<dt id="bson.codec_options.CodecOptions.with_options"><a name="//apple_ref/cpp/Method/bson.codec_options.CodecOptions.with_options"></a>
+<code class="sig-name descname">with_options</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.codec_options.CodecOptions.with_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a copy of this CodecOptions, overriding some options:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">DEFAULT_CODEC_OPTIONS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DEFAULT_CODEC_OPTIONS</span><span class="o">.</span><span class="n">tz_aware</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">options</span> <span class="o">=</span> <span class="n">DEFAULT_CODEC_OPTIONS</span><span class="o">.</span><span class="n">with_options</span><span class="p">(</span><span class="n">tz_aware</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">options</span><span class="o">.</span><span class="n">tz_aware</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.5.</span></p>
+</div>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="bson.codec_options.TypeCodec"><a name="//apple_ref/cpp/Class/bson.codec_options.TypeCodec"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.codec_options.</code><code class="sig-name descname">TypeCodec</code><a class="headerlink" href="#bson.codec_options.TypeCodec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for defining type codec classes which describe how a
+custom type can be transformed to/from one of the types <a class="reference internal" href="index.html#module-bson" title="bson: BSON (Binary JSON) Encoding and Decoding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code></a>
+can already encode/decode.</p>
+<p>Codec classes must implement the <code class="docutils literal notranslate"><span class="pre">python_type</span></code> attribute, and the
+<code class="docutils literal notranslate"><span class="pre">transform_python</span></code> method to support encoding, as well as the
+<code class="docutils literal notranslate"><span class="pre">bson_type</span></code> attribute, and the <code class="docutils literal notranslate"><span class="pre">transform_bson</span></code> method to support
+decoding.</p>
+<p>See <a class="reference internal" href="../../examples/custom_type.html#custom-type-type-codec"><span class="std std-ref">The TypeCodec Class</span></a> documentation for an example.</p>
+</dd></dl>
+<dl class="py class">
+<dt id="bson.codec_options.TypeDecoder"><a name="//apple_ref/cpp/Class/bson.codec_options.TypeDecoder"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.codec_options.</code><code class="sig-name descname">TypeDecoder</code><a class="headerlink" href="#bson.codec_options.TypeDecoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for defining type codec classes which describe how a
+BSON type can be transformed to a custom type.</p>
+<p>Codec classes must implement the <code class="docutils literal notranslate"><span class="pre">bson_type</span></code> attribute, and the
+<code class="docutils literal notranslate"><span class="pre">transform_bson</span></code> method to support decoding.</p>
+<p>See <a class="reference internal" href="../../examples/custom_type.html#custom-type-type-codec"><span class="std std-ref">The TypeCodec Class</span></a> documentation for an example.</p>
+<dl class="py method">
+<dt id="bson.codec_options.TypeDecoder.bson_type"><a name="//apple_ref/cpp/Method/bson.codec_options.TypeDecoder.bson_type"></a>
+<em class="property">abstract property </em><code class="sig-name descname">bson_type</code><a class="headerlink" href="#bson.codec_options.TypeDecoder.bson_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The BSON type to be converted into our own type.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.codec_options.TypeDecoder.transform_bson"><a name="//apple_ref/cpp/Method/bson.codec_options.TypeDecoder.transform_bson"></a>
+<em class="property">abstract </em><code class="sig-name descname">transform_bson</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.codec_options.TypeDecoder.transform_bson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the given BSON value into our own type.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="bson.codec_options.TypeEncoder"><a name="//apple_ref/cpp/Class/bson.codec_options.TypeEncoder"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.codec_options.</code><code class="sig-name descname">TypeEncoder</code><a class="headerlink" href="#bson.codec_options.TypeEncoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for defining type codec classes which describe how a
+custom type can be transformed to one of the types BSON understands.</p>
+<p>Codec classes must implement the <code class="docutils literal notranslate"><span class="pre">python_type</span></code> attribute, and the
+<code class="docutils literal notranslate"><span class="pre">transform_python</span></code> method to support encoding.</p>
+<p>See <a class="reference internal" href="../../examples/custom_type.html#custom-type-type-codec"><span class="std std-ref">The TypeCodec Class</span></a> documentation for an example.</p>
+<dl class="py method">
+<dt id="bson.codec_options.TypeEncoder.python_type"><a name="//apple_ref/cpp/Method/bson.codec_options.TypeEncoder.python_type"></a>
+<em class="property">abstract property </em><code class="sig-name descname">python_type</code><a class="headerlink" href="#bson.codec_options.TypeEncoder.python_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Python type to be converted into something serializable.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.codec_options.TypeEncoder.transform_python"><a name="//apple_ref/cpp/Method/bson.codec_options.TypeEncoder.transform_python"></a>
+<em class="property">abstract </em><code class="sig-name descname">transform_python</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.codec_options.TypeEncoder.transform_python" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the given Python object into something serializable.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="bson.codec_options.TypeRegistry"><a name="//apple_ref/cpp/Class/bson.codec_options.TypeRegistry"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.codec_options.</code><code class="sig-name descname">TypeRegistry</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type_codecs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fallback_encoder</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.codec_options.TypeRegistry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encapsulates type codecs used in encoding and / or decoding BSON, as
+well as the fallback encoder. Type registries cannot be modified after
+instantiation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TypeRegistry</span></code> can be initialized with an iterable of type codecs, and
+a callable for the fallback encoder:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bson.codec_options</span> <span class="kn">import</span> <span class="n">TypeRegistry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">type_registry</span> <span class="o">=</span> <span class="n">TypeRegistry</span><span class="p">([</span><span class="n">Codec1</span><span class="p">,</span> <span class="n">Codec2</span><span class="p">,</span> <span class="n">Codec3</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+<span class="gp">... </span>                             <span class="n">fallback_encoder</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../../examples/custom_type.html#custom-type-type-registry"><span class="std std-ref">The TypeRegistry Class</span></a> documentation for an example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>type_codecs</cite> (optional): iterable of type codec instances. If
+<code class="docutils literal notranslate"><span class="pre">type_codecs</span></code> contains multiple codecs that transform a single
+python or BSON type, the transformation specified by the type codec
+occurring last prevails. A TypeError will be raised if one or more
+type codecs modify the encoding behavior of a built-in <a class="reference internal" href="index.html#module-bson" title="bson: BSON (Binary JSON) Encoding and Decoding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code></a>
+type.</p></li>
+<li><p><cite>fallback_encoder</cite> (optional): callable that accepts a single,
+unencodable python value and transforms it into a type that
+<a class="reference internal" href="index.html#module-bson" title="bson: BSON (Binary JSON) Encoding and Decoding"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code></a> can encode. See <a class="reference internal" href="../../examples/custom_type.html#fallback-encoder-callable"><span class="std std-ref">The fallback_encoder Callable</span></a>
+documentation for an example.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="code.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">code</span></code> – Tools for representing JavaScript code</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="dbref.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dbref</span></code> – Tools for manipulating DBRefs (references to documents stored in MongoDB)</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/codec_options.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="dbref.html" title="dbref – Tools for manipulating DBRefs (references to documents stored in MongoDB)">next</a> |</li>
+<li class="right">
+<a href="code.html" title="code – Tools for representing JavaScript code">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">codec_options</span></code> – Tools for specifying BSON codec options</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

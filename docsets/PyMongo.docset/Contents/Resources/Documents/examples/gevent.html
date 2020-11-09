@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gevent &#8212; PyMongo 3.11.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/delighted.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GridFS Example" href="gridfs.html" />
+    <link rel="prev" title="Geospatial Indexing Example" href="geo.html" />
+
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gridfs.html" title="GridFS Example"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="geo.html" title="Geospatial Indexing Example"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Gevent</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gevent">
+<h1>Gevent<a class="headerlink" href="#gevent" title="Permalink to this headline">¶</a></h1>
+<p>PyMongo supports <a class="reference external" href="http://www.gevent.org/">Gevent</a>. Simply call Gevent’s
+<code class="docutils literal notranslate"><span class="pre">monkey.patch_all()</span></code> before loading any other modules:</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># You must call patch_all() *before* importing any other modules</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gevent</span> <span class="kn">import</span> <span class="n">monkey</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">monkey</span><span class="o">.</span><span class="n">patch_all</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>PyMongo uses thread and socket functions from the Python standard library.
+Gevent’s monkey-patching replaces those standard functions so that PyMongo
+does asynchronous I/O with non-blocking sockets, and schedules operations
+on greenlets instead of threads.</p>
+<div class="section" id="avoid-blocking-in-hub-join">
+<h2>Avoid blocking in Hub.join<a class="headerlink" href="#avoid-blocking-in-hub-join" title="Permalink to this headline">¶</a></h2>
+<p>By default, PyMongo uses threads to discover and monitor your servers’ topology
+(see <a class="reference internal" href="high_availability.html#health-monitoring"><span class="std std-ref">Health Monitoring</span></a>). If you execute <code class="docutils literal notranslate"><span class="pre">monkey.patch_all()</span></code> when
+your application first begins, PyMongo automatically uses greenlets instead
+of threads.</p>
+<p>When shutting down, if your application calls <a class="reference external" href="http://www.gevent.org/api/gevent.hub.html#gevent.hub.Hub.join" title="(in gevent v20.9.1.dev0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">join()</span></code></a> on
+Gevent’s <a class="reference external" href="http://www.gevent.org/api/gevent.hub.html#gevent.hub.Hub" title="(in gevent v20.9.1.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Hub</span></code></a> without first terminating these background
+greenlets, the call to <a class="reference external" href="http://www.gevent.org/api/gevent.hub.html#gevent.hub.Hub.join" title="(in gevent v20.9.1.dev0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">join()</span></code></a> blocks indefinitely. You
+therefore <strong>must close or dereference</strong> any active
+<a class="reference internal" href="../api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient" title="pymongo.mongo_client.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a> before exiting.</p>
+<p>An example solution to this issue in some application frameworks is a signal
+handler to end background greenlets when your application receives SIGHUP:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">signal</span>
+
+<span class="k">def</span> <span class="nf">graceful_reload</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Explicitly close some global MongoClient object.&quot;&quot;&quot;</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGHUP</span><span class="p">,</span> <span class="n">graceful_reload</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Applications using uWSGI prior to 1.9.16 are affected by this issue,
+or newer uWSGI versions with the <code class="docutils literal notranslate"><span class="pre">-gevent-wait-for-hub</span></code> option.
+See <a class="reference external" href="https://uwsgi-docs.readthedocs.io/en/latest/Changelog-1.9.16.html#important-change-in-the-gevent-plugin-shutdown-reload-procedure">the uWSGI changelog for details</a>.</p>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Gevent</a><ul>
+<li><a class="reference internal" href="#avoid-blocking-in-hub-join">Avoid blocking in Hub.join</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="geo.html"
+                        title="previous chapter">Geospatial Indexing Example</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gridfs.html"
+                        title="next chapter">GridFS Example</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/gevent.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gridfs.html" title="GridFS Example"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="geo.html" title="Geospatial Indexing Example"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyMongo 3.11.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Examples</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Gevent</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+  </body>
+</html>

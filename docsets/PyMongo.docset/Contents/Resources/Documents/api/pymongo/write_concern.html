@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>write_concern – Tools for specifying write concern — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="event_loggers.html" rel="next" title="event_loggers – Example loggers"/>
+<link href="uri_parser.html" rel="prev" title="uri_parser – Tools to parse and validate a MongoDB URI"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="event_loggers.html" title="event_loggers – Example loggers">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="uri_parser.html" title="uri_parser – Tools to parse and validate a MongoDB URI">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">write_concern</span></code> – Tools for specifying write concern</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.write_concern">
+<span id="write-concern-tools-for-specifying-write-concern"></span><h1><a name="//apple_ref/cpp/Module/pymongo.write_concern"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">write_concern</span></code> – Tools for specifying write concern<a class="headerlink" href="#module-pymongo.write_concern" title="Permalink to this headline">¶</a></h1>
+<p>Tools for working with write concerns.</p>
+<dl class="py class">
+<dt id="pymongo.write_concern.WriteConcern"><a name="//apple_ref/cpp/Class/pymongo.write_concern.WriteConcern"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.write_concern.</code><code class="sig-name descname">WriteConcern</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wtimeout</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">j</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fsync</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.write_concern.WriteConcern" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>w</cite>: (integer or string) Used with replication, write operations
+will block until they have been replicated to the specified number
+or tagged set of servers. <cite>w=&lt;integer&gt;</cite> always includes the replica
+set primary (e.g. w=3 means write to the primary and wait until
+replicated to <strong>two</strong> secondaries). <strong>w=0 disables acknowledgement
+of write operations and can not be used with other write concern
+options.</strong></p></li>
+<li><p><cite>wtimeout</cite>: (integer) Used in conjunction with <cite>w</cite>. Specify a value
+in milliseconds to control how long to wait for write propagation
+to complete. If replication does not complete in the given
+timeframe, a timeout exception is raised.</p></li>
+<li><p><cite>j</cite>: If <code class="docutils literal notranslate"><span class="pre">True</span></code> block until write operations have been committed
+to the journal. Cannot be used in combination with <cite>fsync</cite>. Prior
+to MongoDB 2.6 this option was ignored if the server was running
+without journaling. Starting with MongoDB 2.6 write operations will
+fail with an exception if this option is used when the server is
+running without journaling.</p></li>
+<li><p><cite>fsync</cite>: If <code class="docutils literal notranslate"><span class="pre">True</span></code> and the server is running without journaling,
+blocks until the server has synced all data files to disk. If the
+server is running with journaling, this acts the same as the <cite>j</cite>
+option, blocking until write operations have been committed to the
+journal. Cannot be used in combination with <cite>j</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pymongo.write_concern.WriteConcern.acknowledged"><a name="//apple_ref/cpp/Method/pymongo.write_concern.WriteConcern.acknowledged"></a>
+<em class="property">property </em><code class="sig-name descname">acknowledged</code><a class="headerlink" href="#pymongo.write_concern.WriteConcern.acknowledged" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> write operations will wait for acknowledgement before
+returning.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.write_concern.WriteConcern.document"><a name="//apple_ref/cpp/Method/pymongo.write_concern.WriteConcern.document"></a>
+<em class="property">property </em><code class="sig-name descname">document</code><a class="headerlink" href="#pymongo.write_concern.WriteConcern.document" title="Permalink to this definition">¶</a></dt>
+<dd><p>The document representation of this write concern.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a> is immutable. Mutating the value of
+<a class="reference internal" href="#pymongo.write_concern.WriteConcern.document" title="pymongo.write_concern.WriteConcern.document"><code class="xref py py-attr docutils literal notranslate"><span class="pre">document</span></code></a> does not mutate this <a class="reference internal" href="#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.write_concern.WriteConcern.is_server_default"><a name="//apple_ref/cpp/Method/pymongo.write_concern.WriteConcern.is_server_default"></a>
+<em class="property">property </em><code class="sig-name descname">is_server_default</code><a class="headerlink" href="#pymongo.write_concern.WriteConcern.is_server_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does this WriteConcern match the server default.</p>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="uri_parser.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">uri_parser</span></code> – Tools to parse and validate a MongoDB URI</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="event_loggers.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">event_loggers</span></code> – Example loggers</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/write_concern.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="event_loggers.html" title="event_loggers – Example loggers">next</a> |</li>
+<li class="right">
+<a href="uri_parser.html" title="uri_parser – Tools to parse and validate a MongoDB URI">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">write_concern</span></code> – Tools for specifying write concern</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

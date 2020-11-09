@@ -1,0 +1,969 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>mongo_replica_set_client – Tools for connecting to a MongoDB replica set — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="monitoring.html" rel="next" title="monitoring – Tools for monitoring driver events."/>
+<link href="mongo_client.html" rel="prev" title="mongo_client – Tools for connecting to MongoDB"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="monitoring.html" title="monitoring – Tools for monitoring driver events.">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="mongo_client.html" title="mongo_client – Tools for connecting to MongoDB">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">mongo_replica_set_client</span></code> – Tools for connecting to a MongoDB replica set</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-pymongo.mongo_replica_set_client">
+<span id="mongo-replica-set-client-tools-for-connecting-to-a-mongodb-replica-set"></span><h1><a name="//apple_ref/cpp/Module/pymongo.mongo_replica_set_client"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">mongo_replica_set_client</span></code> – Tools for connecting to a MongoDB replica set<a class="headerlink" href="#module-pymongo.mongo_replica_set_client" title="Permalink to this headline">¶</a></h1>
+<p>Deprecated. See <a class="reference internal" href="../../examples/high_availability.html"><span class="doc">High Availability and PyMongo</span></a>.</p>
+<dl class="py class">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient"><a name="//apple_ref/cpp/Class/pymongo.mongo_replica_set_client.MongoReplicaSetClient"></a>
+<em class="property">class </em><code class="sig-prename descclassname">pymongo.mongo_replica_set_client.</code><code class="sig-name descname">MongoReplicaSetClient</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hosts_or_uri</span></em>, <em class="sig-param"><span class="n">document_class</span><span class="o">=</span><span class="default_value">dict</span></em>, <em class="sig-param"><span class="n">tz_aware</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">connect</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Client for a MongoDB instance, a replica set, or a set of mongoses.</p>
+<p>The client object is thread-safe and has connection-pooling built in.
+If an operation fails because of a network error,
+<a class="reference internal" href="errors.html#pymongo.errors.ConnectionFailure" title="pymongo.errors.ConnectionFailure"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionFailure</span></code></a> is raised and the client
+reconnects in the background. Application code should handle this
+exception (recognizing that the operation failed) and then continue to
+execute.</p>
+<p>The <cite>host</cite> parameter can be a full <a class="reference external" href="http://dochub.mongodb.org/core/connections">mongodb URI</a>, in addition to
+a simple hostname. It can also be a list of hostnames or
+URIs. Any port specified in the host string(s) will override
+the <cite>port</cite> parameter. If multiple mongodb URIs containing
+database or auth information are passed, the last database,
+username, and password present will be used.  For username and
+passwords reserved characters like ‘:’, ‘/’, ‘+’ and ‘@’ must be
+percent encoded following RFC 2396:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Python 3.x</span>
+    <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">quote_plus</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># Python 2.x</span>
+    <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">quote_plus</span>
+
+<span class="n">uri</span> <span class="o">=</span> <span class="s2">"mongodb://</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">@</span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+    <span class="n">quote_plus</span><span class="p">(</span><span class="n">user</span><span class="p">),</span> <span class="n">quote_plus</span><span class="p">(</span><span class="n">password</span><span class="p">),</span> <span class="n">host</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Unix domain sockets are also supported. The socket path must be percent
+encoded in the URI:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uri</span> <span class="o">=</span> <span class="s2">"mongodb://</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">@</span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span>
+    <span class="n">quote_plus</span><span class="p">(</span><span class="n">user</span><span class="p">),</span> <span class="n">quote_plus</span><span class="p">(</span><span class="n">password</span><span class="p">),</span> <span class="n">quote_plus</span><span class="p">(</span><span class="n">socket_path</span><span class="p">))</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But not when passed as a simple hostname:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">'/tmp/mongodb-27017.sock'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Starting with version 3.6, PyMongo supports mongodb+srv:// URIs. The
+URI must include one, and only one, hostname. The hostname will be
+resolved to one or more DNS <a class="reference external" href="https://en.wikipedia.org/wiki/SRV_record">SRV records</a> which will be used
+as the seed list for connecting to the MongoDB deployment. When using
+SRV URIs, the <cite>authSource</cite> and <cite>replicaSet</cite> configuration options can
+be specified using <a class="reference external" href="https://en.wikipedia.org/wiki/TXT_record">TXT records</a>. See the
+<a class="reference external" href="https://github.com/mongodb/specifications/blob/master/source/initial-dns-seedlist-discovery/initial-dns-seedlist-discovery.rst">Initial DNS Seedlist Discovery spec</a>
+for more details. Note that the use of SRV URIs implicitly enables
+TLS support. Pass tls=false in the URI to override.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>MongoClient creation will block waiting for answers from
+DNS when mongodb+srv:// URIs are used.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Starting with version 3.0 the <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code>
+constructor no longer blocks while connecting to the server or
+servers, and it no longer raises
+<a class="reference internal" href="errors.html#pymongo.errors.ConnectionFailure" title="pymongo.errors.ConnectionFailure"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionFailure</span></code></a> if they are
+unavailable, nor <a class="reference internal" href="errors.html#pymongo.errors.ConfigurationError" title="pymongo.errors.ConfigurationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigurationError</span></code></a>
+if the user’s credentials are wrong. Instead, the constructor
+returns immediately and launches the connection process on
+background threads. You can check if the server is available
+like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo.errors</span> <span class="kn">import</span> <span class="n">ConnectionFailure</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># The ismaster command is cheap and does not require auth.</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">'ismaster'</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">ConnectionFailure</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Server not available"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When using PyMongo in a multiprocessing context, please
+read <a class="reference internal" href="../../faq.html#multiprocessing"><span class="std std-ref">Using PyMongo with Multiprocessing</span></a> first.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Many of the following options can be passed using a MongoDB
+URI or keyword parameters. If the same option is passed in a URI and
+as a keyword parameter the keyword parameter takes precedence.</p>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>host</cite> (optional): hostname or IP address or Unix domain socket
+path of a single mongod or mongos instance to connect to, or a
+mongodb URI, or a list of hostnames / mongodb URIs. If <cite>host</cite> is
+an IPv6 literal it must be enclosed in ‘[‘ and ‘]’ characters
+following the RFC2732 URL syntax (e.g. ‘[::1]’ for localhost).
+Multihomed and round robin DNS addresses are <strong>not</strong> supported.</p></li>
+<li><p><cite>port</cite> (optional): port number on which to connect</p></li>
+<li><p><cite>document_class</cite> (optional): default class to use for
+documents returned from queries on this client</p></li>
+<li><p><cite>type_registry</cite> (optional): instance of
+<a class="reference internal" href="../bson/codec_options.html#bson.codec_options.TypeRegistry" title="bson.codec_options.TypeRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeRegistry</span></code></a> to enable encoding
+and decoding of custom types.</p></li>
+<li><p><cite>tz_aware</cite> (optional): if <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a> instances returned as values
+in a document by this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> will be timezone
+aware (otherwise they will be naive)</p></li>
+<li><p><cite>connect</cite> (optional): if <code class="docutils literal notranslate"><span class="pre">True</span></code> (the default), immediately
+begin connecting to MongoDB in the background. Otherwise connect
+on the first operation.</p></li>
+<li><dl class="simple">
+<dt><cite>directConnection</cite> (optional): if <code class="docutils literal notranslate"><span class="pre">True</span></code>, forces this client to</dt><dd><p>connect directly to the specified MongoDB host as a standalone.
+If <code class="docutils literal notranslate"><span class="pre">false</span></code>, the client connects to the entire replica set of
+which the given MongoDB host(s) is a part. If this is <code class="docutils literal notranslate"><span class="pre">True</span></code>
+and a mongodb+srv:// URI or a URI containing multiple seeds is
+provided, an exception will be raised.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="line-block">
+<div class="line"><strong>Other optional parameters can be passed as keyword arguments:</strong></div>
+</div>
+<ul>
+<li><p><cite>maxPoolSize</cite> (optional): The maximum allowable number of
+concurrent connections to each connected server. Requests to a
+server will block if there are <cite>maxPoolSize</cite> outstanding
+connections to the requested server. Defaults to 100. Cannot be 0.</p></li>
+<li><p><cite>minPoolSize</cite> (optional): The minimum required number of concurrent
+connections that the pool will maintain to each connected server.
+Default is 0.</p></li>
+<li><p><cite>maxIdleTimeMS</cite> (optional): The maximum number of milliseconds that
+a connection can remain idle in the pool before being removed and
+replaced. Defaults to <cite>None</cite> (no limit).</p></li>
+<li><p><cite>socketTimeoutMS</cite>: (integer or None) Controls how long (in
+milliseconds) the driver will wait for a response after sending an
+ordinary (non-monitoring) database operation before concluding that
+a network error has occurred. <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> means no timeout.
+Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code> (no timeout).</p></li>
+<li><p><cite>connectTimeoutMS</cite>: (integer or None) Controls how long (in
+milliseconds) the driver will wait during server monitoring when
+connecting a new socket to a server before concluding the server
+is unavailable. <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> means no timeout.
+Defaults to <code class="docutils literal notranslate"><span class="pre">20000</span></code> (20 seconds).</p></li>
+<li><p><cite>server_selector</cite>: (callable or None) Optional, user-provided
+function that augments server selection rules. The function should
+accept as an argument a list of
+<a class="reference internal" href="server_description.html#pymongo.server_description.ServerDescription" title="pymongo.server_description.ServerDescription"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerDescription</span></code></a> objects and
+return a list of server descriptions that should be considered
+suitable for the desired operation.</p></li>
+<li><p><cite>serverSelectionTimeoutMS</cite>: (integer) Controls how long (in
+milliseconds) the driver will wait to find an available,
+appropriate server to carry out a database operation; while it is
+waiting, multiple server monitoring operations may be carried out,
+each controlled by <cite>connectTimeoutMS</cite>. Defaults to <code class="docutils literal notranslate"><span class="pre">30000</span></code> (30
+seconds).</p></li>
+<li><p><cite>waitQueueTimeoutMS</cite>: (integer or None) How long (in milliseconds)
+a thread will wait for a socket from the pool if the pool has no
+free sockets. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code> (no timeout).</p></li>
+<li><p><cite>waitQueueMultiple</cite>: (integer or None) Multiplied by maxPoolSize
+to give the number of threads allowed to wait for a socket at one
+time. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code> (no limit).</p></li>
+<li><p><cite>heartbeatFrequencyMS</cite>: (optional) The number of milliseconds
+between periodic server checks, or None to accept the default
+frequency of 10 seconds.</p></li>
+<li><p><cite>appname</cite>: (string or None) The name of the application that
+created this MongoClient instance. MongoDB 3.4 and newer will
+print this value in the server log upon establishing each
+connection. It is also recorded in the slow query log and
+profile collections.</p></li>
+<li><p><cite>driver</cite>: (pair or None) A driver implemented on top of PyMongo can
+pass a <a class="reference internal" href="driver_info.html#pymongo.driver_info.DriverInfo" title="pymongo.driver_info.DriverInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">DriverInfo</span></code></a> to add its name,
+version, and platform to the message printed in the server log when
+establishing a connection.</p></li>
+<li><p><cite>event_listeners</cite>: a list or tuple of event listeners. See
+<a class="reference internal" href="monitoring.html#module-pymongo.monitoring" title="pymongo.monitoring: Tools for monitoring driver events."><code class="xref py py-mod docutils literal notranslate"><span class="pre">monitoring</span></code></a> for details.</p></li>
+<li><p><cite>retryWrites</cite>: (boolean) Whether supported write operations
+executed within this MongoClient will be retried once after a
+network error on MongoDB 3.6+. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+The supported write operations are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="collection.html#pymongo.collection.Collection.bulk_write" title="pymongo.collection.Collection.bulk_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bulk_write()</span></code></a>, as long as
+<a class="reference internal" href="operations.html#pymongo.operations.UpdateMany" title="pymongo.operations.UpdateMany"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateMany</span></code></a> or
+<a class="reference internal" href="operations.html#pymongo.operations.DeleteMany" title="pymongo.operations.DeleteMany"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeleteMany</span></code></a> are not included.</p></li>
+<li><p><a class="reference internal" href="collection.html#pymongo.collection.Collection.delete_one" title="pymongo.collection.Collection.delete_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_one()</span></code></a></p></li>
+<li><p><a class="reference internal" href="collection.html#pymongo.collection.Collection.insert_one" title="pymongo.collection.Collection.insert_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert_one()</span></code></a></p></li>
+<li><p><a class="reference internal" href="collection.html#pymongo.collection.Collection.insert_many" title="pymongo.collection.Collection.insert_many"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert_many()</span></code></a></p></li>
+<li><p><a class="reference internal" href="collection.html#pymongo.collection.Collection.replace_one" title="pymongo.collection.Collection.replace_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">replace_one()</span></code></a></p></li>
+<li><p><a class="reference internal" href="collection.html#pymongo.collection.Collection.update_one" title="pymongo.collection.Collection.update_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_one()</span></code></a></p></li>
+<li><p><a class="reference internal" href="collection.html#pymongo.collection.Collection.find_one_and_delete" title="pymongo.collection.Collection.find_one_and_delete"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one_and_delete()</span></code></a></p></li>
+<li><p><a class="reference internal" href="collection.html#pymongo.collection.Collection.find_one_and_replace" title="pymongo.collection.Collection.find_one_and_replace"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one_and_replace()</span></code></a></p></li>
+<li><p><a class="reference internal" href="collection.html#pymongo.collection.Collection.find_one_and_update" title="pymongo.collection.Collection.find_one_and_update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one_and_update()</span></code></a></p></li>
+</ul>
+</div></blockquote>
+<p>Unsupported write operations include, but are not limited to,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.aggregate" title="pymongo.collection.Collection.aggregate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aggregate()</span></code></a> using the <code class="docutils literal notranslate"><span class="pre">$out</span></code>
+pipeline operator and any operation with an unacknowledged write
+concern (e.g. {w: 0})). See
+<a class="reference external" href="https://github.com/mongodb/specifications/blob/master/source/retryable-writes/retryable-writes.rst">https://github.com/mongodb/specifications/blob/master/source/retryable-writes/retryable-writes.rst</a></p>
+</li>
+<li><p><cite>retryReads</cite>: (boolean) Whether supported read operations
+executed within this MongoClient will be retried once after a
+network error on MongoDB 3.6+. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+The supported read operations are:
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.find" title="pymongo.collection.Collection.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.find_one" title="pymongo.collection.Collection.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one()</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.aggregate" title="pymongo.collection.Collection.aggregate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aggregate()</span></code></a> without <code class="docutils literal notranslate"><span class="pre">$out</span></code>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.distinct" title="pymongo.collection.Collection.distinct"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distinct()</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.count" title="pymongo.collection.Collection.count"><code class="xref py py-meth docutils literal notranslate"><span class="pre">count()</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.estimated_document_count" title="pymongo.collection.Collection.estimated_document_count"><code class="xref py py-meth docutils literal notranslate"><span class="pre">estimated_document_count()</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.count_documents" title="pymongo.collection.Collection.count_documents"><code class="xref py py-meth docutils literal notranslate"><span class="pre">count_documents()</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.watch" title="pymongo.collection.Collection.watch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pymongo.collection.Collection.watch()</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.list_indexes" title="pymongo.collection.Collection.list_indexes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list_indexes()</span></code></a>,
+<a class="reference internal" href="database.html#pymongo.database.Database.watch" title="pymongo.database.Database.watch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pymongo.database.Database.watch()</span></code></a>,
+<a class="reference internal" href="database.html#pymongo.database.Database.list_collections" title="pymongo.database.Database.list_collections"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list_collections()</span></code></a>,
+<a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient.watch" title="pymongo.mongo_client.MongoClient.watch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pymongo.mongo_client.MongoClient.watch()</span></code></a>,
+and <a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient.list_databases" title="pymongo.mongo_client.MongoClient.list_databases"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list_databases()</span></code></a>.</p>
+<p>Unsupported read operations include, but are not limited to:
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.map_reduce" title="pymongo.collection.Collection.map_reduce"><code class="xref py py-meth docutils literal notranslate"><span class="pre">map_reduce()</span></code></a>,
+<a class="reference internal" href="collection.html#pymongo.collection.Collection.inline_map_reduce" title="pymongo.collection.Collection.inline_map_reduce"><code class="xref py py-meth docutils literal notranslate"><span class="pre">inline_map_reduce()</span></code></a>,
+<a class="reference internal" href="database.html#pymongo.database.Database.command" title="pymongo.database.Database.command"><code class="xref py py-meth docutils literal notranslate"><span class="pre">command()</span></code></a>,
+and any getMore operation on a cursor.</p>
+<p>Enabling retryable reads makes applications more resilient to
+transient errors such as network failures, database upgrades, and
+replica set failovers. For an exact definition of which errors
+trigger a retry, see the <a class="reference external" href="https://github.com/mongodb/specifications/blob/master/source/retryable-reads/retryable-reads.rst">retryable reads specification</a>.</p>
+</li>
+<li><p><cite>socketKeepAlive</cite>: (boolean) <strong>DEPRECATED</strong> Whether to send
+periodic keep-alive packets on connected sockets. Defaults to
+<code class="docutils literal notranslate"><span class="pre">True</span></code>. Disabling it is not recommended, see
+<a class="reference external" href="https://docs.mongodb.com/manual/faq/diagnostics/#does-tcp-keepalive-time-affect-mongodb-deployments">https://docs.mongodb.com/manual/faq/diagnostics/#does-tcp-keepalive-time-affect-mongodb-deployments</a>”,</p></li>
+<li><p><cite>compressors</cite>: Comma separated list of compressors for wire
+protocol compression. The list is used to negotiate a compressor
+with the server. Currently supported options are “snappy”, “zlib”
+and “zstd”. Support for snappy requires the
+<a class="reference external" href="https://pypi.org/project/python-snappy/">python-snappy</a> package.
+zlib support requires the Python standard library zlib module. zstd
+requires the <a class="reference external" href="https://pypi.org/project/zstandard/">zstandard</a>
+package. By default no compression is used. Compression support
+must also be enabled on the server. MongoDB 3.4+ supports snappy
+compression. MongoDB 3.6 adds support for zlib. MongoDB 4.2 adds
+support for zstd.</p></li>
+<li><p><cite>zlibCompressionLevel</cite>: (int) The zlib compression level to use
+when zlib is used as the wire protocol compressor. Supported values
+are -1 through 9. -1 tells the zlib library to use its default
+compression level (usually 6). 0 means no compression. 1 is best
+speed. 9 is best compression. Defaults to -1.</p></li>
+<li><p><cite>uuidRepresentation</cite>: The BSON representation to use when encoding
+from and decoding to instances of <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a>. Valid
+values are <cite>pythonLegacy</cite> (the default), <cite>javaLegacy</cite>,
+<cite>csharpLegacy</cite>, <cite>standard</cite> and <cite>unspecified</cite>. New applications
+should consider setting this to <cite>standard</cite> for cross language
+compatibility. See <a class="reference internal" href="../../examples/uuid.html#handling-uuid-data-example"><span class="std std-ref">Handling UUID Data</span></a> for details.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><strong>Write Concern options:</strong></div>
+<div class="line">(Only set if passed. No default values.)</div>
+</div>
+<ul class="simple">
+<li><p><cite>w</cite>: (integer or string) If this is a replica set, write operations
+will block until they have been replicated to the specified number
+or tagged set of servers. <cite>w=&lt;int&gt;</cite> always includes the replica set
+primary (e.g. w=3 means write to the primary and wait until
+replicated to <strong>two</strong> secondaries). Passing w=0 <strong>disables write
+acknowledgement</strong> and all other write concern options.</p></li>
+<li><p><cite>wTimeoutMS</cite>: (integer) Used in conjunction with <cite>w</cite>. Specify a value
+in milliseconds to control how long to wait for write propagation
+to complete. If replication does not complete in the given
+timeframe, a timeout exception is raised. Passing wTimeoutMS=0
+will cause <strong>write operations to wait indefinitely</strong>.</p></li>
+<li><p><cite>journal</cite>: If <code class="docutils literal notranslate"><span class="pre">True</span></code> block until write operations have been
+committed to the journal. Cannot be used in combination with
+<cite>fsync</cite>. Prior to MongoDB 2.6 this option was ignored if the server
+was running without journaling. Starting with MongoDB 2.6 write
+operations will fail with an exception if this option is used when
+the server is running without journaling.</p></li>
+<li><p><cite>fsync</cite>: If <code class="docutils literal notranslate"><span class="pre">True</span></code> and the server is running without journaling,
+blocks until the server has synced all data files to disk. If the
+server is running with journaling, this acts the same as the <cite>j</cite>
+option, blocking until write operations have been committed to the
+journal. Cannot be used in combination with <cite>j</cite>.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><strong>Replica set keyword arguments for connecting with a replica set
+- either directly or via a mongos:</strong></div>
+</div>
+<ul class="simple">
+<li><p><cite>replicaSet</cite>: (string or None) The name of the replica set to
+connect to. The driver will verify that all servers it connects to
+match this name. Implies that the hosts specified are a seed list
+and the driver should attempt to find all members of the set.
+Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><strong>Read Preference:</strong></div>
+</div>
+<ul class="simple">
+<li><p><cite>readPreference</cite>: The replica set read preference for this client.
+One of <code class="docutils literal notranslate"><span class="pre">primary</span></code>, <code class="docutils literal notranslate"><span class="pre">primaryPreferred</span></code>, <code class="docutils literal notranslate"><span class="pre">secondary</span></code>,
+<code class="docutils literal notranslate"><span class="pre">secondaryPreferred</span></code>, or <code class="docutils literal notranslate"><span class="pre">nearest</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">primary</span></code>.</p></li>
+<li><p><cite>readPreferenceTags</cite>: Specifies a tag set as a comma-separated list
+of colon-separated key-value pairs. For example <code class="docutils literal notranslate"><span class="pre">dc:ny,rack:1</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><cite>maxStalenessSeconds</cite>: (integer) The maximum estimated
+length of time a replica set secondary can fall behind the primary
+in replication before it will no longer be selected for operations.
+Defaults to <code class="docutils literal notranslate"><span class="pre">-1</span></code>, meaning no maximum. If maxStalenessSeconds
+is set, it must be a positive integer greater than or equal to
+90 seconds.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../examples/server_selection.html"><span class="doc">Server Selector Example</span></a></p>
+</div>
+<div class="line-block">
+<div class="line"><strong>Authentication:</strong></div>
+</div>
+<ul>
+<li><p><cite>username</cite>: A string.</p></li>
+<li><p><cite>password</cite>: A string.</p>
+<p>Although username and password must be percent-escaped in a MongoDB
+URI, they must not be percent-escaped when passed as parameters. In
+this example, both the space and slash special characters are passed
+as-is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MongoClient</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s2">"user name"</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">"pass/word"</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><cite>authSource</cite>: The database to authenticate on. Defaults to the
+database specified in the URI, if provided, or to “admin”.</p></li>
+<li><p><cite>authMechanism</cite>: See <a class="reference internal" href="database.html#pymongo.auth.MECHANISMS" title="pymongo.auth.MECHANISMS"><code class="xref py py-data docutils literal notranslate"><span class="pre">MECHANISMS</span></code></a> for options.
+If no mechanism is specified, PyMongo automatically uses MONGODB-CR
+when connected to a pre-3.0 version of MongoDB, SCRAM-SHA-1 when
+connected to MongoDB 3.0 through 3.6, and negotiates the mechanism
+to use (SCRAM-SHA-1 or SCRAM-SHA-256) when connected to MongoDB
+4.0+.</p></li>
+<li><p><cite>authMechanismProperties</cite>: Used to specify authentication mechanism
+specific options. To specify the service name for GSSAPI
+authentication pass authMechanismProperties=’SERVICE_NAME:&lt;service
+name&gt;’.
+To specify the session token for MONGODB-AWS authentication pass
+<code class="docutils literal notranslate"><span class="pre">authMechanismProperties='AWS_SESSION_TOKEN:&lt;session</span> <span class="pre">token&gt;'</span></code>.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../examples/authentication.html"><span class="doc">Authentication Examples</span></a></p>
+</div>
+<div class="line-block">
+<div class="line"><strong>TLS/SSL configuration:</strong></div>
+</div>
+<ul class="simple">
+<li><p><cite>tls</cite>: (boolean) If <code class="docutils literal notranslate"><span class="pre">True</span></code>, create the connection to the server
+using transport layer security. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><cite>tlsInsecure</cite>: (boolean) Specify whether TLS constraints should be
+relaxed as much as possible. Setting <code class="docutils literal notranslate"><span class="pre">tlsInsecure=True</span></code> implies
+<code class="docutils literal notranslate"><span class="pre">tlsAllowInvalidCertificates=True</span></code> and
+<code class="docutils literal notranslate"><span class="pre">tlsAllowInvalidHostnames=True</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>. Think
+very carefully before setting this to <code class="docutils literal notranslate"><span class="pre">True</span></code> as it dramatically
+reduces the security of TLS.</p></li>
+<li><p><cite>tlsAllowInvalidCertificates</cite>: (boolean) If <code class="docutils literal notranslate"><span class="pre">True</span></code>, continues
+the TLS handshake regardless of the outcome of the certificate
+verification process. If this is <code class="docutils literal notranslate"><span class="pre">False</span></code>, and a value is not
+provided for <code class="docutils literal notranslate"><span class="pre">tlsCAFile</span></code>, PyMongo will attempt to load system
+provided CA certificates. If the python version in use does not
+support loading system CA certificates then the <code class="docutils literal notranslate"><span class="pre">tlsCAFile</span></code>
+parameter must point to a file of CA certificates.
+<code class="docutils literal notranslate"><span class="pre">tlsAllowInvalidCertificates=False</span></code> implies <code class="docutils literal notranslate"><span class="pre">tls=True</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>. Think very carefully before setting this
+to <code class="docutils literal notranslate"><span class="pre">True</span></code> as that could make your application vulnerable to
+man-in-the-middle attacks.</p></li>
+<li><p><cite>tlsAllowInvalidHostnames</cite>: (boolean) If <code class="docutils literal notranslate"><span class="pre">True</span></code>, disables TLS
+hostname verification. <code class="docutils literal notranslate"><span class="pre">tlsAllowInvalidHostnames=False</span></code> implies
+<code class="docutils literal notranslate"><span class="pre">tls=True</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>. Think very carefully before
+setting this to <code class="docutils literal notranslate"><span class="pre">True</span></code> as that could make your application
+vulnerable to man-in-the-middle attacks.</p></li>
+<li><p><cite>tlsCAFile</cite>: A file containing a single or a bundle of
+“certification authority” certificates, which are used to validate
+certificates passed from the other end of the connection.
+Implies <code class="docutils literal notranslate"><span class="pre">tls=True</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><cite>tlsCertificateKeyFile</cite>: A file containing the client certificate
+and private key. If you want to pass the certificate and private
+key as separate files, use the <code class="docutils literal notranslate"><span class="pre">ssl_certfile</span></code> and <code class="docutils literal notranslate"><span class="pre">ssl_keyfile</span></code>
+options instead. Implies <code class="docutils literal notranslate"><span class="pre">tls=True</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><cite>tlsCRLFile</cite>: A file containing a PEM or DER formatted
+certificate revocation list. Only supported by python 2.7.9+
+(pypy 2.5.1+). Implies <code class="docutils literal notranslate"><span class="pre">tls=True</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><cite>tlsCertificateKeyFilePassword</cite>: The password or passphrase for
+decrypting the private key in <code class="docutils literal notranslate"><span class="pre">tlsCertificateKeyFile</span></code> or
+<code class="docutils literal notranslate"><span class="pre">ssl_keyfile</span></code>. Only necessary if the private key is encrypted.
+Only supported by python 2.7.9+ (pypy 2.5.1+) and 3.3+. Defaults
+to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><cite>tlsDisableOCSPEndpointCheck</cite>: (boolean) If <code class="docutils literal notranslate"><span class="pre">True</span></code>, disables
+certificate revocation status checking via the OCSP responder
+specified on the server certificate. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><cite>ssl</cite>: (boolean) Alias for <code class="docutils literal notranslate"><span class="pre">tls</span></code>.</p></li>
+<li><p><cite>ssl_certfile</cite>: The certificate file used to identify the local
+connection against mongod. Implies <code class="docutils literal notranslate"><span class="pre">tls=True</span></code>. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><cite>ssl_keyfile</cite>: The private keyfile used to identify the local
+connection against mongod. Can be omitted if the keyfile is
+included with the <code class="docutils literal notranslate"><span class="pre">tlsCertificateKeyFile</span></code>. Implies <code class="docutils literal notranslate"><span class="pre">tls=True</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><strong>Read Concern options:</strong></div>
+<div class="line">(If not set explicitly, this will use the server default)</div>
+</div>
+<ul class="simple">
+<li><p><cite>readConcernLevel</cite>: (string) The read concern level specifies the
+level of isolation for read operations.  For example, a read
+operation using a read concern level of <code class="docutils literal notranslate"><span class="pre">majority</span></code> will only
+return data that has been written to a majority of nodes. If the
+level is left unspecified, the server default will be used.</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><strong>Client side encryption options:</strong></div>
+<div class="line">(If not set explicitly, client side encryption will not be enabled.)</div>
+</div>
+<ul class="simple">
+<li><p><cite>auto_encryption_opts</cite>: A
+<a class="reference internal" href="encryption_options.html#pymongo.encryption_options.AutoEncryptionOpts" title="pymongo.encryption_options.AutoEncryptionOpts"><code class="xref py py-class docutils literal notranslate"><span class="pre">AutoEncryptionOpts</span></code></a> which
+configures this client to automatically encrypt collection commands
+and automatically decrypt results. See
+<a class="reference internal" href="../../examples/encryption.html#automatic-client-side-encryption"><span class="std std-ref">Automatic Client-Side Field Level Encryption</span></a> for an example.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p class="admonition-title">The MongoDB documentation on</p>
+<p><a class="reference external" href="http://dochub.mongodb.org/core/connections" name="pymongo.mongo_replica_set_client.MongoReplicaSetClient"><em>connections</em></a></p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.11: </span>Added the following keyword arguments and URI options:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tlsDisableOCSPEndpointCheck</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">directConnection</span></code></p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.9: </span>Added the <code class="docutils literal notranslate"><span class="pre">retryReads</span></code> keyword argument and URI option.
+Added the <code class="docutils literal notranslate"><span class="pre">tlsInsecure</span></code> keyword argument and URI option.
+The following keyword arguments and URI options were deprecated:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wTimeout</span></code> was deprecated in favor of <code class="docutils literal notranslate"><span class="pre">wTimeoutMS</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">j</span></code> was deprecated in favor of <code class="docutils literal notranslate"><span class="pre">journal</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ssl_cert_reqs</span></code> was deprecated in favor of
+<code class="docutils literal notranslate"><span class="pre">tlsAllowInvalidCertificates</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ssl_match_hostname</span></code> was deprecated in favor of
+<code class="docutils literal notranslate"><span class="pre">tlsAllowInvalidHostnames</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ssl_ca_certs</span></code> was deprecated in favor of <code class="docutils literal notranslate"><span class="pre">tlsCAFile</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ssl_certfile</span></code> was deprecated in favor of
+<code class="docutils literal notranslate"><span class="pre">tlsCertificateKeyFile</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ssl_crlfile</span></code> was deprecated in favor of <code class="docutils literal notranslate"><span class="pre">tlsCRLFile</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ssl_pem_passphrase</span></code> was deprecated in favor of
+<code class="docutils literal notranslate"><span class="pre">tlsCertificateKeyFilePassword</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.9: </span><code class="docutils literal notranslate"><span class="pre">retryWrites</span></code> now defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.8: </span>Added the <code class="docutils literal notranslate"><span class="pre">server_selector</span></code> keyword argument.
+Added the <code class="docutils literal notranslate"><span class="pre">type_registry</span></code> keyword argument.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.7: </span>Added the <code class="docutils literal notranslate"><span class="pre">driver</span></code> keyword argument.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added support for mongodb+srv:// URIs.
+Added the <code class="docutils literal notranslate"><span class="pre">retryWrites</span></code> keyword argument and URI option.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Add <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">password</span></code> options. Document the
+<code class="docutils literal notranslate"><span class="pre">authSource</span></code>, <code class="docutils literal notranslate"><span class="pre">authMechanism</span></code>, and <code class="docutils literal notranslate"><span class="pre">authMechanismProperties</span></code>
+options.
+Deprecated the <code class="docutils literal notranslate"><span class="pre">socketKeepAlive</span></code> keyword argument and URI option.
+<code class="docutils literal notranslate"><span class="pre">socketKeepAlive</span></code> now defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span><a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient" title="pymongo.mongo_client.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a> is now the one and only
+client class for a standalone server, mongos, or replica set.
+It includes the functionality that had been split into
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MongoReplicaSetClient</span></code>: it can connect
+to a replica set, discover all its members, and monitor the set for
+stepdowns, elections, and reconfigs.</p>
+<p>The <a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient" title="pymongo.mongo_client.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a> constructor no
+longer blocks while connecting to the server or servers, and it no
+longer raises <a class="reference internal" href="errors.html#pymongo.errors.ConnectionFailure" title="pymongo.errors.ConnectionFailure"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionFailure</span></code></a> if they
+are unavailable, nor <a class="reference internal" href="errors.html#pymongo.errors.ConfigurationError" title="pymongo.errors.ConfigurationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigurationError</span></code></a>
+if the user’s credentials are wrong. Instead, the constructor
+returns immediately and launches the connection process on
+background threads.</p>
+<p>Therefore the <code class="docutils literal notranslate"><span class="pre">alive</span></code> method is removed since it no longer
+provides meaningful information; even if the client is disconnected,
+it may discover a server in time to fulfill the next operation.</p>
+<p>In PyMongo 2.x, <a class="reference internal" href="index.html#pymongo.MongoClient" title="pymongo.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a> accepted a list of
+standalone MongoDB servers and used the first it could connect to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MongoClient</span><span class="p">([</span><span class="s1">'host1.com:27017'</span><span class="p">,</span> <span class="s1">'host2.com:27017'</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>A list of multiple standalones is no longer supported; if multiple
+servers are listed they must be members of the same replica set, or
+mongoses in the same sharded cluster.</p>
+<p>The behavior for a list of mongoses is changed from “high
+availability” to “load balancing”. Before, the client connected to
+the lowest-latency mongos in the list, and used it until a network
+error prompted it to re-evaluate all mongoses’ latencies and
+reconnect to one of them. In PyMongo 3, the client monitors its
+network latency to all the mongoses continuously, and distributes
+operations evenly among those with the lowest latency. See
+<a class="reference internal" href="../../examples/high_availability.html#mongos-load-balancing"><span class="std std-ref">mongos Load Balancing</span></a> for more information.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">connect</span></code> option is added.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">start_request</span></code>, <code class="docutils literal notranslate"><span class="pre">in_request</span></code>, and <code class="docutils literal notranslate"><span class="pre">end_request</span></code> methods
+are removed, as well as the <code class="docutils literal notranslate"><span class="pre">auto_start_request</span></code> option.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">copy_database</span></code> method is removed, see the
+<a class="reference internal" href="../../examples/copydb.html"><span class="doc">copy_database examples</span></a> for alternatives.</p>
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">MongoClient.disconnect()</span></code> method is removed; it was a
+synonym for <code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code>.</p>
+<p><a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient" title="pymongo.mongo_client.MongoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code></a> no longer returns an
+instance of <a class="reference internal" href="database.html#pymongo.database.Database" title="pymongo.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> for attribute names
+with leading underscores. You must use dict-style lookups instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="p">[</span><span class="s1">'__my_database__'</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Not:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">__my_database__</span>
+</pre></div>
+</div>
+</div>
+<dl class="py method">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.close"><a name="//apple_ref/cpp/Method/pymongo.mongo_replica_set_client.MongoReplicaSetClient.close"></a>
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleanup client resources and disconnect from MongoDB.</p>
+<p>On MongoDB &gt;= 3.6, end all server sessions created by this client by
+sending one or more endSessions commands.</p>
+<p>Close all sockets in the connection pools and stop the monitor threads.
+If this instance is used again it will be automatically re-opened and
+the threads restarted unless auto encryption is enabled. A client
+enabled with auto encryption cannot be used again after being closed;
+any attempt will raise <a class="reference internal" href="errors.html#pymongo.errors.InvalidOperation" title="pymongo.errors.InvalidOperation"><code class="xref py py-exc docutils literal notranslate"><span class="pre">InvalidOperation</span></code></a>.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>End all server sessions created by this client.</p>
+</div>
+</dd></dl>
+<dl class="describe">
+<dt>
+<code class="sig-name descname">c[db_name] || c.db_name</code></dt>
+<dd><p>Get the <cite>db_name</cite> <a class="reference internal" href="database.html#pymongo.database.Database" title="pymongo.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> on <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">MongoReplicaSetClient</span></code></a> <cite>c</cite>.</p>
+<p>Raises <a class="reference internal" href="errors.html#pymongo.errors.InvalidName" title="pymongo.errors.InvalidName"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvalidName</span></code></a> if an invalid database name is used.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.primary"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.primary"></a>
+<code class="sig-name descname">primary</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.primary" title="Permalink to this definition">¶</a></dt>
+<dd><p>The (host, port) of the current primary of the replica set.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if this client is not connected to a replica set,
+there is no primary, or this client was created without the
+<cite>replicaSet</cite> option.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.0: </span>MongoClient gained this property in version 3.0 when
+MongoReplicaSetClient’s functionality was merged in.</p>
+</div>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.secondaries"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.secondaries"></a>
+<code class="sig-name descname">secondaries</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.secondaries" title="Permalink to this definition">¶</a></dt>
+<dd><p>The secondary members known to this client.</p>
+<p>A sequence of (host, port) pairs. Empty if this client is not
+connected to a replica set, there are no visible secondaries, or this
+client was created without the <cite>replicaSet</cite> option.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.0: </span>MongoClient gained this property in version 3.0 when
+MongoReplicaSetClient’s functionality was merged in.</p>
+</div>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.arbiters"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.arbiters"></a>
+<code class="sig-name descname">arbiters</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.arbiters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Arbiters in the replica set.</p>
+<p>A sequence of (host, port) pairs. Empty if this client is not
+connected to a replica set, there are no arbiters, or this client was
+created without the <cite>replicaSet</cite> option.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.max_pool_size"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.max_pool_size"></a>
+<code class="sig-name descname">max_pool_size</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.max_pool_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum allowable number of concurrent connections to each
+connected server. Requests to a server will block if there are
+<cite>maxPoolSize</cite> outstanding connections to the requested server.
+Defaults to 100. Cannot be 0.</p>
+<p>When a server’s pool has reached <cite>max_pool_size</cite>, operations for that
+server block waiting for a socket to be returned to the pool. If
+<code class="docutils literal notranslate"><span class="pre">waitQueueTimeoutMS</span></code> is set, a blocked operation will raise
+<a class="reference internal" href="errors.html#pymongo.errors.ConnectionFailure" title="pymongo.errors.ConnectionFailure"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ConnectionFailure</span></code></a> after a timeout.
+By default <code class="docutils literal notranslate"><span class="pre">waitQueueTimeoutMS</span></code> is not set.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.max_bson_size"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.max_bson_size"></a>
+<code class="sig-name descname">max_bson_size</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.max_bson_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The largest BSON object the connected server accepts in bytes.</p>
+<p>If the client is not connected, this will block until a connection is
+established or raise ServerSelectionTimeoutError if no server is
+available.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.max_message_size"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.max_message_size"></a>
+<code class="sig-name descname">max_message_size</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.max_message_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The largest message the connected server accepts in bytes.</p>
+<p>If the client is not connected, this will block until a connection is
+established or raise ServerSelectionTimeoutError if no server is
+available.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.local_threshold_ms"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.local_threshold_ms"></a>
+<code class="sig-name descname">local_threshold_ms</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.local_threshold_ms" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local threshold for this instance.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.codec_options"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.codec_options"></a>
+<code class="sig-name descname">codec_options</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.codec_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read only access to the <a class="reference internal" href="../bson/codec_options.html#bson.codec_options.CodecOptions" title="bson.codec_options.CodecOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>
+of this instance.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.read_preference"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.read_preference"></a>
+<code class="sig-name descname">read_preference</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.read_preference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read only access to the read preference of this instance.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>The <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.read_preference" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient.read_preference"><code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code></a> attribute is now read only.</p>
+</div>
+</dd></dl>
+<dl class="py attribute">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.write_concern"><a name="//apple_ref/cpp/Attribute/pymongo.mongo_replica_set_client.MongoReplicaSetClient.write_concern"></a>
+<code class="sig-name descname">write_concern</code><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.write_concern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read only access to the <a class="reference internal" href="write_concern.html#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>
+of this instance.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>The <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.write_concern" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient.write_concern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code></a> attribute is now read only.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.database_names"><a name="//apple_ref/cpp/Method/pymongo.mongo_replica_set_client.MongoReplicaSetClient.database_names"></a>
+<code class="sig-name descname">database_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.database_names" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>DEPRECATED</strong>: Get a list of the names of all databases on the
+connected server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.7: </span>Deprecated. Use <code class="xref py py-meth docutils literal notranslate"><span class="pre">list_database_names()</span></code> instead.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.drop_database"><a name="//apple_ref/cpp/Method/pymongo.mongo_replica_set_client.MongoReplicaSetClient.drop_database"></a>
+<code class="sig-name descname">drop_database</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name_or_database</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.drop_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drop a database.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>name_or_database</cite> is not an instance of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">basestring</span></code> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> in python 3) or
+<a class="reference internal" href="database.html#pymongo.database.Database" title="pymongo.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>name_or_database</cite>: the name of a database to drop, or a
+<a class="reference internal" href="database.html#pymongo.database.Database" title="pymongo.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> instance representing the
+database to drop</p></li>
+<li><p><cite>session</cite> (optional): a
+<a class="reference internal" href="client_session.html#pymongo.client_session.ClientSession" title="pymongo.client_session.ClientSession"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSession</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.6: </span>Added <code class="docutils literal notranslate"><span class="pre">session</span></code> parameter.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="mongo_client.html#pymongo.mongo_client.MongoClient.write_concern" title="pymongo.mongo_client.MongoClient.write_concern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code></a> of
+this client is automatically applied to this operation when using
+MongoDB &gt;= 3.4.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.4: </span>Apply this client’s write concern automatically to this operation
+when connected to MongoDB &gt;= 3.4.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.get_database"><a name="//apple_ref/cpp/Method/pymongo.mongo_replica_set_client.MongoReplicaSetClient.get_database"></a>
+<code class="sig-name descname">get_database</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">codec_options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">read_preference</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">write_concern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">read_concern</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.get_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <a class="reference internal" href="database.html#pymongo.database.Database" title="pymongo.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> with the given name and
+options.</p>
+<p>Useful for creating a <a class="reference internal" href="database.html#pymongo.database.Database" title="pymongo.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> with
+different codec options, read preference, and/or write concern from
+this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">read_preference</span>
+<span class="go">Primary()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db1</span><span class="o">.</span><span class="n">read_preference</span>
+<span class="go">Primary()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">ReadPreference</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_database</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s1">'test'</span><span class="p">,</span> <span class="n">read_preference</span><span class="o">=</span><span class="n">ReadPreference</span><span class="o">.</span><span class="n">SECONDARY</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db2</span><span class="o">.</span><span class="n">read_preference</span>
+<span class="go">Secondary(tag_sets=None)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>name</cite> (optional): The name of the database - a string. If <code class="docutils literal notranslate"><span class="pre">None</span></code>
+(the default) the database named in the MongoDB connection URI is
+returned.</p></li>
+<li><p><cite>codec_options</cite> (optional): An instance of
+<a class="reference internal" href="../bson/codec_options.html#bson.codec_options.CodecOptions" title="bson.codec_options.CodecOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.codec_options" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient.codec_options"><code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code></a> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
+used.</p></li>
+<li><p><cite>read_preference</cite> (optional): The read preference to use. If
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.read_preference" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient.read_preference"><code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code></a> of this
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is used. See <a class="reference internal" href="read_preferences.html#module-pymongo.read_preferences" title="pymongo.read_preferences: Utilities for choosing which member of a replica set to read from."><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code></a>
+for options.</p></li>
+<li><p><cite>write_concern</cite> (optional): An instance of
+<a class="reference internal" href="write_concern.html#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.write_concern" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient.write_concern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code></a> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
+used.</p></li>
+<li><p><cite>read_concern</cite> (optional): An instance of
+<a class="reference internal" href="read_concern.html#pymongo.read_concern.ReadConcern" title="pymongo.read_concern.ReadConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
+used.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>The <cite>name</cite> parameter is now optional, defaulting to the database
+named in the MongoDB connection URI.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.close_cursor"><a name="//apple_ref/cpp/Method/pymongo.mongo_replica_set_client.MongoReplicaSetClient.close_cursor"></a>
+<code class="sig-name descname">close_cursor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cursor_id</span></em>, <em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.close_cursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>DEPRECATED - Send a kill cursors message soon with the given id.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>cursor_id</cite> is not an instance of
+<code class="docutils literal notranslate"><span class="pre">(int,</span> <span class="pre">long)</span></code>. What closing the cursor actually means
+depends on this client’s cursor manager.</p>
+<p>This method may be called from a <a class="reference internal" href="cursor.html#pymongo.cursor.Cursor" title="pymongo.cursor.Cursor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cursor</span></code></a>
+destructor during garbage collection, so it isn’t safe to take a
+lock or do network I/O. Instead, we schedule the cursor to be closed
+soon on a background thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>cursor_id</cite>: id of cursor to close</p></li>
+<li><p><cite>address</cite> (optional): (host, port) pair of the cursor’s server.
+If it is not provided, the client attempts to close the cursor on
+the primary or standalone, or a mongos server.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.7: </span>Deprecated.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>Added <code class="docutils literal notranslate"><span class="pre">address</span></code> parameter.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.kill_cursors"><a name="//apple_ref/cpp/Method/pymongo.mongo_replica_set_client.MongoReplicaSetClient.kill_cursors"></a>
+<code class="sig-name descname">kill_cursors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cursor_ids</span></em>, <em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.kill_cursors" title="Permalink to this definition">¶</a></dt>
+<dd><p>DEPRECATED - Send a kill cursors message soon with the given ids.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>cursor_ids</cite> is not an instance of
+<code class="docutils literal notranslate"><span class="pre">list</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>cursor_ids</cite>: list of cursor ids to kill</p></li>
+<li><p><cite>address</cite> (optional): (host, port) pair of the cursor’s server.
+If it is not provided, the client attempts to close the cursor on
+the primary or standalone, or a mongos server.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.3: </span>Deprecated.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>Now accepts an <cite>address</cite> argument. Schedules the cursors to be
+closed on a background thread instead of sending the message
+immediately.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.set_cursor_manager"><a name="//apple_ref/cpp/Method/pymongo.mongo_replica_set_client.MongoReplicaSetClient.set_cursor_manager"></a>
+<code class="sig-name descname">set_cursor_manager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">manager_class</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.set_cursor_manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>DEPRECATED - Set this client’s cursor manager.</p>
+<p>Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <cite>manager_class</cite> is not a subclass of
+<a class="reference internal" href="cursor_manager.html#pymongo.cursor_manager.CursorManager" title="pymongo.cursor_manager.CursorManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">CursorManager</span></code></a>. A cursor manager
+handles closing cursors. Different managers can implement different
+policies in terms of when to actually kill a cursor that has
+been closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>manager_class</cite>: cursor manager to use</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.3: </span>Deprecated, for real this time.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.0: </span>Undeprecated.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt id="pymongo.mongo_replica_set_client.MongoReplicaSetClient.get_default_database"><a name="//apple_ref/cpp/Method/pymongo.mongo_replica_set_client.MongoReplicaSetClient.get_default_database"></a>
+<code class="sig-name descname">get_default_database</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">codec_options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">read_preference</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">write_concern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">read_concern</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.get_default_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the database named in the MongoDB connection URI.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">uri</span> <span class="o">=</span> <span class="s1">'mongodb://host/my_database'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_default_database</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'my_database'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_database</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">db</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'my_database'</span>
+</pre></div>
+</div>
+<p>Useful in scripts where you want to choose which database to use
+based only on the URI in a configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>default</cite> (optional): the database name to use if no database name
+was provided in the URI.</p></li>
+<li><p><cite>codec_options</cite> (optional): An instance of
+<a class="reference internal" href="../bson/codec_options.html#bson.codec_options.CodecOptions" title="bson.codec_options.CodecOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.codec_options" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient.codec_options"><code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code></a> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
+used.</p></li>
+<li><p><cite>read_preference</cite> (optional): The read preference to use. If
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.read_preference" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient.read_preference"><code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code></a> of this
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is used. See <a class="reference internal" href="read_preferences.html#module-pymongo.read_preferences" title="pymongo.read_preferences: Utilities for choosing which member of a replica set to read from."><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code></a>
+for options.</p></li>
+<li><p><cite>write_concern</cite> (optional): An instance of
+<a class="reference internal" href="write_concern.html#pymongo.write_concern.WriteConcern" title="pymongo.write_concern.WriteConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.write_concern" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient.write_concern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code></a> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
+used.</p></li>
+<li><p><cite>read_concern</cite> (optional): An instance of
+<a class="reference internal" href="read_concern.html#pymongo.read_concern.ReadConcern" title="pymongo.read_concern.ReadConcern"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
+used.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.8: </span>Undeprecated. Added the <code class="docutils literal notranslate"><span class="pre">default</span></code>, <code class="docutils literal notranslate"><span class="pre">codec_options</span></code>,
+<code class="docutils literal notranslate"><span class="pre">read_preference</span></code>, <code class="docutils literal notranslate"><span class="pre">write_concern</span></code> and <code class="docutils literal notranslate"><span class="pre">read_concern</span></code>
+parameters.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 3.5: </span>Deprecated, use <a class="reference internal" href="#pymongo.mongo_replica_set_client.MongoReplicaSetClient.get_database" title="pymongo.mongo_replica_set_client.MongoReplicaSetClient.get_database"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_database()</span></code></a> instead.</p>
+</div>
+</dd></dl>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="mongo_client.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mongo_client</span></code> – Tools for connecting to MongoDB</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="monitoring.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">monitoring</span></code> – Tools for monitoring driver events.</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/pymongo/mongo_replica_set_client.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="monitoring.html" title="monitoring – Tools for monitoring driver events.">next</a> |</li>
+<li class="right">
+<a href="mongo_client.html" title="mongo_client – Tools for connecting to MongoDB">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pymongo</span></code> – Python driver for MongoDB</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">mongo_replica_set_client</span></code> – Tools for connecting to a MongoDB replica set</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>

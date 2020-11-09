@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>decimal128 – Support for BSON Decimal128 — PyMongo 3.11.0 documentation</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/pydoctheme.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/language_data.js"></script>
+<script src="../../_static/delighted.js"></script>
+<script src="../../_static/sidebar.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="errors.html" rel="next" title="errors – Exceptions raised by the bson package"/>
+<link href="dbref.html" rel="prev" title="dbref – Tools for manipulating DBRefs (references to documents stored in MongoDB)"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a accesskey="N" href="errors.html" title="errors – Exceptions raised by the bson package">next</a> |</li>
+<li class="right">
+<a accesskey="P" href="dbref.html" title="dbref – Tools for manipulating DBRefs (references to documents stored in MongoDB)">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">decimal128</span></code> – Support for BSON Decimal128</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<div class="section" id="module-bson.decimal128">
+<span id="decimal128-support-for-bson-decimal128"></span><h1><a name="//apple_ref/cpp/Module/bson.decimal128"></a><code class="xref py py-mod docutils literal notranslate"><span class="pre">decimal128</span></code> – Support for BSON Decimal128<a class="headerlink" href="#module-bson.decimal128" title="Permalink to this headline">¶</a></h1>
+<p>Tools for working with the BSON decimal128 type.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 3.4.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Decimal128 BSON type requires MongoDB 3.4+.</p>
+</div>
+<dl class="py class">
+<dt id="bson.decimal128.Decimal128"><a name="//apple_ref/cpp/Class/bson.decimal128.Decimal128"></a>
+<em class="property">class </em><code class="sig-prename descclassname">bson.decimal128.</code><code class="sig-name descname">Decimal128</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.decimal128.Decimal128" title="Permalink to this definition">¶</a></dt>
+<dd><p>BSON Decimal128 type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s2">"0.0005"</span><span class="p">))</span>
+<span class="go">Decimal128('0.0005')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="s2">"0.0005"</span><span class="p">)</span>
+<span class="go">Decimal128('0.0005')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">((</span><span class="mi">3474527112516337664</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="go">Decimal128('0.0005')</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>value</cite>: An instance of <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code></a>, string, or tuple of
+(high bits, low bits) from Binary Integer Decimal (BID) format.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#bson.decimal128.Decimal128" title="bson.decimal128.Decimal128"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal128</span></code></a> uses an instance of <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Context" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Context</span></code></a>
+configured for IEEE-754 Decimal128 when validating parameters.
+Signals like <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.InvalidOperation" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.InvalidOperation</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Inexact" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Inexact</span></code></a>,
+and <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Overflow" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Overflow</span></code></a> are trapped and raised as exceptions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="s2">".13.1"</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">"&lt;stdin&gt;"</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  <span class="c">...</span>
+<span class="gr">decimal.InvalidOperation</span>: <span class="n">[&lt;class 'decimal.ConversionSyntax'&gt;]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="s2">"1E-6177"</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">"&lt;stdin&gt;"</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  <span class="c">...</span>
+<span class="gr">decimal.Inexact</span>: <span class="n">[&lt;class 'decimal.Inexact'&gt;]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="s2">"1E6145"</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">"&lt;stdin&gt;"</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  <span class="c">...</span>
+<span class="gr">decimal.Overflow</span>: <span class="n">[&lt;class 'decimal.Overflow'&gt;, &lt;class 'decimal.Rounded'&gt;]</span>
+</pre></div>
+</div>
+<p>To ensure the result of a calculation can always be stored as BSON
+Decimal128 use the context returned by
+<a class="reference internal" href="#bson.decimal128.create_decimal128_context" title="bson.decimal128.create_decimal128_context"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_decimal128_context()</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">decimal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">decimal128_ctx</span> <span class="o">=</span> <span class="n">create_decimal128_context</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">decimal</span><span class="o">.</span><span class="n">localcontext</span><span class="p">(</span><span class="n">decimal128_ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">ctx</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">Decimal128</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">create_decimal</span><span class="p">(</span><span class="s2">".13.3"</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="go">Decimal128('NaN')</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">decimal</span><span class="o">.</span><span class="n">localcontext</span><span class="p">(</span><span class="n">decimal128_ctx</span><span class="p">)</span> <span class="k">as</span> <span class="n">ctx</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">Decimal128</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">create_decimal</span><span class="p">(</span><span class="s2">"1E-6177"</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="go">Decimal128('0E-6176')</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">decimal</span><span class="o">.</span><span class="n">localcontext</span><span class="p">(</span><span class="n">DECIMAL128_CTX</span><span class="p">)</span> <span class="k">as</span> <span class="n">ctx</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">Decimal128</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">create_decimal</span><span class="p">(</span><span class="s2">"1E6145"</span><span class="p">))</span>
+<span class="gp">...</span>
+<span class="go">Decimal128('Infinity')</span>
+</pre></div>
+</div>
+<p>To match the behavior of MongoDB’s Decimal128 implementation
+str(Decimal(value)) may not match str(Decimal128(value)) for NaN values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">'NaN'</span><span class="p">))</span>
+<span class="go">Decimal128('NaN')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">'-NaN'</span><span class="p">))</span>
+<span class="go">Decimal128('NaN')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">'sNaN'</span><span class="p">))</span>
+<span class="go">Decimal128('NaN')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">'-sNaN'</span><span class="p">))</span>
+<span class="go">Decimal128('NaN')</span>
+</pre></div>
+</div>
+<p>However, <a class="reference internal" href="#bson.decimal128.Decimal128.to_decimal" title="bson.decimal128.Decimal128.to_decimal"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_decimal()</span></code></a> will return the exact value:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">'NaN'</span><span class="p">))</span><span class="o">.</span><span class="n">to_decimal</span><span class="p">()</span>
+<span class="go">Decimal('NaN')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">'-NaN'</span><span class="p">))</span><span class="o">.</span><span class="n">to_decimal</span><span class="p">()</span>
+<span class="go">Decimal('-NaN')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">'sNaN'</span><span class="p">))</span><span class="o">.</span><span class="n">to_decimal</span><span class="p">()</span>
+<span class="go">Decimal('sNaN')</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">'-sNaN'</span><span class="p">))</span><span class="o">.</span><span class="n">to_decimal</span><span class="p">()</span>
+<span class="go">Decimal('-sNaN')</span>
+</pre></div>
+</div>
+<p>Two instances of <a class="reference internal" href="#bson.decimal128.Decimal128" title="bson.decimal128.Decimal128"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal128</span></code></a> compare equal if their Binary
+Integer Decimal encodings are equal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="s1">'NaN'</span><span class="p">)</span> <span class="o">==</span> <span class="n">Decimal128</span><span class="p">(</span><span class="s1">'NaN'</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal128</span><span class="p">(</span><span class="s1">'NaN'</span><span class="p">)</span><span class="o">.</span><span class="n">bid</span> <span class="o">==</span> <span class="n">Decimal128</span><span class="p">(</span><span class="s1">'NaN'</span><span class="p">)</span><span class="o">.</span><span class="n">bid</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>This differs from <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code></a> comparisons for NaN:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Decimal</span><span class="p">(</span><span class="s1">'NaN'</span><span class="p">)</span> <span class="o">==</span> <span class="n">Decimal</span><span class="p">(</span><span class="s1">'NaN'</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</div>
+<dl class="py method">
+<dt id="bson.decimal128.Decimal128.bid"><a name="//apple_ref/cpp/Method/bson.decimal128.Decimal128.bid"></a>
+<em class="property">property </em><code class="sig-name descname">bid</code><a class="headerlink" href="#bson.decimal128.Decimal128.bid" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Binary Integer Decimal (BID) encoding of this instance.</p>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.decimal128.Decimal128.from_bid"><a name="//apple_ref/cpp/Method/bson.decimal128.Decimal128.from_bid"></a>
+<em class="property">classmethod </em><code class="sig-name descname">from_bid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bson.decimal128.Decimal128.from_bid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an instance of <a class="reference internal" href="#bson.decimal128.Decimal128" title="bson.decimal128.Decimal128"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal128</span></code></a> from Binary Integer
+Decimal string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><cite>value</cite>: 16 byte string (128-bit IEEE 754-2008 decimal floating
+point in Binary Integer Decimal (BID) format).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="bson.decimal128.Decimal128.to_decimal"><a name="//apple_ref/cpp/Method/bson.decimal128.Decimal128.to_decimal"></a>
+<code class="sig-name descname">to_decimal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bson.decimal128.Decimal128.to_decimal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Decimal</span></code></a> for this
+<a class="reference internal" href="#bson.decimal128.Decimal128" title="bson.decimal128.Decimal128"><code class="xref py py-class docutils literal notranslate"><span class="pre">Decimal128</span></code></a>.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py function">
+<dt id="bson.decimal128.create_decimal128_context"><a name="//apple_ref/cpp/Function/bson.decimal128.create_decimal128_context"></a>
+<code class="sig-prename descclassname">bson.decimal128.</code><code class="sig-name descname">create_decimal128_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bson.decimal128.create_decimal128_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance of <a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Context" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">decimal.Context</span></code></a> appropriate
+for working with IEEE-754 128-bit decimal floating point values.</p>
+</dd></dl>
+</div>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<h4>Previous topic</h4>
+<p class="topless"><a href="dbref.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dbref</span></code> – Tools for manipulating DBRefs (references to documents stored in MongoDB)</a></p>
+<h4>Next topic</h4>
+<p class="topless"><a href="errors.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">errors</span></code> – Exceptions raised by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> package</a></p>
+<div aria-label="source link" role="note">
+<h3>This Page</h3>
+<ul class="this-page-menu">
+<li><a href="../../_sources/api/bson/decimal128.rst.txt" rel="nofollow">Show Source</a></li>
+</ul>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">Quick search</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" name="q" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>$('#searchbox').show(0);</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>Navigation</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.html" title="General Index">index</a></li>
+<li class="right">
+<a href="../../py-modindex.html" title="Python Module Index">modules</a> |</li>
+<li class="right">
+<a href="errors.html" title="errors – Exceptions raised by the bson package">next</a> |</li>
+<li class="right">
+<a href="dbref.html" title="dbref – Tools for manipulating DBRefs (references to documents stored in MongoDB)">previous</a> |</li>
+<li class="nav-item nav-item-0"><a href="../../index.html">PyMongo 3.11.0 documentation</a> »</li>
+<li class="nav-item nav-item-1"><a href="../index.html">API Documentation</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bson</span></code> – BSON (Binary JSON) Encoding and Decoding</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">decimal128</span></code> – Support for BSON Decimal128</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © Copyright MongoDB, Inc. 2008-present. MongoDB, Mongo, and the leaf logo are registered trademarks of MongoDB, Inc.
+    </div>
+</body>
+</html>
